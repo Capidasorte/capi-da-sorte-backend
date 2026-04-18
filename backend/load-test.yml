@@ -1,0 +1,28 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Teste de concorrencia"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Login e compra simultanea"
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            email: "teste2@teste.com"
+            senha: "123456"
+          capture:
+            - json: "$.token"
+              as: "token"
+      - post:
+          url: "/purchase"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          json:
+            campaign_id: "cdd6ae10-8200-44e8-ab9d-d4e2a4ba059f"
+            quantidade: 1
