@@ -1,3 +1,4 @@
+// APP — BACKEND CAPI DA SORTE
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
@@ -10,25 +11,43 @@ const webhookRoutes = require('./routes/webhook.routes')
 
 const app = express()
 
-// Segurança
 app.use(helmet())
 
 // Rate limit geral
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100,
-  message: { error: 'Muitas requisicoes. Tente novamente em 15 minutos.' }
+  windowMs: 15 * 60 * 1000,
+  max: 5000,
+  message: { error: 'Muitas requisicoes. Tente novamente em 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false
 })
 app.use(limiter)
 
-// Rate limit para auth
+// Rate limit de auth
 const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hora
-  max: 10,
+  windowMs: 60 * 60 * 1000,
+  max: 200,
   message: { error: 'Muitas tentativas. Tente novamente em 1 hora.' }
 })
 
-app.use(cors())
+// Rate limit de compra
+const purchaseLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 500,
+  message: { error: 'Limite de compras atingido. Tente novamente em 1 hora.' }
+})
+
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://capi-da-sorte-frontend.vercel.app',
+    'https://capidasorte.com.br',
+    'https://www.capidasorte.com.br'
+  ],
+  credentials: true
+}))
+
 app.use(express.json())
 
 app.get('/', (req, res) => {
@@ -49,7 +68,7 @@ app.get('/test-db', async (req, res) => {
 
 app.use('/auth', authLimiter, authRoutes)
 app.use('/admin', adminRoutes)
-app.use('/purchase', purchaseRoutes)
+app.use('/purchase', purchaseLimiter, purchaseRoutes)
 app.use('/webhook', webhookRoutes)
 
 console.log('Rotas registradas!')

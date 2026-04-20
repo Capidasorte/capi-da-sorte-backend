@@ -1,3 +1,4 @@
+// VALIDATORS — BACKEND CAPI DA SORTE
 const { z } = require('zod')
 
 function validarCPF(cpf) {
@@ -35,7 +36,8 @@ const registerSchema = z.object({
   cpf: z.string().min(11, 'CPF invalido').max(11, 'CPF invalido'),
   telefone: z.string().min(10, 'Telefone invalido'),
   data_nascimento: z.string().min(1, 'Data de nascimento obrigatoria'),
-  accepted_terms: z.boolean()
+  genero: z.enum(['M', 'F', 'O']).optional(),
+  accepted_terms: z.boolean().optional()
 })
 
 const loginSchema = z.object({
