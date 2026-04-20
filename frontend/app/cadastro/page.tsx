@@ -65,7 +65,8 @@ export default function Cadastro() {
           genero: form.genero,
           email: form.email,
           telefone: form.telefone.replace(/\D/g, ''),
-          senha: form.senha
+          senha: form.senha,
+          accepted_terms: aceito
         })
       })
       const data = await res.json()
@@ -74,7 +75,7 @@ export default function Cadastro() {
         localStorage.setItem('user', JSON.stringify(data.user))
         window.location.href = '/'
       } else {
-        setErro(data.message || 'Erro ao realizar cadastro')
+        setErro(data.error || data.message || 'Erro ao realizar cadastro')
       }
     } catch {
       setErro('Erro de conexão. Tente novamente.')
@@ -141,6 +142,8 @@ export default function Cadastro() {
         .label { font-size:13px; color:#7A8BB0; font-weight:600; margin-bottom:6px; letter-spacing:1px; display:block; }
         .checkbox-wrap { display:flex; align-items:flex-start; gap:12px; cursor:pointer; }
         .checkbox-wrap input { width:18px; height:18px; min-width:18px; cursor:pointer; accent-color:#F5A800; margin-top:2px; }
+        .eye-wrap { position:relative; }
+        .eye-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#7A8BB0; padding:0; }
       `}</style>
 
       <div style={{ minHeight:'100vh', background:'#04091C', padding:'20px 16px 60px', fontFamily:"'Barlow',sans-serif" }}>
@@ -197,12 +200,24 @@ export default function Cadastro() {
 
               <div>
                 <label className="label">Senha *</label>
-                <input className="input-field" type="password" placeholder="Mínimo 6 caracteres" value={form.senha} onChange={e => setForm({...form, senha:e.target.value})} />
+                <div className="eye-wrap">
+                  <input className="input-field" type="password" id="senha" placeholder="Mínimo 6 caracteres" value={form.senha} onChange={e => setForm({...form, senha:e.target.value})} style={{ paddingRight:48 }} />
+                  <button className="eye-btn" type="button" onClick={() => {
+                    const el = document.getElementById('senha') as HTMLInputElement
+                    el.type = el.type === 'password' ? 'text' : 'password'
+                  }}>👁</button>
+                </div>
               </div>
 
               <div>
                 <label className="label">Confirmar senha *</label>
-                <input className="input-field" type="password" placeholder="Repita a senha" value={form.confirmar_senha} onChange={e => setForm({...form, confirmar_senha:e.target.value})} />
+                <div className="eye-wrap">
+                  <input className="input-field" type="password" id="confirmar_senha" placeholder="Repita a senha" value={form.confirmar_senha} onChange={e => setForm({...form, confirmar_senha:e.target.value})} style={{ paddingRight:48 }} />
+                  <button className="eye-btn" type="button" onClick={() => {
+                    const el = document.getElementById('confirmar_senha') as HTMLInputElement
+                    el.type = el.type === 'password' ? 'text' : 'password'
+                  }}>👁</button>
+                </div>
               </div>
 
               <label className="checkbox-wrap">
