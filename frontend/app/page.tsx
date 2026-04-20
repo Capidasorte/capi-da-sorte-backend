@@ -1,5 +1,7 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -20,6 +22,14 @@ export default function Home() {
   ]
 
   const nomes = ['Maria S.', 'Joao P.', 'Ana C.', 'Pedro L.', 'Lucas M.', 'Carla F.', 'Bruno T.']
+
+  const addFeed = useCallback((qty: number) => {
+    const n = nomes[Math.floor(Math.random() * nomes.length)]
+    const masked = n.split(' ')[0].substring(0, 2) + '*** ' + n.split(' ').pop()
+    const id = ++feedCounter.current
+    setFeed(prev => [{ id, text: `${masked} garantiu ${qty} bilhete${qty > 1 ? 's' : ''}` }, ...prev.slice(0, 2)])
+    setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 5000)
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -76,15 +86,7 @@ export default function Home() {
       addFeed(qty)
     }, 3000 + Math.random() * 2000)
     return () => clearInterval(interval)
-  }, [])
-
-  const addFeed = (qty: number) => {
-    const n = nomes[Math.floor(Math.random() * nomes.length)]
-    const masked = n.split(' ')[0].substring(0, 2) + '*** ' + n.split(' ').pop()
-    const id = ++feedCounter.current
-    setFeed(prev => [{ id, text: `${masked} garantiu ${qty} bilhete${qty > 1 ? 's' : ''}` }, ...prev.slice(0, 2)])
-    setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 5000)
-  }
+  }, [addFeed])
 
   const formatPremio = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const pct = Math.max(0.1, (cotasVendidas / totalCotas) * 100)
@@ -94,17 +96,8 @@ export default function Home() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap');
-        
         * { margin:0; padding:0; box-sizing:border-box; }
-        
-        body { 
-          background:#04091C; 
-          -webkit-font-smoothing:antialiased; 
-          -moz-osx-font-smoothing:grayscale; 
-          text-rendering:optimizeLegibility;
-          font-feature-settings:"kern" 1;
-        }
-        
+        body { background:#04091C; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; }
         .counter {
           font-family:'Bebas Neue',cursive;
           font-size:clamp(52px,12vw,110px);
@@ -118,19 +111,7 @@ export default function Home() {
           letter-spacing:2px;
           filter:drop-shadow(0 0 30px rgba(245,168,0,.5));
         }
-
-        .premio-label {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:clamp(14px,3vw,18px);
-          font-weight:700;
-          letter-spacing:5px;
-          text-transform:uppercase;
-          color:#7A8BB0;
-          margin-bottom:8px;
-        }
-        
         @keyframes metal-shine { 0%{background-position:0% center} 100%{background-position:200% center} }
-        
         .glow-ring {
           position:absolute; top:50%; left:50%;
           transform:translate(-50%,-50%);
@@ -139,10 +120,8 @@ export default function Home() {
           animation:ring-pulse 2.5s ease-in-out infinite;
         }
         @keyframes ring-pulse { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5} 50%{transform:translate(-50%,-50%) scale(1.04);opacity:1} }
-        
         .live-dot { animation:blink 1s infinite; }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
-        
         .progress-fill { position:relative; }
         .progress-fill::after {
           content:''; position:absolute; right:0; top:0; bottom:0; width:40px;
@@ -150,7 +129,6 @@ export default function Home() {
           animation:shine 1.5s ease-in-out infinite;
         }
         @keyframes shine { 0%,100%{opacity:0} 50%{opacity:1} }
-        
         .btn-buy { position:relative; overflow:hidden; transition:all .2s; }
         .btn-buy::before {
           content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
@@ -159,20 +137,14 @@ export default function Home() {
         }
         .btn-buy:hover::before { left:100%; }
         .btn-buy:hover { transform:translateY(-3px)!important; box-shadow:0 14px 44px rgba(245,168,0,.55)!important; }
-        
         .feed-item { animation:slideUp .4s ease forwards; }
         @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-        
         .pkg { transition:all 0.2s; cursor:pointer; }
         .pkg:hover { border-color:#F5A800!important; background:rgba(245,168,0,0.08)!important; transform:translateY(-2px); }
-        
         .social-link { transition:opacity .2s; text-decoration:none; }
         .social-link:hover { opacity:.7; }
-        
         .logo-wrap { filter:drop-shadow(0 0 8px rgba(245,168,0,0.5)); transition:filter .3s; }
         .logo-wrap:hover { filter:drop-shadow(0 0 16px rgba(245,168,0,0.8)); }
-
-        /* SORTEIOS GRID RESPONSIVO */
         .sorteios-grid {
           display:grid;
           grid-template-columns:repeat(4,1fr);
@@ -181,170 +153,22 @@ export default function Home() {
           max-width:900px;
           margin:0 auto;
         }
-
         @media (max-width:600px) {
-          .sorteios-grid {
-            grid-template-columns:repeat(2,1fr);
-            gap:10px;
-          }
+          .sorteios-grid { grid-template-columns:repeat(2,1fr); }
         }
-
         .sorteio-card {
-          position:relative;
-          overflow:hidden;
-          border-radius:12px;
-          padding:14px 10px;
-          text-align:center;
-          min-height:120px;
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-          justify-content:center;
+          position:relative; overflow:hidden; border-radius:12px;
+          padding:14px 10px; text-align:center; min-height:120px;
+          display:flex; flex-direction:column; align-items:center; justify-content:center;
         }
-
-        .sorteio-card-label {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:clamp(10px,2vw,13px);
-          font-weight:700;
-          color:#7A8BB0;
-          letter-spacing:2px;
-          text-transform:uppercase;
-          margin-bottom:4px;
-        }
-
-        .sorteio-card-data {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:clamp(16px,3vw,22px);
-          font-weight:900;
-          color:#ffffff;
-          margin-bottom:4px;
-        }
-
-        .sorteio-card-premio {
-          font-family:'Bebas Neue',cursive;
-          font-size:clamp(18px,4vw,26px);
-          font-weight:900;
-          color:#F5A800;
-          letter-spacing:1px;
-        }
-
-        /* PACOTES GRID RESPONSIVO */
         .pacotes-grid {
           display:grid;
           grid-template-columns:repeat(4,1fr);
           gap:10px;
           margin-bottom:20px;
         }
-
         @media (max-width:600px) {
-          .pacotes-grid {
-            grid-template-columns:repeat(2,1fr);
-            gap:10px;
-          }
-        }
-
-        .pkg-number {
-          font-family:'Bebas Neue',cursive;
-          font-size:clamp(28px,6vw,38px);
-          font-weight:900;
-          color:#fff;
-          line-height:1;
-        }
-
-        .pkg-label {
-          font-size:clamp(11px,2vw,12px);
-          color:#7A8BB0;
-          margin-top:4px;
-          font-weight:600;
-        }
-
-        .pkg-valor {
-          font-size:clamp(14px,3vw,18px);
-          font-weight:700;
-          color:#F5A800;
-          margin-top:6px;
-        }
-
-        .pkg-economia {
-          font-size:clamp(10px,2vw,12px);
-          color:#1FCC6A;
-          font-weight:700;
-          margin-top:4px;
-        }
-
-        /* TEXTOS GERAIS */
-        .section-title {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:clamp(16px,3vw,20px);
-          font-weight:700;
-          letter-spacing:2px;
-          text-transform:uppercase;
-          color:#fff;
-          margin-bottom:14px;
-        }
-
-        .progress-label {
-          font-size:clamp(13px,2.5vw,15px);
-          color:#aaa;
-          font-weight:600;
-        }
-
-        .progress-pct {
-          font-family:'Bebas Neue',cursive;
-          font-size:clamp(20px,4vw,28px);
-          color:#F5A800;
-          font-weight:900;
-          letter-spacing:1px;
-        }
-
-        .total-pagar-label {
-          font-size:clamp(12px,2vw,14px);
-          color:#7A8BB0;
-          margin-bottom:4px;
-          letter-spacing:1px;
-          font-weight:600;
-        }
-
-        .total-pagar-valor {
-          font-family:'Bebas Neue',cursive;
-          font-size:clamp(42px,8vw,58px);
-          font-weight:900;
-          color:#F5A800;
-          line-height:1;
-          margin-bottom:20px;
-          letter-spacing:2px;
-        }
-
-        .btn-buy-text {
-          font-family:'Barlow Condensed',sans-serif;
-          font-size:clamp(16px,3.5vw,22px);
-          font-weight:900;
-          letter-spacing:2px;
-          text-transform:uppercase;
-        }
-
-        .trust-text {
-          font-size:clamp(11px,2vw,14px);
-          color:#7A8BB0;
-          margin-top:12px;
-          font-weight:600;
-        }
-
-        .footer-text {
-          font-size:clamp(11px,2vw,13px);
-          color:#4A5B7A;
-          font-weight:600;
-        }
-
-        .social-text {
-          font-size:clamp(13px,2.5vw,16px);
-          font-weight:700;
-        }
-
-        .selo-18 {
-          width:clamp(36px,6vw,46px);
-          height:clamp(36px,6vw,46px);
-          font-size:clamp(11px,2vw,14px);
+          .pacotes-grid { grid-template-columns:repeat(2,1fr); }
         }
       `}</style>
 
@@ -354,20 +178,20 @@ export default function Home() {
 
         {/* HEADER */}
         <header style={{ background:'rgba(4,9,28,0.95)', borderBottom:'1px solid rgba(245,168,0,0.2)', padding:'0 16px', height:70, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100, backdropFilter:'blur(20px)' }}>
-          <a href="/" className="logo-wrap" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
-            <img
+          <Link href="/" className="logo-wrap" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
+            <Image
               src="/logo.png"
               alt="Capi da Sorte"
-              style={{ height:56, width:'auto', maxWidth:180, objectFit:'contain' }}
+              width={180}
+              height={56}
+              style={{ objectFit:'contain' }}
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.style.display = 'none'
-                const fallback = target.nextSibling as HTMLElement
-                if (fallback) fallback.style.display = 'block'
               }}
             />
-            <span style={{ display:'none', fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:2, fontFamily:"'Bebas Neue',cursive" }}>CAPI DA SORTE</span>
-          </a>
+            <span style={{ fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:2, fontFamily:"'Bebas Neue',cursive" }}>CAPI DA SORTE</span>
+          </Link>
           <div style={{ display:'flex', gap:8 }}>
             <button style={{ background:'transparent', border:'2px solid #F5A800', color:'#F5A800', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, cursor:'pointer', fontFamily:"'Barlow',sans-serif", fontSize:'clamp(12px,2vw,15px)' }}>Entrar</button>
             <button style={{ background:'linear-gradient(135deg,#FFD060,#F5A800)', border:'none', color:'#04091C', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, cursor:'pointer', fontFamily:"'Barlow',sans-serif", fontSize:'clamp(12px,2vw,15px)' }}>Cadastrar</button>
@@ -376,7 +200,7 @@ export default function Home() {
 
         {/* HERO */}
         <div style={{ textAlign:'center', padding:'40px 16px 16px' }}>
-          <div className="premio-label">Premio Acumulado</div>
+          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(14px,3vw,18px)', fontWeight:700, letterSpacing:5, textTransform:'uppercase', color:'#7A8BB0', marginBottom:8 }}>Premio Acumulado</div>
           <div style={{ position:'relative', display:'inline-block', marginBottom:16 }}>
             <div className="glow-ring" style={{ width:300, height:120 }}></div>
             <div className="glow-ring" style={{ width:360, height:150, animationDelay:'.4s', opacity:.6 }}></div>
@@ -401,9 +225,9 @@ export default function Home() {
           ].map((s, i) => (
             <div key={i} className="sorteio-card" style={{ background:s.main?'rgba(245,168,0,0.1)':'rgba(13,30,74,0.6)', border:`1px solid ${s.main?'rgba(245,168,0,0.5)':'rgba(255,255,255,0.1)'}` }}>
               <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:s.main?'linear-gradient(90deg,#F5A800,#fff8,#F5A800)':'linear-gradient(90deg,#C88000,#FFD060)' }}></div>
-              <div className="sorteio-card-label">{s.ordem}</div>
-              <div className="sorteio-card-data">{s.data}</div>
-              <div className="sorteio-card-premio" style={{ fontSize:s.main?'clamp(16px,3.5vw,20px)':undefined }}>{s.premio}</div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(10px,2vw,13px)', fontWeight:700, color:'#7A8BB0', letterSpacing:2, textTransform:'uppercase', marginBottom:4 }}>{s.ordem}</div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,22px)', fontWeight:900, color:'#fff', marginBottom:4 }}>{s.data}</div>
+              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:1 }}>{s.premio}</div>
               {s.main && <span style={{ background:'#F5A800', color:'#04091C', fontSize:'clamp(8px,1.5vw,10px)', fontWeight:900, padding:'3px 8px', borderRadius:8, marginTop:4, letterSpacing:1 }}>ACUMULADO</span>}
             </div>
           ))}
@@ -412,8 +236,8 @@ export default function Home() {
         {/* PROGRESSO */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 24px' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
-            <span className="progress-label">Bilhetes vendidos: <strong style={{ color:'#fff' }}>{cotasVendidas.toLocaleString('pt-BR')}</strong></span>
-            <span className="progress-pct">{pct.toFixed(1)}%</span>
+            <span style={{ fontSize:'clamp(13px,2.5vw,15px)', color:'#aaa', fontWeight:600 }}>Bilhetes vendidos: <strong style={{ color:'#fff' }}>{cotasVendidas.toLocaleString('pt-BR')}</strong></span>
+            <span style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(20px,4vw,28px)', color:'#F5A800', fontWeight:900 }}>{pct.toFixed(1)}%</span>
           </div>
           <div style={{ height:12, background:'rgba(255,255,255,0.05)', borderRadius:12, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
             <div className="progress-fill" style={{ height:'100%', width:`${pct}%`, background:'linear-gradient(90deg,#C88000,#F5A800,#FFD060)', borderRadius:12, transition:'width 1s ease' }}></div>
@@ -426,28 +250,30 @@ export default function Home() {
 
         {/* PACOTES */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 20px' }}>
-          <div className="section-title">Escolha seu Pacote</div>
+          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,20px)', fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:'#fff', marginBottom:14 }}>Escolha seu Pacote</div>
           <div className="pacotes-grid">
             {pacotes.map((pkg) => (
               <div key={pkg.qty} className="pkg" onClick={() => setPkgSelecionado(pkg.qty)} style={{ border:`2px solid ${pkgSelecionado===pkg.qty?'#F5A800':'rgba(255,255,255,0.12)'}`, background:pkgSelecionado===pkg.qty?'rgba(245,168,0,0.14)':'rgba(255,255,255,0.03)', borderRadius:14, padding:'16px 8px', textAlign:'center', position:'relative' }}>
                 {pkg.label && <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:'#F5A800', color:'#04091C', fontSize:'clamp(7px,1.5vw,9px)', fontWeight:900, padding:'3px 8px', borderRadius:8, whiteSpace:'nowrap', letterSpacing:1 }}>{pkg.label}</div>}
-                <div className="pkg-number">{pkg.qty}</div>
-                <div className="pkg-label">bilhete{pkg.qty>1?'s':''}</div>
-                <div className="pkg-valor">R$ {pkg.valor.toFixed(2).replace('.',',')}</div>
-                {pkg.economia && <div className="pkg-economia">economia R$ {pkg.economia}</div>}
+                <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(28px,6vw,38px)', fontWeight:900, color:'#fff', lineHeight:1 }}>{pkg.qty}</div>
+                <div style={{ fontSize:'clamp(11px,2vw,12px)', color:'#7A8BB0', marginTop:4, fontWeight:600 }}>bilhete{pkg.qty>1?'s':''}</div>
+                <div style={{ fontSize:'clamp(14px,3vw,18px)', fontWeight:700, color:'#F5A800', marginTop:6 }}>R$ {pkg.valor.toFixed(2).replace('.',',')}</div>
+                {pkg.economia && <div style={{ fontSize:'clamp(10px,2vw,12px)', color:'#1FCC6A', fontWeight:700, marginTop:4 }}>economia R$ {pkg.economia}</div>}
               </div>
             ))}
           </div>
 
           {/* COMPRA */}
           <div style={{ background:'linear-gradient(135deg,rgba(245,168,0,0.1),rgba(245,168,0,0.03))', border:'1px solid rgba(245,168,0,0.3)', borderRadius:16, padding:'clamp(16px,4vw,30px)', textAlign:'center' }}>
-            <div className="total-pagar-label">Total a Pagar</div>
-            <div className="total-pagar-valor">R$ {pkgAtual.valor.toFixed(2).replace('.',',')}</div>
-            <button className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,22px)', border:'none', borderRadius:12, cursor:'pointer', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', boxShadow:'0 8px 32px rgba(245,168,0,.4)' }}>
-              <span className="btn-buy-text">Garantir Meus Bilhetes Agora</span>
+            <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', marginBottom:4, letterSpacing:1, fontWeight:600 }}>Total a Pagar</div>
+            <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(42px,8vw,58px)', fontWeight:900, color:'#F5A800', lineHeight:1, marginBottom:20, letterSpacing:2 }}>
+              R$ {pkgAtual.valor.toFixed(2).replace('.',',')}
+            </div>
+            <button className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,22px)', border:'none', borderRadius:12, cursor:'pointer', fontSize:'clamp(16px,3.5vw,22px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', boxShadow:'0 8px 32px rgba(245,168,0,.4)', fontFamily:"'Barlow Condensed',sans-serif" }}>
+              Garantir Meus Bilhetes Agora
             </button>
-            <div className="trust-text">Pagamento 100% seguro via PIX • Confirmação imediata</div>
-            <div className="trust-text" style={{ marginTop:4 }}>Quanto mais bilhetes, maiores suas chances</div>
+            <div style={{ fontSize:'clamp(11px,2vw,14px)', color:'#7A8BB0', marginTop:12, fontWeight:600 }}>Pagamento 100% seguro via PIX • Confirmação imediata</div>
+            <div style={{ fontSize:'clamp(11px,2vw,14px)', color:'#7A8BB0', marginTop:4, fontWeight:600 }}>Quanto mais bilhetes, maiores suas chances</div>
           </div>
         </div>
 
@@ -458,15 +284,15 @@ export default function Home() {
         <div style={{ display:'flex', justifyContent:'center', alignItems:'center', gap:24, marginBottom:12 }}>
           <a href="https://wa.me/55" target="_blank" className="social-link" style={{ display:'flex', alignItems:'center', gap:8, color:'#25D366' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            <span className="social-text" style={{ color:'#25D366' }}>WhatsApp</span>
+            <span style={{ fontSize:'clamp(13px,2.5vw,16px)', fontWeight:700 }}>WhatsApp</span>
           </a>
           <a href="https://instagram.com/capidasorte" target="_blank" className="social-link" style={{ display:'flex', alignItems:'center', gap:8, color:'#E1306C' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-            <span className="social-text" style={{ color:'#E1306C' }}>Instagram</span>
+            <span style={{ fontSize:'clamp(13px,2.5vw,16px)', fontWeight:700 }}>Instagram</span>
           </a>
         </div>
-        <div className="footer-text">© 2026 Capi da Sorte • Todos os direitos reservados</div>
-        <div className="selo-18" style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:900, color:'rgba(255,255,255,0.5)', fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:1 }}>+18</div>
+        <div style={{ fontSize:'clamp(11px,2vw,13px)', color:'#4A5B7A', fontWeight:600 }}>© 2026 Capi da Sorte • Todos os direitos reservados</div>
+        <div style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', width:'clamp(36px,6vw,46px)', height:'clamp(36px,6vw,46px)', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'clamp(11px,2vw,14px)', fontWeight:900, color:'rgba(255,255,255,0.5)', fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:1 }}>+18</div>
       </footer>
 
       {/* FEED */}
