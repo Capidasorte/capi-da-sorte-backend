@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -179,17 +178,6 @@ export default function Home() {
         {/* HEADER */}
         <header style={{ background:'rgba(4,9,28,0.95)', borderBottom:'1px solid rgba(245,168,0,0.2)', padding:'0 16px', height:70, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100, backdropFilter:'blur(20px)' }}>
           <Link href="/" className="logo-wrap" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
-            <Image
-              src="/logo.png"
-              alt="Capi da Sorte"
-              width={180}
-              height={56}
-              style={{ objectFit:'contain' }}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.style.display = 'none'
-              }}
-            />
             <span style={{ fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:2, fontFamily:"'Bebas Neue',cursive" }}>CAPI DA SORTE</span>
           </Link>
           <div style={{ display:'flex', gap:8 }}>
