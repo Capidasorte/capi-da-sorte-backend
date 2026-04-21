@@ -39,7 +39,7 @@ export default function Compra() {
 
   const pkgAtual = pacotes.find(p => p.qty === pacoteSelecionado) || pacotes[1]
 
-  // Carrega usuário e campanha
+  // ==================== USEEFFECT PRINCIPAL ====================
   useEffect(() => {
     const userData = localStorage.getItem('user')
     const token = localStorage.getItem('token')
@@ -50,18 +50,22 @@ export default function Compra() {
     }
 
     try {
-      setUser(JSON.parse(userData))
-    } catch {
+      const parsedUser = JSON.parse(userData)
+      setUser(parsedUser)
+    } catch (err) {
+      console.error('Erro ao parsear dados do usuário:', err)
+      // Limpa dados inválidos
       localStorage.removeItem('user')
       localStorage.removeItem('token')
       window.location.href = '/login'
       return
     }
 
+    // Só carrega a campanha se o usuário for válido
     carregarCampanha()
   }, [])
 
-  // Polling automático para verificar pagamento PIX
+  // ==================== POLLING AUTOMÁTICO ====================
   useEffect(() => {
     if (status !== 'pix' || !pagamento?.payment_id) return
 
@@ -80,9 +84,9 @@ export default function Compra() {
           setStatus('confirmado')
         }
       } catch (err) {
-        console.error('Erro no polling de pagamento:', err)
+        console.error('Erro no polling:', err)
       }
-    }, 4000) // verifica a cada 4 segundos
+    }, 4000)
 
     return () => clearInterval(interval)
   }, [status, pagamento?.payment_id])
@@ -93,9 +97,11 @@ export default function Compra() {
       if (res.ok) {
         const data = await res.json()
         setCampanha(data)
+      } else {
+        setError('Não foi possível carregar a campanha.')
       }
     } catch {
-      setError('Erro ao carregar a campanha ativa.')
+      setError('Erro ao conectar com o servidor.')
     }
   }
 
@@ -132,7 +138,7 @@ export default function Compra() {
         setError(data.error || 'Não foi possível gerar o PIX.')
       }
     } catch {
-      setError('Erro de conexão. Verifique sua internet e tente novamente.')
+      setError('Erro de conexão. Verifique sua internet.')
     } finally {
       setLoading(false)
     }
@@ -144,8 +150,6 @@ export default function Compra() {
       alert('✅ Código PIX copiado!')
     }
   }
-
-  const valorPorBilhete = (pkgAtual.valor / pkgAtual.qty).toFixed(2).replace('.', ',')
 
   return (
     <>
@@ -179,10 +183,7 @@ export default function Compra() {
           box-shadow: 0 8px 32px rgba(245, 168, 0, 0.3);
           transition: all 0.2s;
         }
-        .btn-pix:disabled {
-          opacity: 0.65;
-          cursor: not-allowed;
-        }
+        .btn-pix:disabled { opacity: 0.65; cursor: not-allowed; }
 
         .btn-copiar {
           width: 100%;
@@ -233,7 +234,7 @@ export default function Compra() {
             </Link>
           </div>
 
-          {/* Erro */}
+          {/* Mensagem de Erro */}
           {error && (
             <div style={{
               background: 'rgba(255, 61, 90, 0.15)',
@@ -317,7 +318,7 @@ export default function Compra() {
                       )}
 
                       <div style={{ fontSize: 12, color: '#7A8BB0', marginTop: 8 }}>
-                        R$ { (pkg.valor / pkg.qty).toFixed(2).replace('.', ',') } cada
+                        R$ {(pkg.valor / pkg.qty).toFixed(2).replace('.', ',')} cada
                       </div>
                     </div>
                   ))}
@@ -405,7 +406,7 @@ export default function Compra() {
                 </div>
 
                 <div style={{ fontSize: 13, color: '#7A8BB0', marginBottom: 20 }}>
-                  Pague via PIX • Seus bilhetes serão liberados automaticamente
+                  Pague via PIX • Confirmação automática
                 </div>
 
                 {pagamento.pix_copia_cola && (
@@ -419,7 +420,7 @@ export default function Compra() {
                 </button>
 
                 <div style={{ fontSize: 12, color: '#4A5B7A', marginTop: 20 }}>
-                  Confirmação automática em até 60 segundos após o pagamento
+                  O pagamento é confirmado em até 60 segundos
                 </div>
               </div>
             </div>
