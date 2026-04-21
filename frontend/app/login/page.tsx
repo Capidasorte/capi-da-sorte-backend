@@ -7,6 +7,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', senha: '' })
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
+  const [mostrarSenha, setMostrarSenha] = useState(false)
 
   const handleSubmit = async () => {
     setErro('')
@@ -27,7 +28,7 @@ export default function Login() {
         localStorage.setItem('user', JSON.stringify(data.user))
         window.location.href = '/'
       } else {
-        setErro(data.message || 'E-mail ou senha incorretos')
+        setErro(data.error || data.message || 'E-mail ou senha incorretos')
       }
     } catch {
       setErro('Erro de conexão. Tente novamente.')
@@ -75,6 +76,8 @@ export default function Login() {
         .btn-entrar:hover { transform:translateY(-2px); box-shadow:0 12px 40px rgba(245,168,0,.5); }
         .btn-entrar:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
         .label { font-size:13px; color:#7A8BB0; font-weight:600; margin-bottom:6px; letter-spacing:1px; display:block; }
+        .eye-wrap { position:relative; }
+        .eye-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#7A8BB0; padding:0; font-size:18px; }
       `}</style>
 
       <div style={{ minHeight:'100vh', background:'#04091C', padding:'20px 16px 60px', fontFamily:"'Barlow',sans-serif" }}>
@@ -99,7 +102,6 @@ export default function Login() {
                 <input
                   className="input-field"
                   type="email"
-                  name="email"
                   placeholder="seu@email.com"
                   value={form.email}
                   onChange={e => setForm({...form, email:e.target.value})}
@@ -109,15 +111,20 @@ export default function Login() {
 
               <div>
                 <label className="label">Senha *</label>
-                <input
-                  className="input-field"
-                  type="password"
-                  name="senha"
-                  placeholder="Sua senha"
-                  value={form.senha}
-                  onChange={e => setForm({...form, senha:e.target.value})}
-                  onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-                />
+                <div className="eye-wrap">
+                  <input
+                    className="input-field"
+                    type={mostrarSenha ? 'text' : 'password'}
+                    placeholder="Sua senha"
+                    value={form.senha}
+                    onChange={e => setForm({...form, senha:e.target.value})}
+                    onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                    style={{ paddingRight:48 }}
+                  />
+                  <button className="eye-btn" type="button" onClick={() => setMostrarSenha(!mostrarSenha)}>
+                    {mostrarSenha ? '🙈' : '👁'}
+                  </button>
+                </div>
               </div>
 
               <div style={{ textAlign:'right' }}>
