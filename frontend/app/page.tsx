@@ -252,7 +252,7 @@ export default function Home() {
             <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(42px,8vw,58px)', fontWeight:900, color:'#F5A800', lineHeight:1, marginBottom:20, letterSpacing:2 }}>
               R$ {pkgAtual.valor.toFixed(2).replace('.',',')}
             </div>
-            <Link href="/cadastro" className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,22px)', border:'none', borderRadius:12, cursor:'pointer', fontSize:'clamp(16px,3.5vw,22px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', boxShadow:'0 8px 32px rgba(245,168,0,.4)', fontFamily:"'Barlow Condensed',sans-serif", display:'block', textDecoration:'none' }}>
+            <Link href="/compra" className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,22px)', border:'none', borderRadius:12, cursor:'pointer', fontSize:'clamp(16px,3.5vw,22px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', boxShadow:'0 8px 32px rgba(245,168,0,.4)', fontFamily:"'Barlow Condensed',sans-serif", display:'block', textDecoration:'none' }}>
               Garantir Meus Bilhetes Agora
             </Link>
             <div style={{ fontSize:'clamp(11px,2vw,14px)', color:'#7A8BB0', marginTop:12, fontWeight:600 }}>Pagamento 100% seguro via PIX • Confirmação imediata</div>
