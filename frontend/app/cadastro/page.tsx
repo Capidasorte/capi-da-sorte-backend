@@ -17,6 +17,8 @@ export default function Cadastro() {
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
   const [aceito, setAceito] = useState(false)
+  const [mostrarSenha, setMostrarSenha] = useState(false)
+  const [mostrarConfirmar, setMostrarConfirmar] = useState(false)
 
   const formatCPF = (value: string) => {
     return value
@@ -84,6 +86,23 @@ export default function Cadastro() {
     }
   }
 
+  const IconeOlho = ({ aberto }: { aberto: boolean }) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A8BB0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {aberto ? (
+        <>
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </>
+      ) : (
+        <>
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </>
+      )}
+    </svg>
+  )
+
   return (
     <>
       <style>{`
@@ -143,7 +162,7 @@ export default function Cadastro() {
         .checkbox-wrap { display:flex; align-items:flex-start; gap:12px; cursor:pointer; }
         .checkbox-wrap input { width:18px; height:18px; min-width:18px; cursor:pointer; accent-color:#F5A800; margin-top:2px; }
         .eye-wrap { position:relative; }
-        .eye-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#7A8BB0; padding:0; }
+        .eye-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center; }
       `}</style>
 
       <div style={{ minHeight:'100vh', background:'#04091C', padding:'20px 16px 60px', fontFamily:"'Barlow',sans-serif" }}>
@@ -201,22 +220,34 @@ export default function Cadastro() {
               <div>
                 <label className="label">Senha *</label>
                 <div className="eye-wrap">
-                  <input className="input-field" type="password" id="senha" placeholder="Mínimo 6 caracteres" value={form.senha} onChange={e => setForm({...form, senha:e.target.value})} style={{ paddingRight:48 }} />
-                  <button className="eye-btn" type="button" onClick={() => {
-                    const el = document.getElementById('senha') as HTMLInputElement
-                    el.type = el.type === 'password' ? 'text' : 'password'
-                  }}>👁</button>
+                  <input
+                    className="input-field"
+                    type={mostrarSenha ? 'text' : 'password'}
+                    placeholder="Mínimo 6 caracteres"
+                    value={form.senha}
+                    onChange={e => setForm({...form, senha:e.target.value})}
+                    style={{ paddingRight:48 }}
+                  />
+                  <button className="eye-btn" type="button" onClick={() => setMostrarSenha(!mostrarSenha)}>
+                    <IconeOlho aberto={mostrarSenha} />
+                  </button>
                 </div>
               </div>
 
               <div>
                 <label className="label">Confirmar senha *</label>
                 <div className="eye-wrap">
-                  <input className="input-field" type="password" id="confirmar_senha" placeholder="Repita a senha" value={form.confirmar_senha} onChange={e => setForm({...form, confirmar_senha:e.target.value})} style={{ paddingRight:48 }} />
-                  <button className="eye-btn" type="button" onClick={() => {
-                    const el = document.getElementById('confirmar_senha') as HTMLInputElement
-                    el.type = el.type === 'password' ? 'text' : 'password'
-                  }}>👁</button>
+                  <input
+                    className="input-field"
+                    type={mostrarConfirmar ? 'text' : 'password'}
+                    placeholder="Repita a senha"
+                    value={form.confirmar_senha}
+                    onChange={e => setForm({...form, confirmar_senha:e.target.value})}
+                    style={{ paddingRight:48 }}
+                  />
+                  <button className="eye-btn" type="button" onClick={() => setMostrarConfirmar(!mostrarConfirmar)}>
+                    <IconeOlho aberto={mostrarConfirmar} />
+                  </button>
                 </div>
               </div>
 
