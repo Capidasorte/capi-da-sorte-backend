@@ -1,6 +1,7 @@
 // PÁGINA COMPRA — FLUXO DE PAGAMENTO PIX
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 interface Campanha {
@@ -21,23 +22,36 @@ interface User {
   email: string
 }
 
-export default function Compra() {
+function CompraContent() {
+  const searchParams = useSearchParams()
+  const qtdParam = searchParams.get('qty')
+
   const [campanha, setCampanha] = useState<Campanha | null>(null)
-  const [pacoteSelecionado, setPacoteSelecionado] = useState(5)
   const [loading, setLoading] = useState(false)
   const [pagamento, setPagamento] = useState<Pagamento | null>(null)
-  const [status, setStatus] = useState<'escolha' | 'pix' | 'confirmado'>('escolha')
+  const [status, setStatus] = useState<'pix' | 'confirmado'>('pix')
   const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [autoIniciado, setAutoIniciado] = useState(false)
 
-  const pacotes = [
-    { qty: 1, valor: 5, label: null, economia: null },
-    { qty: 5, valor: 22, label: 'POPULAR', economia: 3 },
-    { qty: 10, valor: 40, label: null, economia: 10 },
-    { qty: 20, valor: 70, label: 'MELHOR VALOR', economia: 30 },
-  ]
+  const quantidade = qtdParam ? parseInt(qtdParam) : 5
 
-  const pkgAtual = pacotes.find(p => p.qty === pacoteSelecionado) || pacotes[1]
+  const calcularValor = (qty: number): number => {
+    if (qty === 1)  return 4.99
+    if (qty === 5)  return 22.00
+    if (qty === 10) return 40.00
+    if (qty === 20) return 70.00
+    if (qty > 20) {
+      const blocos20 = Math.floor(qty / 20)
+      const resto = qty % 20
+      let valor = blocos20 * 70.00
+      if (resto > 0) valor += calcularValor(resto)
+      return parseFloat(valor.toFixed(2))
+    }
+    return parseFloat((qty * 4.99).toFixed(2))
+  }
+
+  const valor = calcularValor(quantidade)
 
   useEffect(() => {
     const userData = localStorage.getItem('user')
@@ -84,18 +98,25 @@ export default function Compra() {
         const data = await res.json()
         setCampanha(data)
       } else {
-        setError('Não foi possível carregar a campanha.')
+        setError('Nenhuma campanha ativa no momento.')
       }
     } catch {
       setError('Erro ao conectar com o servidor.')
     }
   }
 
-  const handleComprar = async () => {
+  useEffect(() => {
+    if (campanha && user && !autoIniciado && !pagamento) {
+      setAutoIniciado(true)
+      iniciarCompra(campanha.id)
+    }
+  }, [campanha, user])
+
+  const iniciarCompra = async (campaign_id: string) => {
     setError(null)
     const token = localStorage.getItem('token')
-    if (!token || !campanha) {
-      setError('Sessão expirada. Faça login novamente.')
+    if (!token) {
+      window.location.href = '/login'
       return
     }
     setLoading(true)
@@ -106,15 +127,11 @@ export default function Compra() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          campaign_id: campanha.id,
-          quantidade: pkgAtual.qty
-        })
+        body: JSON.stringify({ campaign_id, quantidade })
       })
       const data = await res.json()
       if (res.ok) {
         setPagamento(data)
-        setStatus('pix')
       } else {
         setError(data.error || 'Não foi possível gerar o PIX.')
       }
@@ -138,16 +155,6 @@ export default function Compra() {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap');
         * { margin:0; padding:0; box-sizing:border-box; }
         body { background:#04091C; }
-        .pkg { transition:all 0.25s ease; cursor:pointer; }
-        .pkg:hover { border-color:#F5A800!important; transform:translateY(-4px); }
-        .btn-pix {
-          width:100%; padding:18px; border:none; border-radius:12px; cursor:pointer;
-          font-family:'Barlow',sans-serif; font-size:16px; font-weight:700;
-          letter-spacing:2px; text-transform:uppercase;
-          background:linear-gradient(135deg,#FFD060,#F5A800,#C88000);
-          color:#04091C; box-shadow:0 8px 32px rgba(245,168,0,.3); transition:all .2s;
-        }
-        .btn-pix:disabled { opacity:0.65; cursor:not-allowed; }
         .btn-copiar {
           width:100%; padding:14px; border:2px solid #F5A800; border-radius:12px;
           cursor:pointer; font-family:'Barlow',sans-serif; font-size:14px; font-weight:700;
@@ -157,6 +164,27 @@ export default function Compra() {
           width:100%; padding:14px; border:none; border-radius:12px; cursor:not-allowed;
           font-family:'Barlow',sans-serif; font-size:14px; font-weight:700;
           background:#1FCC6A; color:#fff; margin-top:12px; opacity:0.8;
+        }
+        .spinner {
+          width:44px; height:44px; border:3px solid rgba(245,168,0,.15);
+          border-top-color:#F5A800; border-radius:50%;
+          animation:spin 0.8s linear infinite; margin:0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-recompra {
+          display:block; padding:16px; border-radius:12px;
+          background:linear-gradient(135deg,#FFD060,#F5A800,#C88000);
+          color:#04091C; font-weight:700; font-size:15px;
+          text-decoration:none; letter-spacing:1px; text-transform:uppercase;
+          text-align:center; font-family:'Barlow',sans-serif;
+          box-shadow:0 8px 24px rgba(245,168,0,.3);
+        }
+        .btn-meus-bilhetes {
+          display:block; padding:16px; border-radius:12px;
+          background:transparent; border:2px solid rgba(245,168,0,0.4);
+          color:#F5A800; font-weight:700; font-size:15px;
+          text-decoration:none; letter-spacing:1px; text-transform:uppercase;
+          text-align:center; font-family:'Barlow',sans-serif;
         }
       `}</style>
 
@@ -172,60 +200,50 @@ export default function Compra() {
           </div>
 
           {error && (
-            <div style={{ background:'rgba(255,61,90,0.15)', border:'1px solid #FF3D5A', color:'#FF6B85', padding:'14px 16px', borderRadius:12, marginBottom:20, fontSize:14 }}>
-              {error}
+            <div style={{ background:'rgba(255,61,90,0.15)', border:'1px solid #FF3D5A', color:'#FF6B85', padding:'14px 16px', borderRadius:12, marginBottom:20, fontSize:14, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <span>{error}</span>
+              <button onClick={() => { setError(null); if(campanha) iniciarCompra(campanha.id) }} style={{ color:'#F5A800', background:'none', border:'none', cursor:'pointer', fontWeight:700, fontSize:13, marginLeft:12 }}>
+                Tentar novamente
+              </button>
             </div>
           )}
 
-          {/* TELA DE ESCOLHA */}
-          {status === 'escolha' && (
-            <div>
-              <div style={{ textAlign:'center', marginBottom:24 }}>
-                <div style={{ fontSize:13, color:'#7A8BB0', letterSpacing:2, textTransform:'uppercase', fontWeight:600 }}>GARANTIR BILHETES</div>
-                {user && <div style={{ fontSize:17, color:'#fff', marginTop:8, fontWeight:700 }}>Olá, {user.nome?.split(' ')[0]}!</div>}
+          {/* CARREGANDO */}
+          {loading && !pagamento && (
+            <div style={{ textAlign:'center', padding:'80px 20px' }}>
+              <div className="spinner"></div>
+              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:26, color:'#F5A800', letterSpacing:2, marginBottom:8 }}>
+                Gerando seu PIX...
               </div>
-
-              <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:20, padding:'24px' }}>
-                <div style={{ fontSize:14, color:'#7A8BB0', fontWeight:600, marginBottom:16, letterSpacing:1 }}>Escolha seu pacote:</div>
-
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:12, marginBottom:24 }}>
-                  {pacotes.map((pkg) => (
-                    <div key={pkg.qty} className="pkg" onClick={() => setPacoteSelecionado(pkg.qty)} style={{ border:`2px solid ${pacoteSelecionado===pkg.qty?'#F5A800':'rgba(255,255,255,0.12)'}`, background:pacoteSelecionado===pkg.qty?'rgba(245,168,0,0.14)':'rgba(255,255,255,0.03)', borderRadius:14, padding:'18px 10px', textAlign:'center', position:'relative' }}>
-                      {pkg.label && <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:'#F5A800', color:'#04091C', fontSize:9, fontWeight:900, padding:'4px 10px', borderRadius:8, whiteSpace:'nowrap' }}>{pkg.label}</div>}
-                      <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:42, color:'#fff', lineHeight:1 }}>{pkg.qty}</div>
-                      <div style={{ fontSize:13, color:'#7A8BB0' }}>bilhete{pkg.qty>1?'s':''}</div>
-                      <div style={{ fontSize:17, fontWeight:700, color:'#F5A800', marginTop:10 }}>R$ {pkg.valor.toFixed(2).replace('.',',')}</div>
-                      {pkg.economia && <div style={{ fontSize:11, color:'#1FCC6A', fontWeight:700, marginTop:4 }}>economia R$ {pkg.economia}</div>}
-                      <div style={{ fontSize:12, color:'#7A8BB0', marginTop:8 }}>R$ {(pkg.valor/pkg.qty).toFixed(2).replace('.',',')} cada</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ background:'rgba(245,168,0,0.08)', border:'1px solid rgba(245,168,0,0.25)', borderRadius:12, padding:'18px', textAlign:'center', marginBottom:20 }}>
-                  <div style={{ fontSize:13, color:'#7A8BB0' }}>Total a pagar</div>
-                  <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:54, color:'#F5A800', lineHeight:1, marginTop:4 }}>
-                    R$ {pkgAtual.valor.toFixed(2).replace('.',',')}
-                  </div>
-                </div>
-
-                <button className="btn-pix" onClick={handleComprar} disabled={loading || !campanha}>
-                  {loading ? 'Gerando PIX...' : 'Gerar QR Code PIX'}
-                </button>
-
-                {!campanha && <div style={{ textAlign:'center', marginTop:16, fontSize:14, color:'#FF3D5A' }}>Nenhuma campanha ativa no momento.</div>}
+              <div style={{ fontSize:14, color:'#7A8BB0' }}>
+                {quantidade} bilhete{quantidade > 1 ? 's' : ''} — R$ {valor.toFixed(2).replace('.',',')}
               </div>
             </div>
           )}
 
           {/* TELA DO PIX */}
-          {status === 'pix' && pagamento && (
+          {!loading && pagamento && status === 'pix' && (
             <div>
               <div style={{ textAlign:'center', marginBottom:24 }}>
-                <div style={{ fontSize:13, color:'#7A8BB0', letterSpacing:2, textTransform:'uppercase', fontWeight:600 }}>PAGAMENTO VIA PIX</div>
-                <div style={{ fontSize:15, color:'#fff', marginTop:8 }}>Escaneie ou copie o código</div>
+                <div style={{ fontSize:13, color:'#7A8BB0', letterSpacing:2, textTransform:'uppercase', fontWeight:600 }}>Pagamento via PIX</div>
+                {user && (
+                  <div style={{ fontSize:16, color:'#fff', marginTop:8, fontWeight:700 }}>
+                    Olá, {user.nome?.split(' ')[0]}!
+                  </div>
+                )}
+                <div style={{ fontSize:13, color:'#7A8BB0', marginTop:4 }}>
+                  {quantidade} bilhete{quantidade > 1 ? 's' : ''} serão confirmados após o pagamento
+                </div>
               </div>
 
               <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:20, padding:'28px 24px', textAlign:'center' }}>
+
+                <div style={{ background:'rgba(245,168,0,0.08)', border:'1px solid rgba(245,168,0,0.2)', borderRadius:12, padding:'14px', marginBottom:24 }}>
+                  <div style={{ fontSize:13, color:'#7A8BB0', marginBottom:4 }}>{quantidade} bilhete{quantidade > 1 ? 's' : ''}</div>
+                  <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:46, color:'#F5A800', lineHeight:1 }}>
+                    R$ {valor.toFixed(2).replace('.',',')}
+                  </div>
+                </div>
 
                 {pagamento.qr_code_image && (
                   <div style={{ background:'#fff', borderRadius:16, padding:20, display:'inline-block', marginBottom:20, boxShadow:'0 10px 40px rgba(0,0,0,0.4)' }}>
@@ -238,12 +256,8 @@ export default function Compra() {
                   </div>
                 )}
 
-                <div style={{ fontSize:28, fontFamily:"'Bebas Neue',cursive", color:'#F5A800', marginBottom:6 }}>
-                  R$ {pkgAtual.valor.toFixed(2).replace('.',',')}
-                </div>
-
-                <div style={{ fontSize:13, color:'#7A8BB0', marginBottom:20 }}>
-                  Pague via PIX • Confirmação automática em até 60 segundos
+                <div style={{ fontSize:13, color:'#7A8BB0', marginBottom:16 }}>
+                  Escaneie o QR Code ou copie o código abaixo
                 </div>
 
                 {pagamento.pix_copia_cola && (
@@ -263,27 +277,55 @@ export default function Compra() {
             </div>
           )}
 
-          {/* TELA DE CONFIRMAÇÃO */}
+          {/* CONFIRMADO */}
           {status === 'confirmado' && (
-            <div style={{ textAlign:'center', paddingTop:40 }}>
-              <div style={{ fontSize:80, marginBottom:16 }}>🎉</div>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:42, color:'#1FCC6A', marginBottom:12 }}>
+            <div style={{ textAlign:'center', paddingTop:20 }}>
+              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:42, color:'#1FCC6A', marginBottom:8, filter:'drop-shadow(0 0 20px rgba(31,204,106,0.5))' }}>
                 Pagamento Confirmado!
               </div>
-              <div style={{ fontSize:17, color:'#fff', marginBottom:8 }}>Seus bilhetes foram garantidos!</div>
-              <div style={{ fontSize:14, color:'#7A8BB0', marginBottom:40 }}>Você receberá seus números no WhatsApp em instantes</div>
-              <Link href="/" style={{ display:'block', padding:'18px', borderRadius:12, background:'linear-gradient(135deg,#FFD060,#F5A800)', color:'#04091C', fontWeight:700, fontSize:16, textDecoration:'none', letterSpacing:2, textTransform:'uppercase' }}>
-                Voltar para o Início
-              </Link>
+              <div style={{ fontSize:16, color:'#fff', marginBottom:6 }}>
+                Seus {quantidade} bilhetes foram garantidos com sucesso!
+              </div>
+              <div style={{ fontSize:14, color:'#7A8BB0', marginBottom:40 }}>
+                Você receberá seus números no WhatsApp em instantes
+              </div>
+
+              <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:16, padding:'24px', marginBottom:20 }}>
+                <div style={{ fontSize:13, color:'#7A8BB0', marginBottom:16, fontWeight:600, letterSpacing:1, textTransform:'uppercase' }}>
+                  O que deseja fazer agora?
+                </div>
+                <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                  <Link href="/" className="btn-recompra">
+                    Comprar Mais Bilhetes
+                  </Link>
+                  <Link href="/minha-conta" className="btn-meus-bilhetes">
+                    Ver Meus Bilhetes
+                  </Link>
+                </div>
+              </div>
             </div>
           )}
 
-          <div style={{ textAlign:'center', marginTop:50, fontSize:11, color:'#2A3B5A' }}>
+          <div style={{ textAlign:'center', marginTop:32, fontSize:11, color:'#2A3B5A' }}>
             © 2026 Capi da Sorte • Todos os direitos reservados
           </div>
 
         </div>
       </div>
     </>
+  )
+}
+
+export default function Compra() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight:'100vh', background:'#04091C', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:24, color:'#F5A800', letterSpacing:2 }}>
+          Carregando...
+        </div>
+      </div>
+    }>
+      <CompraContent />
+    </Suspense>
   )
 }

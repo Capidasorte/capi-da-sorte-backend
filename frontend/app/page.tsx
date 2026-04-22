@@ -15,7 +15,7 @@ export default function Home() {
   const [pkgSelecionado, setPkgSelecionado] = useState(5)
   const [quantidade, setQuantidade] = useState(5)
   const [fraseIdx, setFraseIdx] = useState(0)
-  const LIMITE_MAX = 100 // Admin define — por enquanto 100
+  const LIMITE_MAX = 100
 
   const frases = [
     'Compras acontecendo agora',
@@ -109,12 +109,11 @@ export default function Home() {
   const formatPremio = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const pct = Math.max(0.1, (cotasVendidas / totalCotas) * 100)
 
-  const calcularValor = (qty: number) => {
+  const calcularValor = (qty: number): number => {
     if (qty === 1)  return 4.99
     if (qty === 5)  return 22.00
     if (qty === 10) return 40.00
     if (qty === 20) return 70.00
-    // Acima de 20 — calcula proporcional ao melhor pacote
     if (qty > 20) {
       const blocos20 = Math.floor(qty / 20)
       const resto = qty % 20
@@ -254,10 +253,9 @@ export default function Home() {
             <span>{cotasVendidas.toLocaleString('pt-BR')} vendidos</span>
             <span>{(totalCotas - cotasVendidas).toLocaleString('pt-BR')} disponíveis</span>
           </div>
-          {/* FRASE ROTATIVA */}
           <div style={{ textAlign:'center', marginTop:10 }}>
             <span key={fraseIdx} className="frase-rotativa" style={{ fontSize:'clamp(11px,2vw,13px)', color:'rgba(245,168,0,0.6)', fontWeight:600, letterSpacing:1 }}>
-              ⚡ {frases[fraseIdx]}
+              {frases[fraseIdx]}
             </span>
           </div>
         </div>
@@ -314,7 +312,7 @@ export default function Home() {
             <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(42px,8vw,58px)', fontWeight:900, color:'#F5A800', lineHeight:1, marginBottom:20, letterSpacing:2 }}>
               R$ {valorAtual.toFixed(2).replace('.',',')}
             </div>
-            <Link href="/compra" className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,22px)', border:'none', borderRadius:12, cursor:'pointer', fontSize:'clamp(16px,3.5vw,22px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', boxShadow:'0 8px 32px rgba(245,168,0,.4)', fontFamily:"'Barlow Condensed',sans-serif", display:'block', textDecoration:'none' }}>
+            <Link href={`/compra?qty=${quantidade}`} className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,22px)', border:'none', borderRadius:12, cursor:'pointer', fontSize:'clamp(16px,3.5vw,22px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', boxShadow:'0 8px 32px rgba(245,168,0,.4)', fontFamily:"'Barlow Condensed',sans-serif", display:'block', textDecoration:'none' }}>
               Garantir Meus Bilhetes Agora
             </Link>
             <div style={{ fontSize:'clamp(11px,2vw,14px)', color:'#7A8BB0', marginTop:12, fontWeight:600 }}>Pagamento 100% seguro via PIX • Confirmação imediata</div>
