@@ -15,6 +15,7 @@ export default function Home() {
   const [pkgSelecionado, setPkgSelecionado] = useState(5)
   const [quantidade, setQuantidade] = useState(5)
   const [fraseIdx, setFraseIdx] = useState(0)
+  const LIMITE_MAX = 100 // Admin define — por enquanto 100
 
   const frases = [
     'Compras acontecendo agora',
@@ -25,10 +26,10 @@ export default function Home() {
   ]
 
   const pacotes = [
-    { qty: 1,  valor: 4.99,  label: null,          economia: null },
-    { qty: 5,  valor: 22.00, label: 'POPULAR',      economia: 2.95 },
-    { qty: 10, valor: 40.00, label: null,            economia: 9.90,  pulse: true },
-    { qty: 20, valor: 70.00, label: 'MELHOR VALOR',  economia: 29.80, pulse: true },
+    { qty: 1,  valor: 4.99,  label: null,          economia: null,  pulse: false },
+    { qty: 5,  valor: 22.00, label: 'POPULAR',      economia: 2.95,  pulse: false },
+    { qty: 10, valor: 40.00, label: null,            economia: 9.90,  pulse: true  },
+    { qty: 20, valor: 70.00, label: 'MELHOR VALOR',  economia: 29.80, pulse: true  },
   ]
 
   const nomes = ['Maria S.', 'Joao P.', 'Ana C.', 'Pedro L.', 'Lucas M.', 'Carla F.', 'Bruno T.']
@@ -41,7 +42,6 @@ export default function Home() {
     setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 5000)
   }, [])
 
-  // Frases rotativas
   useEffect(() => {
     const interval = setInterval(() => {
       setFraseIdx(i => (i + 1) % frases.length)
@@ -109,26 +109,33 @@ export default function Home() {
   const formatPremio = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const pct = Math.max(0.1, (cotasVendidas / totalCotas) * 100)
 
-  // Calcula valor baseado na quantidade
   const calcularValor = (qty: number) => {
     if (qty === 1)  return 4.99
     if (qty === 5)  return 22.00
     if (qty === 10) return 40.00
     if (qty === 20) return 70.00
+    // Acima de 20 — calcula proporcional ao melhor pacote
+    if (qty > 20) {
+      const blocos20 = Math.floor(qty / 20)
+      const resto = qty % 20
+      let valor = blocos20 * 70.00
+      if (resto > 0) valor += calcularValor(resto)
+      return parseFloat(valor.toFixed(2))
+    }
     return parseFloat((qty * 4.99).toFixed(2))
   }
 
   const calcularEconomia = (qty: number) => {
-    const valorSemDesconto = parseFloat((qty * 4.99).toFixed(2))
-    const valorComDesconto = calcularValor(qty)
-    const eco = valorSemDesconto - valorComDesconto
-    return eco > 0 ? eco : null
+    const semDesconto = parseFloat((qty * 4.99).toFixed(2))
+    const comDesconto = calcularValor(qty)
+    const eco = semDesconto - comDesconto
+    return eco > 0.01 ? eco : null
   }
 
   const valorAtual = calcularValor(quantidade)
   const economiaAtual = calcularEconomia(quantidade)
 
-  const incrementar = () => setQuantidade(q => Math.min(q + 1, 20))
+  const incrementar = () => setQuantidade(q => Math.min(q + 1, LIMITE_MAX))
   const decrementar = () => setQuantidade(q => Math.max(q - 1, 1))
 
   return (
@@ -178,9 +185,10 @@ export default function Home() {
         @media(max-width:600px){.pacotes-grid{grid-template-columns:repeat(2,1fr);}}
         .frase-rotativa{animation:frase-fade .5s ease;}
         @keyframes frase-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-        .btn-qty{background:rgba(245,168,0,0.1);border:2px solid rgba(245,168,0,0.4);color:#F5A800;font-family:'Bebas Neue',cursive;font-size:24px;width:48px;height:48px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+        .btn-qty{background:rgba(245,168,0,0.1);border:2px solid rgba(245,168,0,0.4);color:#F5A800;font-family:'Bebas Neue',cursive;font-size:24px;width:52px;height:52px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
         .btn-qty:hover{background:rgba(245,168,0,0.2);border-color:#F5A800;}
         .btn-qty:active{transform:scale(.93);}
+        .btn-qty:disabled{opacity:0.3;cursor:not-allowed;}
       `}</style>
 
       <canvas ref={canvasRef} style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none' }} />
@@ -261,7 +269,7 @@ export default function Home() {
             {pacotes.map((pkg) => (
               <div
                 key={pkg.qty}
-                className={`pkg${(pkg as any).pulse ? ' pkg-pulse' : ''}`}
+                className={`pkg${pkg.pulse ? ' pkg-pulse' : ''}`}
                 onClick={() => { setPkgSelecionado(pkg.qty); setQuantidade(pkg.qty); }}
                 style={{ border:`2px solid ${pkgSelecionado===pkg.qty?'#F5A800':'rgba(255,255,255,0.12)'}`, background:pkgSelecionado===pkg.qty?'rgba(245,168,0,0.14)':'rgba(255,255,255,0.03)', borderRadius:14, padding:'16px 8px', textAlign:'center', position:'relative' }}
               >
@@ -278,18 +286,23 @@ export default function Home() {
           <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:16, padding:'20px', marginBottom:16 }}>
             <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', fontWeight:600, letterSpacing:1, marginBottom:14, textAlign:'center' }}>Ou escolha a quantidade</div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom:12 }}>
-              <button className="btn-qty" onClick={decrementar}>−</button>
+              <button className="btn-qty" onClick={decrementar} disabled={quantidade <= 1}>−</button>
               <div style={{ textAlign:'center', minWidth:80 }}>
                 <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(36px,8vw,52px)', color:'#fff', lineHeight:1 }}>{quantidade}</div>
                 <div style={{ fontSize:'clamp(11px,2vw,12px)', color:'#7A8BB0', fontWeight:600 }}>bilhete{quantidade>1?'s':''}</div>
               </div>
-              <button className="btn-qty" onClick={incrementar}>+</button>
+              <button className="btn-qty" onClick={incrementar} disabled={quantidade >= LIMITE_MAX}>+</button>
             </div>
             <div style={{ textAlign:'center' }}>
               <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(28px,6vw,42px)', color:'#F5A800', lineHeight:1 }}>R$ {valorAtual.toFixed(2).replace('.',',')}</div>
               {economiaAtual && economiaAtual > 0 && (
                 <div style={{ fontSize:'clamp(11px,2vw,13px)', color:'#00DD44', fontWeight:800, marginTop:4 }}>
                   economia R$ {economiaAtual.toFixed(2).replace('.',',')}
+                </div>
+              )}
+              {quantidade >= LIMITE_MAX && (
+                <div style={{ fontSize:'clamp(10px,2vw,12px)', color:'rgba(245,168,0,0.5)', marginTop:6, fontWeight:600 }}>
+                  Limite máximo atingido
                 </div>
               )}
             </div>
