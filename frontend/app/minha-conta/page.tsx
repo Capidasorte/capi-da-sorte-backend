@@ -159,8 +159,6 @@ export default function MinhaConta() {
         body { background:#04091C; }
         .logo-wrap { filter:drop-shadow(0 0 8px rgba(245,168,0,0.5)); transition:filter .3s; }
         .logo-wrap:hover { filter:drop-shadow(0 0 16px rgba(245,168,0,0.8)); }
-        .bilhete-card { transition:all .2s; }
-        .bilhete-card:hover { border-color:rgba(245,168,0,0.4)!important; transform:translateY(-1px); }
         .btn-sair { background:transparent; border:1px solid rgba(255,255,255,0.15); border-radius:8px; color:rgba(255,255,255,0.4); font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; padding:8px 16px; cursor:pointer; transition:all .2s; letter-spacing:1px; }
         .btn-sair:hover { border-color:rgba(255,61,90,0.5); color:rgba(255,61,90,0.7); }
         .spinner { width:36px; height:36px; border:3px solid rgba(245,168,0,.15); border-top-color:#F5A800; border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 16px; }
@@ -189,6 +187,8 @@ export default function MinhaConta() {
         .countdown-num { font-family:'Bebas Neue',cursive; font-size:clamp(26px,6vw,36px); color:#1FCC6A; line-height:1; filter:drop-shadow(0 0 8px rgba(31,204,106,0.5)); }
         .countdown-lbl { font-size:9px; color:#7A8BB0; letter-spacing:1px; text-transform:uppercase; font-weight:700; margin-top:2px; }
         .countdown-sep { font-family:'Bebas Neue',cursive; font-size:24px; color:rgba(31,204,106,0.4); margin:0 3px; padding-bottom:14px; line-height:1; }
+        .numero-card { transition:all .2s; }
+        .numero-card:hover { border-color:rgba(245,168,0,0.5)!important; transform:scale(1.03); }
       `}</style>
 
       <canvas ref={canvasRef} style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none' }} />
@@ -226,16 +226,49 @@ export default function MinhaConta() {
             </div>
           </div>
 
-          {/* 3. MEUS BILHETES */}
-          <div style={{ background:'rgba(245,168,0,0.05)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:14, padding:'16px', marginBottom:14, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-            <div>
-              <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:2, textTransform:'uppercase', marginBottom:4 }}>Meus Bilhetes</div>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(40px,9vw,56px)', color:'#F5A800', lineHeight:1 }}>{bilhetes.length}</div>
+          {/* 3. MEUS BILHETES — card único com contador + números */}
+          <div style={{ background:'rgba(245,168,0,0.05)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:16, padding:'20px', marginBottom:14 }}>
+
+            {/* Cabeçalho do card */}
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+              <div>
+                <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:2, textTransform:'uppercase', marginBottom:4 }}>Meus Bilhetes</div>
+                <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(40px,9vw,56px)', color:'#F5A800', lineHeight:1 }}>{bilhetes.length}</div>
+              </div>
+              <div style={{ textAlign:'right', fontSize:13 }}>
+                <div style={{ color:'#1FCC6A', fontWeight:700 }}>{bilhetes.filter(b => b.status === 'confirmed').length} confirmados</div>
+                <div style={{ marginTop:4, color:'#7A8BB0' }}>{bilhetes.filter(b => b.status !== 'confirmed').length} pendentes</div>
+              </div>
             </div>
-            <div style={{ textAlign:'right', fontSize:13 }}>
-              <div style={{ color:'#1FCC6A', fontWeight:700 }}>{bilhetes.filter(b => b.status === 'confirmed').length} confirmados</div>
-              <div style={{ marginTop:4, color:'#7A8BB0' }}>{bilhetes.filter(b => b.status !== 'confirmed').length} pendentes</div>
-            </div>
+
+            {/* Divisor */}
+            <div style={{ height:1, background:'rgba(245,168,0,0.1)', marginBottom:16 }}></div>
+
+            {/* Lista de números */}
+            {loading && (
+              <div style={{ textAlign:'center', padding:'24px 0' }}>
+                <div className="spinner"></div>
+                <div style={{ fontSize:13, color:'#7A8BB0' }}>Carregando bilhetes...</div>
+              </div>
+            )}
+
+            {!loading && bilhetes.length === 0 && (
+              <div style={{ textAlign:'center', padding:'24px 0' }}>
+                <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:20, color:'#7A8BB0', letterSpacing:2, marginBottom:6 }}>Nenhum bilhete ainda</div>
+                <div style={{ fontSize:12, color:'#4A5B7A' }}>Compre seus primeiros bilhetes e concorra!</div>
+              </div>
+            )}
+
+            {!loading && bilhetes.length > 0 && (
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
+                {bilhetes.map((b, i) => (
+                  <div key={i} className="numero-card" style={{ background: b.status === 'confirmed' ? 'rgba(31,204,106,0.08)' : 'rgba(245,168,0,0.06)', border:`1px solid ${b.status === 'confirmed' ? 'rgba(31,204,106,0.3)' : 'rgba(245,168,0,0.2)'}`, borderRadius:10, padding:'10px 8px', textAlign:'center' }}>
+                    <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(16px,4vw,22px)', color: b.status === 'confirmed' ? '#1FCC6A' : '#F5A800', letterSpacing:1, lineHeight:1 }}>#{b.numero}</div>
+                    <div style={{ fontSize:9, color:'#4A5B7A', marginTop:4, letterSpacing:1, textTransform:'uppercase' }}>{formatData(b.created_at)}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* 4. BOTÃO COMPRAR MAIS */}
@@ -258,7 +291,7 @@ export default function MinhaConta() {
           </div>
 
           {/* 6. SORTEIOS ROTATIVOS */}
-          <div style={{ background:'rgba(13,30,74,0.6)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'18px', marginBottom:28, textAlign:'center', position:'relative', overflow:'hidden' }}>
+          <div style={{ background:'rgba(13,30,74,0.6)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'18px', marginBottom:20, textAlign:'center', position:'relative', overflow:'hidden' }}>
             <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,#C88000,#FFD060,#C88000)' }}></div>
             <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:3, textTransform:'uppercase', marginBottom:12 }}>Calendário de Sorteios</div>
             <div key={sorteioIdx} className="sorteio-slide">
@@ -276,44 +309,6 @@ export default function MinhaConta() {
               ))}
             </div>
           </div>
-
-          {/* 7. LISTA DE BILHETES */}
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,20px)', fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:'#fff', marginBottom:14 }}>
-            Todos os Bilhetes
-          </div>
-
-          {loading && (
-            <div style={{ textAlign:'center', padding:'40px 0' }}>
-              <div className="spinner"></div>
-              <div style={{ fontSize:14, color:'#7A8BB0' }}>Carregando seus bilhetes...</div>
-            </div>
-          )}
-
-          {!loading && bilhetes.length === 0 && (
-            <div style={{ textAlign:'center', padding:'40px 0', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16 }}>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, color:'#7A8BB0', letterSpacing:2, marginBottom:8 }}>Nenhum bilhete ainda</div>
-              <div style={{ fontSize:13, color:'#4A5B7A' }}>Compre seus primeiros bilhetes e concorra!</div>
-            </div>
-          )}
-
-          {!loading && bilhetes.length > 0 && (
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {bilhetes.map((b, i) => (
-                <div key={i} className="bilhete-card" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:12, padding:'14px 16px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                  <div>
-                    <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:22, color:'#F5A800', letterSpacing:2 }}>#{b.numero}</div>
-                    <div style={{ fontSize:12, color:'#7A8BB0', marginTop:2 }}>{b.campanha}</div>
-                  </div>
-                  <div style={{ textAlign:'right' }}>
-                    <div style={{ display:'inline-block', background: b.status === 'confirmed' ? 'rgba(31,204,106,0.15)' : 'rgba(245,168,0,0.15)', border:`1px solid ${b.status === 'confirmed' ? 'rgba(31,204,106,0.4)' : 'rgba(245,168,0,0.4)'}`, borderRadius:20, padding:'3px 10px', fontSize:11, fontWeight:700, color: b.status === 'confirmed' ? '#1FCC6A' : '#F5A800', letterSpacing:1, textTransform:'uppercase' }}>
-                      {b.status === 'confirmed' ? 'Confirmado' : 'Pendente'}
-                    </div>
-                    <div style={{ fontSize:11, color:'#4A5B7A', marginTop:4 }}>{formatData(b.created_at)}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
 
         </div>
 
