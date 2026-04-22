@@ -8,14 +8,14 @@ export default function Home() {
   const [premio, setPremio] = useState(100000)
   const [displayPremio, setDisplayPremio] = useState(0)
   const [cotasVendidas, setCotasVendidas] = useState(0)
-  const totalCotas = 1000000
+  const totalCotas = 10000000
   const incrementoPorCota = 1.5
   const [feed, setFeed] = useState<{id: number, text: string}[]>([])
   const feedCounter = useRef(0)
   const [pkgSelecionado, setPkgSelecionado] = useState(5)
   const [quantidade, setQuantidade] = useState(5)
   const [fraseIdx, setFraseIdx] = useState(0)
-  const LIMITE_MAX = 100
+  const LIMITE_MAX = 200
 
   const frases = [
     'Compras acontecendo agora',
@@ -194,7 +194,6 @@ export default function Home() {
 
       <main style={{ fontFamily:"'Barlow',sans-serif", minHeight:'100vh', color:'#fff', position:'relative', zIndex:1, paddingBottom:100 }}>
 
-        {/* HEADER */}
         <header style={{ background:'rgba(4,9,28,0.95)', borderBottom:'1px solid rgba(245,168,0,0.2)', padding:'0 16px', height:70, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100, backdropFilter:'blur(20px)' }}>
           <Link href="/" className="logo-wrap" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
             <span style={{ fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:2, fontFamily:"'Bebas Neue',cursive" }}>CAPI DA SORTE</span>
@@ -205,7 +204,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* CONTADOR */}
         <div style={{ textAlign:'center', padding:'40px 16px 16px' }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(14px,3vw,18px)', fontWeight:700, letterSpacing:5, textTransform:'uppercase', color:'#7A8BB0', marginBottom:8 }}>Premio Acumulado</div>
           <div style={{ position:'relative', display:'inline-block', marginBottom:16 }}>
@@ -222,7 +220,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* SORTEIOS */}
         <div className="sorteios-grid">
           {[
             { ordem:'1º Sorteio', data:'15 Abr', premio:'R$ 500,00', main:false },
@@ -240,7 +237,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* BARRA DE PROGRESSO */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 24px' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
             <span style={{ fontSize:'clamp(13px,2.5vw,15px)', color:'#aaa', fontWeight:600 }}>Bilhetes vendidos: <strong style={{ color:'#fff' }}>{cotasVendidas.toLocaleString('pt-BR')}</strong></span>
@@ -260,7 +256,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* PACOTES */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 20px' }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,20px)', fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:'#fff', marginBottom:14 }}>Escolha seu Pacote</div>
           <div className="pacotes-grid">
@@ -280,7 +275,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* CONTADOR + e - */}
           <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:16, padding:'20px', marginBottom:16 }}>
             <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', fontWeight:600, letterSpacing:1, marginBottom:14, textAlign:'center' }}>Ou escolha a quantidade</div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom:12 }}>
@@ -306,7 +300,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BOTÃO PRINCIPAL */}
           <div style={{ background:'linear-gradient(135deg,rgba(245,168,0,0.1),rgba(245,168,0,0.03))', border:'1px solid rgba(245,168,0,0.3)', borderRadius:16, padding:'clamp(16px,4vw,30px)', textAlign:'center' }}>
             <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', marginBottom:4, letterSpacing:1, fontWeight:600 }}>Total a Pagar</div>
             <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(42px,8vw,58px)', fontWeight:900, color:'#F5A800', lineHeight:1, marginBottom:20, letterSpacing:2 }}>
@@ -322,7 +315,6 @@ export default function Home() {
 
       </main>
 
-      {/* FOOTER */}
       <footer style={{ background:'rgba(4,9,28,0.95)', borderTop:'1px solid rgba(255,255,255,0.07)', padding:'20px 16px', textAlign:'center', position:'relative', zIndex:10 }}>
         <div style={{ display:'flex', justifyContent:'center', alignItems:'center', gap:24, marginBottom:12 }}>
           <a href="https://wa.me/55" target="_blank" className="social-link" style={{ display:'flex', alignItems:'center', gap:8, color:'#25D366' }}>
@@ -338,7 +330,6 @@ export default function Home() {
         <div style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', width:'clamp(36px,6vw,46px)', height:'clamp(36px,6vw,46px)', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'clamp(11px,2vw,14px)', fontWeight:900, color:'rgba(255,255,255,0.5)', fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:1 }}>+18</div>
       </footer>
 
-      {/* FEED */}
       <div style={{ position:'fixed', bottom:100, left:16, zIndex:200, display:'flex', flexDirection:'column', gap:8, pointerEvents:'none' }}>
         {feed.map(f => (
           <div key={f.id} className="feed-item" style={{ background:'rgba(4,9,28,.95)', border:'1px solid rgba(245,168,0,.3)', borderRadius:10, padding:'10px 14px', fontSize:'clamp(12px,2vw,14px)', fontWeight:600, color:'#fff', maxWidth:260, backdropFilter:'blur(10px)' }}>{f.text}</div>
