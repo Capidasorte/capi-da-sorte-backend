@@ -15,10 +15,10 @@ export default function Home() {
   const [pkgSelecionado, setPkgSelecionado] = useState(5)
 
   const pacotes = [
-    { qty: 1, valor: 5, label: null, economia: null },
-    { qty: 5, valor: 22, label: 'POPULAR', economia: 3 },
-    { qty: 10, valor: 40, label: null, economia: 10 },
-    { qty: 20, valor: 70, label: 'MELHOR VALOR', economia: 30 },
+    { qty: 1, valor: 4.99, label: null, economia: null },
+    { qty: 5, valor: 22, label: 'POPULAR', economia: 2.95 },
+    { qty: 10, valor: 40, label: null, economia: 9.90 },
+    { qty: 20, valor: 70, label: 'MELHOR VALOR', economia: 29.80 },
   ]
 
   const nomes = ['Maria S.', 'Joao P.', 'Ana C.', 'Pedro L.', 'Lucas M.', 'Carla F.', 'Bruno T.']
@@ -197,7 +197,7 @@ export default function Home() {
           <div style={{ display:'flex', justifyContent:'center', marginBottom:24 }}>
             <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(31,204,106,.08)', border:'1px solid rgba(31,204,106,.3)', borderRadius:20, padding:'6px 16px', fontSize:'clamp(10px,2vw,12px)', fontWeight:700, color:'#1FCC6A', letterSpacing:3, textTransform:'uppercase', fontFamily:"'Barlow Condensed',sans-serif" }}>
               <span className="live-dot" style={{ width:8, height:8, borderRadius:'50%', background:'#1FCC6A', display:'inline-block' }}></span>
-              Atualizando ao vivo
+              Atualizando ao vivo • Participe e Concorra
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function Home() {
                 <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(28px,6vw,38px)', fontWeight:900, color:'#fff', lineHeight:1 }}>{pkg.qty}</div>
                 <div style={{ fontSize:'clamp(11px,2vw,12px)', color:'#7A8BB0', marginTop:4, fontWeight:600 }}>bilhete{pkg.qty>1?'s':''}</div>
                 <div style={{ fontSize:'clamp(14px,3vw,18px)', fontWeight:700, color:'#F5A800', marginTop:6 }}>R$ {pkg.valor.toFixed(2).replace('.',',')}</div>
-                {pkg.economia && <div style={{ fontSize:'clamp(10px,2vw,12px)', color:'#1FCC6A', fontWeight:700, marginTop:4 }}>economia R$ {pkg.economia}</div>}
+                {pkg.economia && <div style={{ fontSize:'clamp(10px,2vw,12px)', color:'#1FCC6A', fontWeight:700, marginTop:4 }}>economia R$ {pkg.economia.toFixed(2).replace('.',',')}</div>}
               </div>
             ))}
           </div>
