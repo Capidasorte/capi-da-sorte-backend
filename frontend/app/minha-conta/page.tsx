@@ -55,13 +55,11 @@ export default function MinhaConta() {
   const proximoSorteio = SORTEIOS.find(s => new Date(s.data).getTime() > Date.now()) || SORTEIOS[SORTEIOS.length - 1]
   const countdown = useCountdown(proximoSorteio.data)
 
-  // Troca sorteio a cada 3s
   useEffect(() => {
     const id = setInterval(() => setSorteioIdx(i => (i + 1) % SORTEIOS.length), 3000)
     return () => clearInterval(id)
   }, [])
 
-  // Premio crescendo em tempo real
   useEffect(() => {
     const id = setInterval(() => {
       const qty = Math.floor(Math.random() * 5) + 1
@@ -70,7 +68,6 @@ export default function MinhaConta() {
     return () => clearInterval(id)
   }, [])
 
-  // Animação suave do prêmio
   useEffect(() => {
     const start = displayPremio
     const end = premio
@@ -87,7 +84,6 @@ export default function MinhaConta() {
     return () => cancelAnimationFrame(animId)
   }, [premio])
 
-  // STARS
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -178,14 +174,14 @@ export default function MinhaConta() {
         @keyframes slide-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
         .counter-premio {
           font-family:'Bebas Neue',cursive;
-          font-size:clamp(28px,7vw,44px);
+          font-size:clamp(36px,9vw,56px);
           line-height:1;
           background:linear-gradient(135deg,#C88000 0%,#FFD060 40%,#F5A800 60%,#FFD060 80%,#C88000 100%);
           background-size:200% auto;
           -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
           animation:metal-shine 3s linear infinite;
           filter:drop-shadow(0 0 20px rgba(245,168,0,.5));
-          letter-spacing:1px;
+          letter-spacing:2px;
         }
         @keyframes metal-shine{0%{background-position:0% center}100%{background-position:200% center}}
         .live-dot { animation:blink 1s infinite; }
@@ -209,7 +205,7 @@ export default function MinhaConta() {
 
         <div style={{ maxWidth:600, margin:'0 auto', padding:'32px 16px 80px' }}>
 
-          {/* SAUDAÇÃO */}
+          {/* 1. SAUDAÇÃO */}
           {user && (
             <div style={{ marginBottom:24 }}>
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(11px,2vw,13px)', color:'#7A8BB0', letterSpacing:4, textTransform:'uppercase', marginBottom:4 }}>Bem-vindo de volta</div>
@@ -218,7 +214,7 @@ export default function MinhaConta() {
             </div>
           )}
 
-          {/* PREMIO ACUMULADO */}
+          {/* 2. PREMIO ACUMULADO */}
           <div style={{ background:'rgba(245,168,0,0.07)', border:'1px solid rgba(245,168,0,0.2)', borderRadius:16, padding:'20px', marginBottom:12, textAlign:'center' }}>
             <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:3, textTransform:'uppercase', marginBottom:8 }}>Premio Acumulado</div>
             <div className="counter-premio">R$ {formatPremio(displayPremio)}</div>
@@ -230,7 +226,24 @@ export default function MinhaConta() {
             </div>
           </div>
 
-          {/* COUNTDOWN */}
+          {/* 3. MEUS BILHETES */}
+          <div style={{ background:'rgba(245,168,0,0.05)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:14, padding:'16px', marginBottom:14, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            <div>
+              <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:2, textTransform:'uppercase', marginBottom:4 }}>Meus Bilhetes</div>
+              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(40px,9vw,56px)', color:'#F5A800', lineHeight:1 }}>{bilhetes.length}</div>
+            </div>
+            <div style={{ textAlign:'right', fontSize:13 }}>
+              <div style={{ color:'#1FCC6A', fontWeight:700 }}>{bilhetes.filter(b => b.status === 'confirmed').length} confirmados</div>
+              <div style={{ marginTop:4, color:'#7A8BB0' }}>{bilhetes.filter(b => b.status !== 'confirmed').length} pendentes</div>
+            </div>
+          </div>
+
+          {/* 4. BOTÃO COMPRAR MAIS */}
+          <Link href="/" className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,18px)', borderRadius:12, fontSize:'clamp(14px,3vw,17px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', fontFamily:"'Barlow Condensed',sans-serif", marginBottom:20 }}>
+            Comprar Mais Bilhetes
+          </Link>
+
+          {/* 5. COUNTDOWN */}
           <div style={{ background:'rgba(31,204,106,0.07)', border:'1px solid rgba(31,204,106,0.2)', borderRadius:16, padding:'20px', marginBottom:12, textAlign:'center' }}>
             <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:3, textTransform:'uppercase', marginBottom:10 }}>Próximo Sorteio — {proximoSorteio.ordem}</div>
             <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'center' }}>
@@ -244,8 +257,8 @@ export default function MinhaConta() {
             </div>
           </div>
 
-          {/* SORTEIOS ROTATIVO */}
-          <div style={{ background:'rgba(13,30,74,0.6)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'18px', marginBottom:20, textAlign:'center', position:'relative', overflow:'hidden' }}>
+          {/* 6. SORTEIOS ROTATIVOS */}
+          <div style={{ background:'rgba(13,30,74,0.6)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'18px', marginBottom:28, textAlign:'center', position:'relative', overflow:'hidden' }}>
             <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'linear-gradient(90deg,#C88000,#FFD060,#C88000)' }}></div>
             <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:3, textTransform:'uppercase', marginBottom:12 }}>Calendário de Sorteios</div>
             <div key={sorteioIdx} className="sorteio-slide">
@@ -264,26 +277,9 @@ export default function MinhaConta() {
             </div>
           </div>
 
-          {/* BILHETES */}
-          <div style={{ background:'rgba(245,168,0,0.05)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:14, padding:'16px', marginBottom:20, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-            <div>
-              <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:2, textTransform:'uppercase', marginBottom:4 }}>Seus Bilhetes</div>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(32px,7vw,48px)', color:'#F5A800', lineHeight:1 }}>{bilhetes.length}</div>
-            </div>
-            <div style={{ textAlign:'right', fontSize:13, color:'#7A8BB0' }}>
-              <div>{bilhetes.filter(b => b.status === 'confirmed').length} confirmados</div>
-              <div style={{ marginTop:4 }}>{bilhetes.filter(b => b.status !== 'confirmed').length} pendentes</div>
-            </div>
-          </div>
-
-          {/* BOTÃO COMPRAR MAIS */}
-          <Link href="/" className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,18px)', borderRadius:12, fontSize:'clamp(14px,3vw,17px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', fontFamily:"'Barlow Condensed',sans-serif", marginBottom:28 }}>
-            Comprar Mais Bilhetes
-          </Link>
-
-          {/* LISTA */}
+          {/* 7. LISTA DE BILHETES */}
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,20px)', fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:'#fff', marginBottom:14 }}>
-            Meus Bilhetes
+            Todos os Bilhetes
           </div>
 
           {loading && (
