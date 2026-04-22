@@ -13,12 +13,22 @@ export default function Home() {
   const [feed, setFeed] = useState<{id: number, text: string}[]>([])
   const feedCounter = useRef(0)
   const [pkgSelecionado, setPkgSelecionado] = useState(5)
+  const [quantidade, setQuantidade] = useState(5)
+  const [fraseIdx, setFraseIdx] = useState(0)
+
+  const frases = [
+    'Compras acontecendo agora',
+    'Quanto mais bilhetes, maiores suas chances',
+    'Compras confirmadas em tempo real',
+    'Prêmio crescendo ao vivo',
+    'Não fique de fora',
+  ]
 
   const pacotes = [
-    { qty: 1, valor: 4.99, label: null, economia: null },
-    { qty: 5, valor: 22, label: 'POPULAR', economia: 2.95 },
-    { qty: 10, valor: 40, label: null, economia: 9.90 },
-    { qty: 20, valor: 70, label: 'MELHOR VALOR', economia: 29.80 },
+    { qty: 1,  valor: 4.99,  label: null,          economia: null },
+    { qty: 5,  valor: 22.00, label: 'POPULAR',      economia: 2.95 },
+    { qty: 10, valor: 40.00, label: null,            economia: 9.90,  pulse: true },
+    { qty: 20, valor: 70.00, label: 'MELHOR VALOR',  economia: 29.80, pulse: true },
   ]
 
   const nomes = ['Maria S.', 'Joao P.', 'Ana C.', 'Pedro L.', 'Lucas M.', 'Carla F.', 'Bruno T.']
@@ -29,6 +39,14 @@ export default function Home() {
     const id = ++feedCounter.current
     setFeed(prev => [{ id, text: `${masked} garantiu ${qty} bilhete${qty > 1 ? 's' : ''}` }, ...prev.slice(0, 2)])
     setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 5000)
+  }, [])
+
+  // Frases rotativas
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFraseIdx(i => (i + 1) % frases.length)
+    }, 3000)
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
@@ -90,102 +108,97 @@ export default function Home() {
 
   const formatPremio = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const pct = Math.max(0.1, (cotasVendidas / totalCotas) * 100)
-  const pkgAtual = pacotes.find(p => p.qty === pkgSelecionado) || pacotes[1]
+
+  // Calcula valor baseado na quantidade
+  const calcularValor = (qty: number) => {
+    if (qty === 1)  return 4.99
+    if (qty === 5)  return 22.00
+    if (qty === 10) return 40.00
+    if (qty === 20) return 70.00
+    return parseFloat((qty * 4.99).toFixed(2))
+  }
+
+  const calcularEconomia = (qty: number) => {
+    const valorSemDesconto = parseFloat((qty * 4.99).toFixed(2))
+    const valorComDesconto = calcularValor(qty)
+    const eco = valorSemDesconto - valorComDesconto
+    return eco > 0 ? eco : null
+  }
+
+  const valorAtual = calcularValor(quantidade)
+  const economiaAtual = calcularEconomia(quantidade)
+
+  const incrementar = () => setQuantidade(q => Math.min(q + 1, 20))
+  const decrementar = () => setQuantidade(q => Math.max(q - 1, 1))
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap');
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { background:#04091C; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; }
+        body { background:#04091C; -webkit-font-smoothing:antialiased; }
         .counter {
           font-family:'Bebas Neue',cursive;
           font-size:clamp(52px,12vw,110px);
           line-height:1;
           background:linear-gradient(135deg,#C88000 0%,#FFD060 40%,#F5A800 60%,#FFD060 80%,#C88000 100%);
           background-size:200% auto;
-          -webkit-background-clip:text;
-          -webkit-text-fill-color:transparent;
-          background-clip:text;
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
           animation:metal-shine 3s linear infinite;
           letter-spacing:2px;
           filter:drop-shadow(0 0 30px rgba(245,168,0,.5));
         }
-        @keyframes metal-shine { 0%{background-position:0% center} 100%{background-position:200% center} }
-        .glow-ring {
-          position:absolute; top:50%; left:50%;
-          transform:translate(-50%,-50%);
-          border:1px solid rgba(245,168,0,.12);
-          border-radius:50%; pointer-events:none;
-          animation:ring-pulse 2.5s ease-in-out infinite;
-        }
-        @keyframes ring-pulse { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5} 50%{transform:translate(-50%,-50%) scale(1.04);opacity:1} }
-        .live-dot { animation:blink 1s infinite; }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
-        .progress-fill { position:relative; }
-        .progress-fill::after {
-          content:''; position:absolute; right:0; top:0; bottom:0; width:40px;
-          background:linear-gradient(90deg,transparent,rgba(255,255,255,.6));
-          animation:shine 1.5s ease-in-out infinite;
-        }
-        @keyframes shine { 0%,100%{opacity:0} 50%{opacity:1} }
-        .btn-buy { position:relative; overflow:hidden; transition:all .2s; }
-        .btn-buy::before {
-          content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
-          background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
-          transition:left .5s;
-        }
-        .btn-buy:hover::before { left:100%; }
-        .btn-buy:hover { transform:translateY(-3px)!important; box-shadow:0 14px 44px rgba(245,168,0,.55)!important; }
-        .feed-item { animation:slideUp .4s ease forwards; }
-        @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-        .pkg { transition:all 0.2s; cursor:pointer; }
-        .pkg:hover { border-color:#F5A800!important; background:rgba(245,168,0,0.08)!important; transform:translateY(-2px); }
-        .social-link { transition:opacity .2s; text-decoration:none; }
-        .social-link:hover { opacity:.7; }
-        .logo-wrap { filter:drop-shadow(0 0 8px rgba(245,168,0,0.5)); transition:filter .3s; }
-        .logo-wrap:hover { filter:drop-shadow(0 0 16px rgba(245,168,0,0.8)); }
-        .sorteios-grid {
-          display:grid;
-          grid-template-columns:repeat(4,1fr);
-          gap:10px;
-          padding:0 16px 20px;
-          max-width:900px;
-          margin:0 auto;
-        }
-        @media (max-width:600px) {
-          .sorteios-grid { grid-template-columns:repeat(2,1fr); }
-        }
-        .sorteio-card {
-          position:relative; overflow:hidden; border-radius:12px;
-          padding:14px 10px; text-align:center; min-height:120px;
-          display:flex; flex-direction:column; align-items:center; justify-content:center;
-        }
-        .pacotes-grid {
-          display:grid;
-          grid-template-columns:repeat(4,1fr);
-          gap:10px;
-          margin-bottom:20px;
-        }
-        @media (max-width:600px) {
-          .pacotes-grid { grid-template-columns:repeat(2,1fr); }
-        }
+        @keyframes metal-shine{0%{background-position:0% center}100%{background-position:200% center}}
+        .glow-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:1px solid rgba(245,168,0,.12);border-radius:50%;pointer-events:none;animation:ring-pulse 2.5s ease-in-out infinite;}
+        @keyframes ring-pulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.5}50%{transform:translate(-50%,-50%) scale(1.04);opacity:1}}
+        .live-dot{animation:blink 1s infinite;}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+        .progress-fill{position:relative;}
+        .progress-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:40px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6));animation:shine 1.5s ease-in-out infinite;}
+        @keyframes shine{0%,100%{opacity:0}50%{opacity:1}}
+        .btn-buy{position:relative;overflow:hidden;transition:all .2s;animation:btn-pulse 2.5s ease-in-out infinite;}
+        .btn-buy::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:btn-shine 2s linear infinite;}
+        .btn-buy:hover{transform:translateY(-3px)!important;box-shadow:0 14px 44px rgba(245,168,0,.7)!important;animation:none!important;}
+        @keyframes btn-pulse{0%,100%{box-shadow:0 8px 32px rgba(245,168,0,.4)}50%{box-shadow:0 8px 48px rgba(245,168,0,.75),0 0 70px rgba(245,168,0,.2)}}
+        @keyframes btn-shine{0%{left:-100%}100%{left:100%}}
+        .feed-item{animation:slideUp .4s ease forwards;}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .pkg{transition:all 0.2s;cursor:pointer;}
+        .pkg:hover{border-color:#F5A800!important;background:rgba(245,168,0,0.08)!important;transform:translateY(-2px);}
+        .pkg-pulse{animation:pkg-glow 2s ease-in-out infinite;}
+        @keyframes pkg-glow{0%,100%{box-shadow:0 0 0 rgba(245,168,0,0)}50%{box-shadow:0 0 20px rgba(245,168,0,.35),0 0 40px rgba(245,168,0,.1)}}
+        .social-link{transition:opacity .2s;text-decoration:none;}
+        .social-link:hover{opacity:.7;}
+        .logo-wrap{filter:drop-shadow(0 0 8px rgba(245,168,0,0.5));transition:filter .3s;}
+        .logo-wrap:hover{filter:drop-shadow(0 0 16px rgba(245,168,0,0.8));}
+        .sorteios-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 16px 20px;max-width:900px;margin:0 auto;}
+        @media(max-width:600px){.sorteios-grid{grid-template-columns:repeat(2,1fr);}}
+        .sorteio-card{position:relative;overflow:hidden;border-radius:12px;padding:14px 10px;text-align:center;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+        .pacotes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+        @media(max-width:600px){.pacotes-grid{grid-template-columns:repeat(2,1fr);}}
+        .frase-rotativa{animation:frase-fade .5s ease;}
+        @keyframes frase-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        .btn-qty{background:rgba(245,168,0,0.1);border:2px solid rgba(245,168,0,0.4);color:#F5A800;font-family:'Bebas Neue',cursive;font-size:24px;width:48px;height:48px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+        .btn-qty:hover{background:rgba(245,168,0,0.2);border-color:#F5A800;}
+        .btn-qty:active{transform:scale(.93);}
       `}</style>
 
       <canvas ref={canvasRef} style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none' }} />
 
       <main style={{ fontFamily:"'Barlow',sans-serif", minHeight:'100vh', color:'#fff', position:'relative', zIndex:1, paddingBottom:100 }}>
 
+        {/* HEADER */}
         <header style={{ background:'rgba(4,9,28,0.95)', borderBottom:'1px solid rgba(245,168,0,0.2)', padding:'0 16px', height:70, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100, backdropFilter:'blur(20px)' }}>
           <Link href="/" className="logo-wrap" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
             <span style={{ fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:2, fontFamily:"'Bebas Neue',cursive" }}>CAPI DA SORTE</span>
           </Link>
           <div style={{ display:'flex', gap:8 }}>
-            <Link href="/login" style={{ background:'transparent', border:'2px solid #F5A800', color:'#F5A800', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontFamily:"'Barlow',sans-serif", fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Entrar</Link>
-            <Link href="/cadastro" style={{ background:'linear-gradient(135deg,#FFD060,#F5A800)', border:'none', color:'#04091C', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontFamily:"'Barlow',sans-serif", fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Cadastrar</Link>
+            <Link href="/login" style={{ background:'transparent', border:'2px solid #F5A800', color:'#F5A800', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Entrar</Link>
+            <Link href="/cadastro" style={{ background:'linear-gradient(135deg,#FFD060,#F5A800)', color:'#04091C', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Cadastrar</Link>
           </div>
         </header>
 
+        {/* CONTADOR */}
         <div style={{ textAlign:'center', padding:'40px 16px 16px' }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(14px,3vw,18px)', fontWeight:700, letterSpacing:5, textTransform:'uppercase', color:'#7A8BB0', marginBottom:8 }}>Premio Acumulado</div>
           <div style={{ position:'relative', display:'inline-block', marginBottom:16 }}>
@@ -202,6 +215,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* SORTEIOS */}
         <div className="sorteios-grid">
           {[
             { ordem:'1º Sorteio', data:'15 Abr', premio:'R$ 500,00', main:false },
@@ -219,6 +233,7 @@ export default function Home() {
           ))}
         </div>
 
+        {/* BARRA DE PROGRESSO */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 24px' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
             <span style={{ fontSize:'clamp(13px,2.5vw,15px)', color:'#aaa', fontWeight:600 }}>Bilhetes vendidos: <strong style={{ color:'#fff' }}>{cotasVendidas.toLocaleString('pt-BR')}</strong></span>
@@ -227,30 +242,64 @@ export default function Home() {
           <div style={{ height:12, background:'rgba(255,255,255,0.05)', borderRadius:12, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
             <div className="progress-fill" style={{ height:'100%', width:`${pct}%`, background:'linear-gradient(90deg,#C88000,#F5A800,#FFD060)', borderRadius:12, transition:'width 1s ease' }}></div>
           </div>
-          <div style={{ display:'flex', justifyContent:'space-between', fontSize:'clamp(11px,2vw,14px)', color:'#7A8BB0', marginTop:8, fontWeight:600 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', fontSize:'clamp(11px,2vw,14px)', color:'#7A8BB0', marginTop:6, fontWeight:600 }}>
             <span>{cotasVendidas.toLocaleString('pt-BR')} vendidos</span>
             <span>{(totalCotas - cotasVendidas).toLocaleString('pt-BR')} disponíveis</span>
           </div>
+          {/* FRASE ROTATIVA */}
+          <div style={{ textAlign:'center', marginTop:10 }}>
+            <span key={fraseIdx} className="frase-rotativa" style={{ fontSize:'clamp(11px,2vw,13px)', color:'rgba(245,168,0,0.6)', fontWeight:600, letterSpacing:1 }}>
+              ⚡ {frases[fraseIdx]}
+            </span>
+          </div>
         </div>
 
+        {/* PACOTES */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 20px' }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,20px)', fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:'#fff', marginBottom:14 }}>Escolha seu Pacote</div>
           <div className="pacotes-grid">
             {pacotes.map((pkg) => (
-              <div key={pkg.qty} className="pkg" onClick={() => setPkgSelecionado(pkg.qty)} style={{ border:`2px solid ${pkgSelecionado===pkg.qty?'#F5A800':'rgba(255,255,255,0.12)'}`, background:pkgSelecionado===pkg.qty?'rgba(245,168,0,0.14)':'rgba(255,255,255,0.03)', borderRadius:14, padding:'16px 8px', textAlign:'center', position:'relative' }}>
+              <div
+                key={pkg.qty}
+                className={`pkg${(pkg as any).pulse ? ' pkg-pulse' : ''}`}
+                onClick={() => { setPkgSelecionado(pkg.qty); setQuantidade(pkg.qty); }}
+                style={{ border:`2px solid ${pkgSelecionado===pkg.qty?'#F5A800':'rgba(255,255,255,0.12)'}`, background:pkgSelecionado===pkg.qty?'rgba(245,168,0,0.14)':'rgba(255,255,255,0.03)', borderRadius:14, padding:'16px 8px', textAlign:'center', position:'relative' }}
+              >
                 {pkg.label && <div style={{ position:'absolute', top:-12, left:'50%', transform:'translateX(-50%)', background:'#F5A800', color:'#04091C', fontSize:'clamp(7px,1.5vw,9px)', fontWeight:900, padding:'3px 8px', borderRadius:8, whiteSpace:'nowrap', letterSpacing:1 }}>{pkg.label}</div>}
                 <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(28px,6vw,38px)', fontWeight:900, color:'#fff', lineHeight:1 }}>{pkg.qty}</div>
                 <div style={{ fontSize:'clamp(11px,2vw,12px)', color:'#7A8BB0', marginTop:4, fontWeight:600 }}>bilhete{pkg.qty>1?'s':''}</div>
                 <div style={{ fontSize:'clamp(14px,3vw,18px)', fontWeight:700, color:'#F5A800', marginTop:6 }}>R$ {pkg.valor.toFixed(2).replace('.',',')}</div>
-                {pkg.economia && <div style={{ fontSize:'clamp(10px,2vw,12px)', color:'#1FCC6A', fontWeight:700, marginTop:4 }}>economia R$ {pkg.economia.toFixed(2).replace('.',',')}</div>}
+                {pkg.economia && <div style={{ fontSize:'clamp(10px,2vw,12px)', color:'#00DD44', fontWeight:800, marginTop:4 }}>economia R$ {pkg.economia.toFixed(2).replace('.',',')}</div>}
               </div>
             ))}
           </div>
 
+          {/* CONTADOR + e - */}
+          <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:16, padding:'20px', marginBottom:16 }}>
+            <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', fontWeight:600, letterSpacing:1, marginBottom:14, textAlign:'center' }}>Ou escolha a quantidade</div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom:12 }}>
+              <button className="btn-qty" onClick={decrementar}>−</button>
+              <div style={{ textAlign:'center', minWidth:80 }}>
+                <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(36px,8vw,52px)', color:'#fff', lineHeight:1 }}>{quantidade}</div>
+                <div style={{ fontSize:'clamp(11px,2vw,12px)', color:'#7A8BB0', fontWeight:600 }}>bilhete{quantidade>1?'s':''}</div>
+              </div>
+              <button className="btn-qty" onClick={incrementar}>+</button>
+            </div>
+            <div style={{ textAlign:'center' }}>
+              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(28px,6vw,42px)', color:'#F5A800', lineHeight:1 }}>R$ {valorAtual.toFixed(2).replace('.',',')}</div>
+              {economiaAtual && economiaAtual > 0 && (
+                <div style={{ fontSize:'clamp(11px,2vw,13px)', color:'#00DD44', fontWeight:800, marginTop:4 }}>
+                  economia R$ {economiaAtual.toFixed(2).replace('.',',')}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* BOTÃO PRINCIPAL */}
           <div style={{ background:'linear-gradient(135deg,rgba(245,168,0,0.1),rgba(245,168,0,0.03))', border:'1px solid rgba(245,168,0,0.3)', borderRadius:16, padding:'clamp(16px,4vw,30px)', textAlign:'center' }}>
             <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', marginBottom:4, letterSpacing:1, fontWeight:600 }}>Total a Pagar</div>
             <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(42px,8vw,58px)', fontWeight:900, color:'#F5A800', lineHeight:1, marginBottom:20, letterSpacing:2 }}>
-              R$ {pkgAtual.valor.toFixed(2).replace('.',',')}
+              R$ {valorAtual.toFixed(2).replace('.',',')}
             </div>
             <Link href="/compra" className="btn-buy" style={{ width:'100%', padding:'clamp(14px,3vw,22px)', border:'none', borderRadius:12, cursor:'pointer', fontSize:'clamp(16px,3.5vw,22px)', fontWeight:900, letterSpacing:2, textTransform:'uppercase', background:'linear-gradient(135deg,#FFD060,#F5A800,#C88000)', color:'#04091C', boxShadow:'0 8px 32px rgba(245,168,0,.4)', fontFamily:"'Barlow Condensed',sans-serif", display:'block', textDecoration:'none' }}>
               Garantir Meus Bilhetes Agora
@@ -262,6 +311,7 @@ export default function Home() {
 
       </main>
 
+      {/* FOOTER */}
       <footer style={{ background:'rgba(4,9,28,0.95)', borderTop:'1px solid rgba(255,255,255,0.07)', padding:'20px 16px', textAlign:'center', position:'relative', zIndex:10 }}>
         <div style={{ display:'flex', justifyContent:'center', alignItems:'center', gap:24, marginBottom:12 }}>
           <a href="https://wa.me/55" target="_blank" className="social-link" style={{ display:'flex', alignItems:'center', gap:8, color:'#25D366' }}>
@@ -277,7 +327,8 @@ export default function Home() {
         <div style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', width:'clamp(36px,6vw,46px)', height:'clamp(36px,6vw,46px)', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'clamp(11px,2vw,14px)', fontWeight:900, color:'rgba(255,255,255,0.5)', fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:1 }}>+18</div>
       </footer>
 
-      <div style={{ position:'fixed', bottom:24, left:16, zIndex:200, display:'flex', flexDirection:'column', gap:8, pointerEvents:'none' }}>
+      {/* FEED */}
+      <div style={{ position:'fixed', bottom:100, left:16, zIndex:200, display:'flex', flexDirection:'column', gap:8, pointerEvents:'none' }}>
         {feed.map(f => (
           <div key={f.id} className="feed-item" style={{ background:'rgba(4,9,28,.95)', border:'1px solid rgba(245,168,0,.3)', borderRadius:10, padding:'10px 14px', fontSize:'clamp(12px,2vw,14px)', fontWeight:600, color:'#fff', maxWidth:260, backdropFilter:'blur(10px)' }}>{f.text}</div>
         ))}
