@@ -5,9 +5,10 @@ import Link from 'next/link'
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [premio, setPremio] = useState(100000)
+  const [premio, setPremio] = useState(0)
   const [displayPremio, setDisplayPremio] = useState(0)
   const [cotasVendidas, setCotasVendidas] = useState(0)
+  const [campanhaCarregada, setCampanhaCarregada] = useState(false)
   const totalCotas = 10000000
   const incrementoPorCota = 1.5
   const [feed, setFeed] = useState<{id: number, text: string}[]>([])
@@ -40,6 +41,29 @@ export default function Home() {
     const id = ++feedCounter.current
     setFeed(prev => [{ id, text: `${masked} garantiu ${qty} bilhete${qty > 1 ? 's' : ''}` }, ...prev.slice(0, 2)])
     setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 5000)
+  }, [])
+
+  // BUSCA CAMPANHA REAL DO BANCO
+  useEffect(() => {
+    const carregarCampanha = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/purchase/campanha-ativa`)
+        if (res.ok) {
+          const data = await res.json()
+          const premioReal = parseFloat(data.premio_inicial) + (parseFloat(data.cotas_vendidas) * parseFloat(data.incremento_por_cota))
+          setPremio(premioReal)
+          setDisplayPremio(premioReal)
+          setCotasVendidas(parseInt(data.cotas_vendidas))
+          setCampanhaCarregada(true)
+        }
+      } catch (err) {
+        console.error(err)
+        setPremio(100000)
+        setDisplayPremio(100000)
+        setCampanhaCarregada(true)
+      }
+    }
+    carregarCampanha()
   }, [])
 
   useEffect(() => {
@@ -81,6 +105,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    if (!campanhaCarregada) return
     const start = displayPremio
     const end = premio
     const duration = 1200
@@ -97,6 +122,7 @@ export default function Home() {
   }, [premio])
 
   useEffect(() => {
+    if (!campanhaCarregada) return
     const interval = setInterval(() => {
       const qty = Math.floor(Math.random() * 8) + 1
       setPremio(p => p + incrementoPorCota * qty)
@@ -104,7 +130,7 @@ export default function Home() {
       addFeed(qty)
     }, 3000 + Math.random() * 2000)
     return () => clearInterval(interval)
-  }, [addFeed])
+  }, [campanhaCarregada, addFeed])
 
   const formatPremio = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const pct = Math.max(0.1, (cotasVendidas / totalCotas) * 100)
@@ -204,13 +230,16 @@ export default function Home() {
           </div>
         </header>
 
+        {/* CONTADOR */}
         <div style={{ textAlign:'center', padding:'40px 16px 16px' }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(14px,3vw,18px)', fontWeight:700, letterSpacing:5, textTransform:'uppercase', color:'#7A8BB0', marginBottom:8 }}>Premio Acumulado</div>
           <div style={{ position:'relative', display:'inline-block', marginBottom:16 }}>
             <div className="glow-ring" style={{ width:300, height:120 }}></div>
             <div className="glow-ring" style={{ width:360, height:150, animationDelay:'.4s', opacity:.6 }}></div>
             <div className="glow-ring" style={{ width:420, height:180, animationDelay:'.8s', opacity:.3 }}></div>
-            <div className="counter">R$ {formatPremio(displayPremio)}</div>
+            <div className="counter">
+              {campanhaCarregada ? `R$ ${formatPremio(displayPremio)}` : 'Carregando...'}
+            </div>
           </div>
           <div style={{ display:'flex', justifyContent:'center', marginBottom:24 }}>
             <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(31,204,106,.08)', border:'1px solid rgba(31,204,106,.3)', borderRadius:20, padding:'6px 16px', fontSize:'clamp(10px,2vw,12px)', fontWeight:700, color:'#1FCC6A', letterSpacing:3, textTransform:'uppercase', fontFamily:"'Barlow Condensed',sans-serif" }}>
@@ -220,6 +249,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* SORTEIOS */}
         <div className="sorteios-grid">
           {[
             { ordem:'1º Sorteio', data:'15 Abr', premio:'R$ 500,00', main:false },
@@ -237,6 +267,7 @@ export default function Home() {
           ))}
         </div>
 
+        {/* BARRA DE PROGRESSO */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 24px' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
             <span style={{ fontSize:'clamp(13px,2.5vw,15px)', color:'#aaa', fontWeight:600 }}>Bilhetes vendidos: <strong style={{ color:'#fff' }}>{cotasVendidas.toLocaleString('pt-BR')}</strong></span>
@@ -256,6 +287,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* PACOTES */}
         <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 20px' }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(16px,3vw,20px)', fontWeight:700, letterSpacing:2, textTransform:'uppercase', color:'#fff', marginBottom:14 }}>Escolha seu Pacote</div>
           <div className="pacotes-grid">
@@ -275,6 +307,7 @@ export default function Home() {
             ))}
           </div>
 
+          {/* CONTADOR + e - */}
           <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:16, padding:'20px', marginBottom:16 }}>
             <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', fontWeight:600, letterSpacing:1, marginBottom:14, textAlign:'center' }}>Ou escolha a quantidade</div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:16, marginBottom:12 }}>
@@ -300,6 +333,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* BOTÃO */}
           <div style={{ background:'linear-gradient(135deg,rgba(245,168,0,0.1),rgba(245,168,0,0.03))', border:'1px solid rgba(245,168,0,0.3)', borderRadius:16, padding:'clamp(16px,4vw,30px)', textAlign:'center' }}>
             <div style={{ fontSize:'clamp(12px,2vw,14px)', color:'#7A8BB0', marginBottom:4, letterSpacing:1, fontWeight:600 }}>Total a Pagar</div>
             <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(42px,8vw,58px)', fontWeight:900, color:'#F5A800', lineHeight:1, marginBottom:20, letterSpacing:2 }}>
@@ -315,6 +349,7 @@ export default function Home() {
 
       </main>
 
+      {/* FOOTER */}
       <footer style={{ background:'rgba(4,9,28,0.95)', borderTop:'1px solid rgba(255,255,255,0.07)', padding:'20px 16px', textAlign:'center', position:'relative', zIndex:10 }}>
         <div style={{ display:'flex', justifyContent:'center', alignItems:'center', gap:24, marginBottom:12 }}>
           <a href="https://wa.me/55" target="_blank" className="social-link" style={{ display:'flex', alignItems:'center', gap:8, color:'#25D366' }}>
@@ -330,6 +365,7 @@ export default function Home() {
         <div style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', width:'clamp(36px,6vw,46px)', height:'clamp(36px,6vw,46px)', borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'clamp(11px,2vw,14px)', fontWeight:900, color:'rgba(255,255,255,0.5)', fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:1 }}>+18</div>
       </footer>
 
+      {/* FEED */}
       <div style={{ position:'fixed', bottom:100, left:16, zIndex:200, display:'flex', flexDirection:'column', gap:8, pointerEvents:'none' }}>
         {feed.map(f => (
           <div key={f.id} className="feed-item" style={{ background:'rgba(4,9,28,.95)', border:'1px solid rgba(245,168,0,.3)', borderRadius:10, padding:'10px 14px', fontSize:'clamp(12px,2vw,14px)', fontWeight:600, color:'#fff', maxWidth:260, backdropFilter:'blur(10px)' }}>{f.text}</div>
