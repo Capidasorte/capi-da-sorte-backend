@@ -36,6 +36,7 @@ export default function Home() {
   const [displayPremio, setDisplayPremio] = useState(0)
   const [cotasVendidas, setCotasVendidas] = useState(0)
   const [campanhaCarregada, setCampanhaCarregada] = useState(false)
+  const [userLogado, setUserLogado] = useState<{nome: string} | null>(null)
   const totalCotas = 10000000
   const incrementoPorCota = 1.5
   const [feed, setFeed] = useState<{id: number, text: string}[]>([])
@@ -71,6 +72,15 @@ export default function Home() {
     const id = ++feedCounter.current
     setFeed(prev => [{ id, text: `${masked} garantiu ${qty} bilhete${qty > 1 ? 's' : ''}` }, ...prev.slice(0, 2)])
     setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 5000)
+  }, [])
+
+  // VERIFICA USUÁRIO LOGADO
+  useEffect(() => {
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      try { setUserLogado(JSON.parse(userData)) }
+      catch { setUserLogado(null) }
+    }
   }, [])
 
   // BUSCA CAMPANHA REAL DO BANCO
@@ -259,9 +269,20 @@ export default function Home() {
           <Link href="/" className="logo-wrap" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
             <span style={{ fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:2, fontFamily:"'Bebas Neue',cursive" }}>CAPI DA SORTE</span>
           </Link>
-          <div style={{ display:'flex', gap:8 }}>
-            <Link href="/login" style={{ background:'transparent', border:'2px solid #F5A800', color:'#F5A800', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Entrar</Link>
-            <Link href="/cadastro" style={{ background:'linear-gradient(135deg,#FFD060,#F5A800)', color:'#04091C', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Cadastrar</Link>
+          <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+            {userLogado ? (
+              <>
+                <span style={{ fontSize:'clamp(12px,2vw,14px)', color:'rgba(245,168,0,0.7)', fontWeight:600 }}>
+                  {userLogado.nome.split(' ')[0]}
+                </span>
+                <Link href="/minha-conta" style={{ background:'linear-gradient(135deg,#FFD060,#F5A800)', color:'#04091C', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Minha Conta</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" style={{ background:'transparent', border:'2px solid #F5A800', color:'#F5A800', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Entrar</Link>
+                <Link href="/cadastro" style={{ background:'linear-gradient(135deg,#FFD060,#F5A800)', color:'#04091C', padding:'8px clamp(10px,2vw,18px)', borderRadius:8, fontWeight:700, fontSize:'clamp(12px,2vw,15px)', textDecoration:'none' }}>Cadastrar</Link>
+              </>
+            )}
           </div>
         </header>
 
