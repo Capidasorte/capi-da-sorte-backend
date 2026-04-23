@@ -40,7 +40,7 @@ function CompraContent() {
 
   const valor = calcularValor(quantidade)
 
-  // STARS ANIMATION
+  // STARS
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -81,6 +81,7 @@ function CompraContent() {
     carregarCampanha()
   }, [])
 
+  // POLLING
   useEffect(() => {
     if (status !== 'pix' || !pagamento?.payment_id) return
     const interval = setInterval(async () => {
@@ -91,7 +92,16 @@ function CompraContent() {
           headers: { 'Authorization': `Bearer ${token}` }
         })
         const data = await res.json()
-        if (data.status === 'CONFIRMED' || data.status === 'RECEIVED') setStatus('confirmado')
+        if (
+          data.status === 'paid' ||
+          data.status === 'confirmed' ||
+          data.status === 'CONFIRMED' ||
+          data.status === 'RECEIVED' ||
+          data.status === 'PAYMENT_CONFIRMED' ||
+          data.status === 'PAYMENT_RECEIVED'
+        ) {
+          setStatus('confirmado')
+        }
       } catch (err) { console.error(err) }
     }, 4000)
     return () => clearInterval(interval)
@@ -151,6 +161,18 @@ function CompraContent() {
         .btn-bilhetes { display:block; padding:16px; border-radius:12px; background:transparent; border:2px solid rgba(245,168,0,0.4); color:#F5A800; font-weight:700; font-size:15px; text-decoration:none; letter-spacing:1px; text-transform:uppercase; text-align:center; font-family:'Barlow',sans-serif; }
         .logo-wrap { filter:drop-shadow(0 0 8px rgba(245,168,0,0.5)); transition:filter .3s; }
         .logo-wrap:hover { filter:drop-shadow(0 0 16px rgba(245,168,0,0.8)); }
+        .confirmado-title {
+          font-family:'Bebas Neue',cursive;
+          font-size:clamp(36px,9vw,52px);
+          color:#1FCC6A;
+          letter-spacing:2px;
+          filter:drop-shadow(0 0 20px rgba(31,204,106,0.5));
+          animation:pulse-green 2s ease-in-out infinite;
+        }
+        @keyframes pulse-green {
+          0%,100%{filter:drop-shadow(0 0 20px rgba(31,204,106,0.5))}
+          50%{filter:drop-shadow(0 0 40px rgba(31,204,106,0.9))}
+        }
       `}</style>
 
       <canvas ref={canvasRef} style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none' }} />
@@ -158,7 +180,6 @@ function CompraContent() {
       <div style={{ minHeight:'100vh', background:'#04091C', padding:'20px 16px 80px', fontFamily:"'Barlow',sans-serif", color:'#fff', position:'relative', zIndex:1 }}>
         <div style={{ maxWidth:480, margin:'0 auto' }}>
 
-          {/* LOGO */}
           <div style={{ textAlign:'center', padding:'32px 0 24px' }}>
             <Link href="/" className="logo-wrap" style={{ textDecoration:'none', display:'inline-block' }}>
               <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:38, color:'#F5A800', letterSpacing:4, filter:'drop-shadow(0 0 16px rgba(245,168,0,0.5))' }}>
@@ -167,7 +188,6 @@ function CompraContent() {
             </Link>
           </div>
 
-          {/* ERRO */}
           {error && (
             <div style={{ background:'rgba(255,61,90,0.15)', border:'1px solid #FF3D5A', color:'#FF6B85', padding:'14px 16px', borderRadius:12, marginBottom:20, fontSize:14, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
               <span>{error}</span>
@@ -177,7 +197,6 @@ function CompraContent() {
             </div>
           )}
 
-          {/* CARREGANDO */}
           {loading && !pagamento && (
             <div style={{ textAlign:'center', padding:'80px 20px' }}>
               <div className="spinner"></div>
@@ -190,7 +209,6 @@ function CompraContent() {
             </div>
           )}
 
-          {/* PIX */}
           {!loading && pagamento && status === 'pix' && (
             <div>
               <div style={{ textAlign:'center', marginBottom:24 }}>
@@ -225,13 +243,10 @@ function CompraContent() {
             </div>
           )}
 
-          {/* CONFIRMADO */}
           {status === 'confirmado' && (
             <div style={{ textAlign:'center', paddingTop:20 }}>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:42, color:'#1FCC6A', marginBottom:8, filter:'drop-shadow(0 0 20px rgba(31,204,106,0.5))' }}>
-                Pagamento Confirmado!
-              </div>
-              <div style={{ fontSize:16, color:'#fff', marginBottom:6 }}>
+              <div className="confirmado-title">Pagamento Confirmado!</div>
+              <div style={{ fontSize:16, color:'#fff', marginTop:12, marginBottom:6 }}>
                 Seus {quantidade} bilhetes foram garantidos!
               </div>
               <div style={{ fontSize:14, color:'#7A8BB0', marginBottom:40 }}>
