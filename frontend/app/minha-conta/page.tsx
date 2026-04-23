@@ -150,6 +150,7 @@ export default function MinhaConta() {
   const formatData = (d: string) => new Date(d).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' })
   const pad = (n: number) => String(n).padStart(2, '0')
   const sorteioAtual = SORTEIOS[sorteioIdx]
+  const sorteioRealizado = new Date(sorteioAtual.data).getTime() < Date.now()
 
   return (
     <>
@@ -226,10 +227,8 @@ export default function MinhaConta() {
             </div>
           </div>
 
-          {/* 3. MEUS BILHETES — card único com contador + números */}
+          {/* 3. MEUS BILHETES */}
           <div style={{ background:'rgba(245,168,0,0.05)', border:'1px solid rgba(245,168,0,0.15)', borderRadius:16, padding:'20px', marginBottom:14 }}>
-
-            {/* Cabeçalho do card */}
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
               <div>
                 <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:2, textTransform:'uppercase', marginBottom:4 }}>Meus Bilhetes</div>
@@ -241,10 +240,8 @@ export default function MinhaConta() {
               </div>
             </div>
 
-            {/* Divisor */}
             <div style={{ height:1, background:'rgba(245,168,0,0.1)', marginBottom:16 }}></div>
 
-            {/* Lista de números */}
             {loading && (
               <div style={{ textAlign:'center', padding:'24px 0' }}>
                 <div className="spinner"></div>
@@ -296,17 +293,29 @@ export default function MinhaConta() {
             <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:3, textTransform:'uppercase', marginBottom:12 }}>Calendário de Sorteios</div>
             <div key={sorteioIdx} className="sorteio-slide">
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'clamp(12px,2.5vw,14px)', fontWeight:700, color:'#7A8BB0', letterSpacing:2, textTransform:'uppercase', marginBottom:4 }}>{sorteioAtual.ordem}</div>
-              <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(22px,5vw,32px)', color:'#fff', letterSpacing:2, marginBottom:4 }}>
-                {new Date(sorteioAtual.data).toLocaleDateString('pt-BR', { day:'2-digit', month:'long' })}
-              </div>
+
+              {/* DATA OU REALIZADO */}
+              {sorteioRealizado ? (
+                <div style={{ display:'inline-block', background:'rgba(31,204,106,0.15)', border:'1px solid rgba(31,204,106,0.4)', borderRadius:20, padding:'4px 14px', fontSize:12, fontWeight:700, color:'#1FCC6A', letterSpacing:2, textTransform:'uppercase', marginBottom:6 }}>
+                  Sorteio Realizado
+                </div>
+              ) : (
+                <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(22px,5vw,32px)', color:'#fff', letterSpacing:2, marginBottom:4 }}>
+                  {new Date(sorteioAtual.data).toLocaleDateString('pt-BR', { day:'2-digit', month:'long' })}
+                </div>
+              )}
+
               <div style={{ fontFamily:"'Bebas Neue',cursive", fontSize:'clamp(20px,4vw,28px)', color:'#F5A800', letterSpacing:1 }}>
                 {sorteioAtual.premio ? `R$ ${sorteioAtual.premio.toLocaleString('pt-BR')},00` : `R$ ${formatPremio(displayPremio)}`}
               </div>
             </div>
             <div style={{ display:'flex', justifyContent:'center', gap:6, marginTop:12 }}>
-              {SORTEIOS.map((_, i) => (
-                <div key={i} onClick={() => setSorteioIdx(i)} style={{ width:6, height:6, borderRadius:'50%', background: i === sorteioIdx ? '#F5A800' : 'rgba(255,255,255,0.15)', cursor:'pointer', transition:'all .2s' }}></div>
-              ))}
+              {SORTEIOS.map((s, i) => {
+                const realizado = new Date(s.data).getTime() < Date.now()
+                return (
+                  <div key={i} onClick={() => setSorteioIdx(i)} style={{ width:6, height:6, borderRadius:'50%', background: i === sorteioIdx ? '#F5A800' : realizado ? 'rgba(31,204,106,0.4)' : 'rgba(255,255,255,0.15)', cursor:'pointer', transition:'all .2s' }}></div>
+                )
+              })}
             </div>
           </div>
 
