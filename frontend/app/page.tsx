@@ -3,6 +3,33 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 
+function useCountdown(targetDate: string) {
+  const [tempo, setTempo] = useState({ dias:0, horas:0, minutos:0, segundos:0 })
+  useEffect(() => {
+    const update = () => {
+      const diff = new Date(targetDate).getTime() - Date.now()
+      if (diff <= 0) { setTempo({ dias:0, horas:0, minutos:0, segundos:0 }); return }
+      setTempo({
+        dias: Math.floor(diff / 86400000),
+        horas: Math.floor((diff % 86400000) / 3600000),
+        minutos: Math.floor((diff % 3600000) / 60000),
+        segundos: Math.floor((diff % 60000) / 1000),
+      })
+    }
+    update()
+    const id = setInterval(update, 1000)
+    return () => clearInterval(id)
+  }, [targetDate])
+  return tempo
+}
+
+const SORTEIOS = [
+  { ordem: '1º Sorteio', data: '2026-04-15T20:00:00', premio: 500 },
+  { ordem: '2º Sorteio', data: '2026-04-20T20:00:00', premio: 800 },
+  { ordem: '3º Sorteio', data: '2026-04-26T20:00:00', premio: 1200 },
+  { ordem: 'Sorteio Principal', data: '2026-04-30T20:00:00', premio: null },
+]
+
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [premio, setPremio] = useState(0)
@@ -17,6 +44,9 @@ export default function Home() {
   const [quantidade, setQuantidade] = useState(5)
   const [fraseIdx, setFraseIdx] = useState(0)
   const LIMITE_MAX = 200
+
+  const proximoSorteio = SORTEIOS.find(s => new Date(s.data).getTime() > Date.now()) || SORTEIOS[SORTEIOS.length - 1]
+  const countdown = useCountdown(proximoSorteio.data)
 
   const frases = [
     'Compras acontecendo agora',
@@ -134,6 +164,7 @@ export default function Home() {
 
   const formatPremio = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const pct = Math.max(0.1, (cotasVendidas / totalCotas) * 100)
+  const pad = (n: number) => String(n).padStart(2, '0')
 
   const calcularValor = (qty: number): number => {
     if (qty === 1)  return 4.99
@@ -214,12 +245,16 @@ export default function Home() {
         .btn-qty:hover{background:rgba(245,168,0,0.2);border-color:#F5A800;}
         .btn-qty:active{transform:scale(.93);}
         .btn-qty:disabled{opacity:0.3;cursor:not-allowed;}
+        .countdown-num{font-family:'Bebas Neue',cursive;font-size:clamp(28px,7vw,42px);color:#1FCC6A;line-height:1;filter:drop-shadow(0 0 8px rgba(31,204,106,0.5));}
+        .countdown-lbl{font-size:9px;color:#7A8BB0;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-top:2px;}
+        .countdown-sep{font-family:'Bebas Neue',cursive;font-size:28px;color:rgba(31,204,106,0.4);margin:0 4px;padding-bottom:14px;line-height:1;}
       `}</style>
 
       <canvas ref={canvasRef} style={{ position:'fixed', inset:0, zIndex:0, pointerEvents:'none' }} />
 
       <main style={{ fontFamily:"'Barlow',sans-serif", minHeight:'100vh', color:'#fff', position:'relative', zIndex:1, paddingBottom:100 }}>
 
+        {/* HEADER */}
         <header style={{ background:'rgba(4,9,28,0.95)', borderBottom:'1px solid rgba(245,168,0,0.2)', padding:'0 16px', height:70, display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100, backdropFilter:'blur(20px)' }}>
           <Link href="/" className="logo-wrap" style={{ display:'flex', alignItems:'center', textDecoration:'none' }}>
             <span style={{ fontSize:'clamp(18px,4vw,26px)', fontWeight:900, color:'#F5A800', letterSpacing:2, fontFamily:"'Bebas Neue',cursive" }}>CAPI DA SORTE</span>
@@ -284,6 +319,36 @@ export default function Home() {
             <span key={fraseIdx} className="frase-rotativa" style={{ fontSize:'clamp(11px,2vw,13px)', color:'rgba(245,168,0,0.6)', fontWeight:600, letterSpacing:1 }}>
               {frases[fraseIdx]}
             </span>
+          </div>
+        </div>
+
+        {/* COUNTDOWN */}
+        <div style={{ maxWidth:900, margin:'0 auto', padding:'0 16px 24px' }}>
+          <div style={{ background:'rgba(31,204,106,0.07)', border:'1px solid rgba(31,204,106,0.2)', borderRadius:16, padding:'20px', textAlign:'center' }}>
+            <div style={{ fontSize:11, color:'#7A8BB0', fontWeight:700, letterSpacing:3, textTransform:'uppercase', marginBottom:10 }}>
+              {proximoSorteio.ordem} — Faltam
+            </div>
+            <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'center' }}>
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
+                <div className="countdown-num">{pad(countdown.dias)}</div>
+                <div className="countdown-lbl">dias</div>
+              </div>
+              <div className="countdown-sep">:</div>
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
+                <div className="countdown-num">{pad(countdown.horas)}</div>
+                <div className="countdown-lbl">horas</div>
+              </div>
+              <div className="countdown-sep">:</div>
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
+                <div className="countdown-num">{pad(countdown.minutos)}</div>
+                <div className="countdown-lbl">min</div>
+              </div>
+              <div className="countdown-sep">:</div>
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
+                <div className="countdown-num">{pad(countdown.segundos)}</div>
+                <div className="countdown-lbl">seg</div>
+              </div>
+            </div>
           </div>
         </div>
 
