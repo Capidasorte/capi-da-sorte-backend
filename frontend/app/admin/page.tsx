@@ -1,3 +1,4 @@
+// frontend/app/admin/page.tsx
 'use client'
 import { useEffect, useRef, useState } from 'react'
 
@@ -14,6 +15,7 @@ interface Transacao {
 interface Usuario {
   id: string; nome: string; email: string; telefone: string
   created_at: string; ativo: boolean; data_nascimento: string
+  saldo_carteira?: number; total_compras?: number; total_gasto?: number
 }
 
 const ADMIN_PASSWORD = 'CapiAdmin@2026'
@@ -31,21 +33,22 @@ const TEMAS = [
   { id:'aniversario', nome:'Aniversariante', cor:'#FF8C00', elementos:'Balões coloridos subindo • Caixa dourada especial • Bolo com velas animado • Desconto exclusivo 24h' },
 ]
 
-type Menu = 'dashboard'|'criar_campanha'|'campanhas_ativas'|'historico'|'sorteios'|'pacotes'|'simulador'|'extrato'|'premios'|'usuarios'|'aniversariantes'|'blacklist'|'identidade'|'temas'|'textos'|'pixel'|'api_conversoes'|'utm'|'relatorio_anuncios'|'logs'|'controle_acesso'
+const HISTORICO_CAMPANHAS = [
+  { id:'001', nome:'Campanha Abril 2026', total_cotas:10000000, cotas_vendidas:2450000, total_arrecadado:12240500, premio_pago:3672150, lucro:8568350, status:'encerrada', ganhador:'João Silva', bilhete:'4857291', data_inicio:'01/04/2026', data_fim:'30/04/2026' },
+  { id:'002', nome:'Campanha Março 2026', total_cotas:5000000, cotas_vendidas:5000000, total_arrecadado:24950000, premio_pago:7485000, lucro:17465000, status:'encerrada', ganhador:'Maria Santos', bilhete:'2934817', data_inicio:'01/03/2026', data_fim:'31/03/2026' },
+]
+
+type Menu = 'dashboard'|'criar_campanha'|'campanhas_ativas'|'historico'|'sorteios'|'pacotes'|'simulador'|'extrato'|'premios'|'usuarios'|'carteira'|'aniversariantes'|'blacklist'|'identidade'|'temas'|'textos'|'pixel'|'api_conversoes'|'utm'|'relatorio_anuncios'|'logs'|'controle_acesso'
 
 const MENU_ITEMS = [
-  { section:'VISÃO GERAL', items:[
-    { id:'dashboard', label:'Dashboard' },
-  ]},
+  { section:'VISÃO GERAL', items:[{ id:'dashboard', label:'Dashboard' }]},
   { section:'CAMPANHAS', items:[
     { id:'criar_campanha', label:'Criar Campanha' },
     { id:'campanhas_ativas', label:'Campanhas Ativas' },
     { id:'historico', label:'Histórico' },
     { id:'sorteios', label:'Sorteios' },
   ]},
-  { section:'BILHETES', items:[
-    { id:'pacotes', label:'Pacotes' },
-  ]},
+  { section:'BILHETES', items:[{ id:'pacotes', label:'Pacotes' }]},
   { section:'FINANCEIRO', items:[
     { id:'simulador', label:'Simulador' },
     { id:'extrato', label:'Extrato' },
@@ -53,6 +56,7 @@ const MENU_ITEMS = [
   ]},
   { section:'USUÁRIOS', items:[
     { id:'usuarios', label:'Usuários' },
+    { id:'carteira', label:'Carteira Digital' },
     { id:'aniversariantes', label:'Aniversariantes' },
     { id:'blacklist', label:'Blacklist' },
   ]},
@@ -93,6 +97,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true)
   const [msgSalvo, setMsgSalvo] = useState('')
   const [busca, setBusca] = useState('')
+  const [buscaCarteira, setBuscaCarteira] = useState('')
   const [temaSelecionado, setTemaSelecionado] = useState('padrao')
   const [previewTema, setPreviewTema] = useState(false)
   const [ganhadorCampanha, setGanhadorCampanha] = useState('')
@@ -107,14 +112,12 @@ export default function Admin() {
   const [utmMidia, setUtmMidia] = useState('facebook')
   const [anivDesconto, setAnivDesconto] = useState('20')
   const [anivValidade, setAnivValidade] = useState('24')
-
   const [simBilhetes, setSimBilhetes] = useState('10000000')
   const [simValor, setSimValor] = useState('4.99')
   const [simPct, setSimPct] = useState('30')
   const [simPctVenda, setSimPctVenda] = useState('100')
   const [simCaixas, setSimCaixas] = useState('10')
   const [simValorCaixa, setSimValorCaixa] = useState('100')
-
   const [novaCamp, setNovaCamp] = useState({
     nome:'', regulamento:'',
     total_cotas:'10000000', valor_cota:'4.99',
@@ -134,21 +137,18 @@ export default function Admin() {
       {quantidade:'2', valor:'200'},
     ],
   })
-
   const [pacotes, setPacotes] = useState([
     { qty:1, valor:'4.99', destaque:false },
     { qty:5, valor:'22.00', destaque:false },
     { qty:10, valor:'40.00', destaque:true },
     { qty:20, valor:'70.00', destaque:true },
   ])
-
   const [identidade, setIdentidade] = useState({
     nome_plataforma:'Capi da Sorte',
     slogan:'O prêmio cresce com você.',
     cor_principal:'#F5A800',
     cor_secundaria:'#04091C',
   })
-
   const [textos, setTextos] = useState({
     frase1:'Compras acontecendo agora',
     frase2:'Quanto mais bilhetes, maiores suas chances',
@@ -226,9 +226,9 @@ export default function Admin() {
 
   const buscarGanhador = () => {
     if (!ganhadorCampanha || !ganhadorSequencia) { salvar('Preencha o número da campanha e a sequência sorteada'); return }
-    const encontrado = usuarios[Math.floor(Math.random()*usuarios.length)] || null
+    const encontrado = usuarios[0] || null
     setGanhadorEncontrado(encontrado)
-    if (!encontrado) salvar('Nenhum ganhador encontrado com essa sequência')
+    if (!encontrado) salvar('Nenhum ganhador encontrado')
   }
 
   function hexToRgb(hex: string) {
@@ -285,7 +285,6 @@ export default function Admin() {
       <canvas ref={canvasRef} style={{position:'fixed',inset:0,zIndex:0,pointerEvents:'none'}}/>
 
       <div style={{display:'flex',minHeight:'100vh',fontFamily:"'Barlow',sans-serif",color:'#fff',position:'relative',zIndex:1}}>
-
         <div style={{width:menuAberto?240:0,minWidth:menuAberto?240:0,background:'rgba(4,9,28,0.98)',borderRight:'1px solid rgba(245,168,0,0.1)',overflowY:'auto',overflowX:'hidden',transition:'all .3s',position:'fixed',top:0,left:0,bottom:0,zIndex:200}}>
           <div style={{padding:'20px 16px 8px'}}>
             <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:20,color:'#F5A800',letterSpacing:3,marginBottom:4}}>CAPI DA SORTE</div>
@@ -365,16 +364,11 @@ export default function Admin() {
             {menu==='criar_campanha'&&(
               <div>
                 <div className="sec-title">Criar Nova Campanha</div>
-
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Identificação da Campanha</div>
                   <div style={{marginBottom:12}}><div className="lbl">Nome da Campanha</div><input className="inp" placeholder="Ex: Campanha Maio 2026" value={novaCamp.nome} onChange={e=>setNovaCamp(p=>({...p,nome:e.target.value}))}/></div>
-                  <div>
-                    <div className="lbl">Regulamento</div>
-                    <textarea className="textarea" style={{minHeight:120,marginTop:4}} placeholder="Digite o regulamento completo da campanha..." value={novaCamp.regulamento} onChange={e=>setNovaCamp(p=>({...p,regulamento:e.target.value}))}/>
-                  </div>
+                  <div><div className="lbl">Regulamento</div><textarea className="textarea" style={{minHeight:120,marginTop:4}} placeholder="Digite o regulamento completo da campanha..." value={novaCamp.regulamento} onChange={e=>setNovaCamp(p=>({...p,regulamento:e.target.value}))}/></div>
                 </div>
-
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Configurações Financeiras</div>
                   <div className="grid2" style={{marginBottom:12}}>
@@ -396,14 +390,13 @@ export default function Admin() {
                     ))}
                   </div>
                 </div>
-
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Datas e Horários</div>
                   <div className="grid2" style={{marginBottom:16}}>
                     <div><div className="lbl">Início das Vendas</div><input className="inp" type="datetime-local" value={novaCamp.data_inicio} onChange={e=>setNovaCamp(p=>({...p,data_inicio:e.target.value}))}/></div>
                     <div><div className="lbl">Encerramento das Vendas</div><input className="inp" type="datetime-local" value={novaCamp.data_fim} onChange={e=>setNovaCamp(p=>({...p,data_fim:e.target.value}))}/></div>
                   </div>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'rgba(245,168,0,0.7)',letterSpacing:1,marginBottom:12}}>Sorteios Fixos — Congelamento Automático pelo Sistema</div>
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'rgba(245,168,0,0.7)',letterSpacing:1,marginBottom:12}}>Sorteios Fixos — Congelamento Automático</div>
                   {[
                     {id:'001',label:'1º Sorteio',dataKey:'data_sorteio1',horaKey:'hora_sorteio1',premioKey:'premio_sorteio1'},
                     {id:'002',label:'2º Sorteio',dataKey:'data_sorteio2',horaKey:'hora_sorteio2',premioKey:'premio_sorteio2'},
@@ -430,10 +423,9 @@ export default function Admin() {
                       <div><div className="lbl">Data</div><input className="inp" type="date" value={novaCamp.data_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,data_sorteio_principal:e.target.value}))}/></div>
                       <div><div className="lbl">Hora</div><input className="inp" type="time" value={novaCamp.hora_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,hora_sorteio_principal:e.target.value}))}/></div>
                     </div>
-                    <div style={{fontSize:11,color:'#7A8BB0',marginTop:8}}>O prêmio acumulado continua crescendo durante todos os sorteios fixos. O congelamento do Sorteio Principal é feito manualmente pelo admin em Campanhas Ativas.</div>
+                    <div style={{fontSize:11,color:'#7A8BB0',marginTop:8}}>O prêmio acumulado continua crescendo durante todos os sorteios fixos.</div>
                   </div>
                 </div>
-
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Caixas Premiadas</div>
                   <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
@@ -448,10 +440,10 @@ export default function Admin() {
                   {novaCamp.caixas_ativas&&(
                     <>
                       <div className="grid2" style={{marginBottom:16}}>
-                        <div><div className="lbl">Total de Caixas na Campanha</div><input className="inp" type="number" value={novaCamp.caixas_total} onChange={e=>setNovaCamp(p=>({...p,caixas_total:e.target.value}))}/></div>
-                        <div><div className="lbl">Quantidade de Caixas Premiadas</div><input className="inp" type="number" value={novaCamp.caixas_premiadas} onChange={e=>setNovaCamp(p=>({...p,caixas_premiadas:e.target.value}))}/></div>
+                        <div><div className="lbl">Total de Caixas</div><input className="inp" type="number" value={novaCamp.caixas_total} onChange={e=>setNovaCamp(p=>({...p,caixas_total:e.target.value}))}/></div>
+                        <div><div className="lbl">Quantidade Premiadas</div><input className="inp" type="number" value={novaCamp.caixas_premiadas} onChange={e=>setNovaCamp(p=>({...p,caixas_premiadas:e.target.value}))}/></div>
                       </div>
-                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'rgba(245,168,0,0.7)',letterSpacing:1,marginBottom:10}}>Valores dos Prêmios por Faixa</div>
+                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'rgba(245,168,0,0.7)',letterSpacing:1,marginBottom:10}}>Valores por Faixa de Prêmio</div>
                       {novaCamp.caixas_faixas.map((f,i)=>(
                         <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:8,marginBottom:8,alignItems:'end'}}>
                           <div><div className="lbl">Quantidade</div><input className="inp" type="number" value={f.quantidade} onChange={e=>{const n=[...novaCamp.caixas_faixas];n[i].quantidade=e.target.value;setNovaCamp(p=>({...p,caixas_faixas:n}))}}/></div>
@@ -463,10 +455,8 @@ export default function Admin() {
                     </>
                   )}
                 </div>
-
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Tema Visual da Campanha</div>
-                  <div style={{fontSize:12,color:'#7A8BB0',marginBottom:12}}>Selecione o tema. Visualize o preview antes de criar a campanha.</div>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:8,marginBottom:12}}>
                     {TEMAS.map(t=>(
                       <div key={t.id} onClick={()=>setNovaCamp(p=>({...p,tema:t.id}))} style={{cursor:'pointer',borderRadius:10,padding:12,border:`2px solid ${novaCamp.tema===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:novaCamp.tema===t.id?`rgba(${hexToRgb(t.cor)},0.1)`:'rgba(255,255,255,0.02)',transition:'all .2s',display:'flex',alignItems:'center',gap:10}}>
@@ -477,7 +467,6 @@ export default function Admin() {
                   </div>
                   <button className="btn-b" onClick={()=>setPreviewTema(true)}>Visualizar Preview do Tema</button>
                 </div>
-
                 <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
                   <button className="btn-s" style={{flex:1}} onClick={()=>salvar('Campanha salva como rascunho!')}>Salvar Rascunho</button>
                   <button className="btn-g" style={{flex:1,padding:14,fontSize:14}} onClick={()=>salvar('Vendas abertas! Campanha ativa!')}>Abrir Vendas</button>
@@ -516,11 +505,46 @@ export default function Admin() {
                     <div style={{height:10,background:'rgba(255,255,255,0.05)',borderRadius:10,overflow:'hidden'}}>
                       <div style={{height:'100%',width:`${pct}%`,background:'linear-gradient(90deg,#C88000,#F5A800,#FFD060)',borderRadius:10}}></div>
                     </div>
-                    <div style={{display:'flex',justifyContent:'space-between',fontSize:12,color:'#7A8BB0',marginTop:6}}>
-                      <span>{pct.toFixed(2)}% vendido</span>
-                    </div>
+                    <div style={{fontSize:12,color:'#7A8BB0',marginTop:6}}>{pct.toFixed(2)}% vendido</div>
                   </div>
                 ):<div style={{textAlign:'center',padding:40,color:'#7A8BB0'}}>Nenhuma campanha ativa</div>}
+              </div>
+            )}
+
+            {/* HISTÓRICO */}
+            {menu==='historico'&&(
+              <div>
+                <div className="sec-title">Histórico de Campanhas</div>
+                <div style={{display:'flex',gap:8,marginBottom:16}}>
+                  <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
+                  <button className="btn-b" onClick={()=>salvar('Histórico exportado!')}>Exportar</button>
+                </div>
+                {HISTORICO_CAMPANHAS.map((c,i)=>(
+                  <div key={i} className="card">
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:16,flexWrap:'wrap',gap:8}}>
+                      <div>
+                        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+                          <div style={{background:'rgba(245,168,0,0.15)',border:'1px solid rgba(245,168,0,0.3)',borderRadius:6,padding:'2px 8px',fontSize:10,fontWeight:700,color:'#F5A800'}}>ID {c.id}</div>
+                          <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:18,color:'#fff',letterSpacing:1}}>{c.nome}</div>
+                        </div>
+                        <div style={{fontSize:12,color:'#7A8BB0'}}>{c.data_inicio} — {c.data_fim}</div>
+                      </div>
+                      <div style={{display:'inline-block',background:'rgba(31,204,106,0.15)',border:'1px solid rgba(31,204,106,0.4)',borderRadius:20,padding:'3px 12px',fontSize:10,fontWeight:700,color:'#1FCC6A',letterSpacing:1,textTransform:'uppercase'}}>Encerrada</div>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}}>
+                      {[
+                        {lbl:'Bilhetes Vendidos',val:c.cotas_vendidas.toLocaleString('pt-BR')},
+                        {lbl:'Total Arrecadado',val:`R$ ${fv(c.total_arrecadado)}`},
+                        {lbl:'Prêmio Pago',val:`R$ ${fv(c.premio_pago)}`},
+                        {lbl:'Lucro',val:`R$ ${fv(c.lucro)}`},
+                        {lbl:'Ganhador',val:c.ganhador},
+                        {lbl:'Bilhete Premiado',val:`#${c.bilhete}`},
+                      ].map((item,j)=>(
+                        <div key={j}><div className="lbl">{item.lbl}</div><div style={{fontSize:13,color:'#fff',fontWeight:600}}>{item.val}</div></div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -542,7 +566,7 @@ export default function Admin() {
                         <div><div className="lbl">Nome</div><div style={{fontSize:14,color:'#fff',fontWeight:600}}>{ganhadorEncontrado.nome}</div></div>
                         <div><div className="lbl">Email</div><div style={{fontSize:14,color:'#fff',fontWeight:600}}>{ganhadorEncontrado.email}</div></div>
                         <div><div className="lbl">Telefone</div><div style={{fontSize:14,color:'#fff',fontWeight:600}}>{ganhadorEncontrado.telefone||'—'}</div></div>
-                        <div><div className="lbl">Bilhete</div><div style={{fontSize:14,color:'#F5A800',fontWeight:700}}>#{ganhadorSequencia}</div></div>
+                        <div><div className="lbl">Bilhete Premiado</div><div style={{fontSize:14,color:'#F5A800',fontWeight:700}}>#{ganhadorSequencia}</div></div>
                       </div>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                         <button className="btn-g" onClick={()=>salvar('Ganhador postado na página principal!')}>Postar na Página Principal</button>
@@ -577,7 +601,7 @@ export default function Admin() {
                     <div style={{marginBottom:12}}><div className="lbl">Nome do Ganhador</div><input className="inp" placeholder="Nome do ganhador" value={s.ganhador} onChange={e=>{const n=[...sorteios];n[i].ganhador=e.target.value;setSorteios(n)}}/></div>
                     <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                       <button className="btn-g" onClick={()=>salvar(`${s.ordem} salvo!`)}>Salvar</button>
-                      {s.status==='pendente'&&<button className="btn-s" onClick={()=>{const n=[...sorteios];n[i].status='realizado';setSorteios(n);salvar(`${s.ordem} marcado como realizado!`)}}>Marcar Realizado</button>}
+                      {s.status==='pendente'&&<button className="btn-s" onClick={()=>{const n=[...sorteios];n[i].status='realizado';setSorteios(n);salvar(`${s.ordem} realizado!`)}}>Marcar Realizado</button>}
                       {s.ganhador&&<button className="btn-b" onClick={()=>salvar(`WhatsApp enviado para ${s.ganhador}!`)}>Contatar Ganhador</button>}
                     </div>
                   </div>
@@ -612,9 +636,8 @@ export default function Admin() {
             {menu==='simulador'&&(
               <div>
                 <div className="sec-title">Simulador Financeiro</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Simule antes de abrir as vendas. Veja a projeção de lucro em diferentes cenários.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Simule antes de abrir as vendas. Veja a projeção em diferentes cenários.</div>
                 <div className="card" style={{marginBottom:16}}>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Parâmetros</div>
                   <div className="grid2" style={{marginBottom:12}}>
                     <div><div className="lbl">Total de Bilhetes</div><input className="inp" type="number" value={simBilhetes} onChange={e=>setSimBilhetes(e.target.value)}/></div>
                     <div><div className="lbl">Valor do Bilhete (R$)</div><input className="inp" type="number" step="0.01" value={simValor} onChange={e=>setSimValor(e.target.value)}/></div>
@@ -731,9 +754,7 @@ export default function Admin() {
                   </div>
                 ))}
               </div>
-            )}
-
-            {/* USUARIOS */}
+            )}{/* USUARIOS */}
             {menu==='usuarios'&&(
               <div>
                 <div className="sec-title">Usuários</div>
@@ -763,6 +784,45 @@ export default function Admin() {
               </div>
             )}
 
+            {/* CARTEIRA DIGITAL */}
+            {menu==='carteira'&&(
+              <div>
+                <div className="sec-title">Carteira Digital</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>Visualize o saldo e movimentações da carteira de cada usuário.</div>
+                <div style={{display:'flex',gap:8,marginBottom:16}}>
+                  <input className="inp" style={{flex:1}} placeholder="Buscar usuário..." value={buscaCarteira} onChange={e=>setBuscaCarteira(e.target.value)}/>
+                </div>
+                <div className="grid3" style={{marginBottom:16}}>
+                  {[
+                    {lbl:'Total em Carteiras',val:'R$ 0,00',cor:'#F5A800'},
+                    {lbl:'Usuários com Saldo',val:'0',cor:'#fff'},
+                    {lbl:'Média por Carteira',val:'R$ 0,00',cor:'#fff'},
+                  ].map((s,i)=>(
+                    <div key={i} className="card" style={{textAlign:'center'}}>
+                      <div className="lbl">{s.lbl}</div>
+                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:22,color:s.cor}}>{s.val}</div>
+                    </div>
+                  ))}
+                </div>
+                {loading?<div style={{textAlign:'center',padding:40,color:'#7A8BB0'}}>Carregando...</div>:
+                usuarios.filter(u=>u.nome?.toLowerCase().includes(buscaCarteira.toLowerCase())||u.email?.toLowerCase().includes(buscaCarteira.toLowerCase())).slice(0,50).map((u,i)=>(
+                  <div key={i} className="row">
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+                      <div>
+                        <div style={{fontSize:14,fontWeight:700,color:'#fff'}}>{u.nome}</div>
+                        <div style={{fontSize:12,color:'#7A8BB0',marginTop:2}}>{u.email}</div>
+                        <div style={{fontSize:12,color:'#7A8BB0',marginTop:2}}>Total gasto: R$ {fv(u.total_gasto||0)}</div>
+                      </div>
+                      <div style={{textAlign:'right'}}>
+                        <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:22,color:'#F5A800'}}>R$ {fv(u.saldo_carteira||0)}</div>
+                        <div style={{fontSize:10,color:'#7A8BB0',letterSpacing:1,textTransform:'uppercase'}}>Saldo disponível</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* ANIVERSARIANTES */}
             {menu==='aniversariantes'&&(
               <div>
@@ -773,7 +833,7 @@ export default function Admin() {
                     <div><div className="lbl">Desconto Exclusivo (%)</div><input className="inp" type="number" value={anivDesconto} onChange={e=>setAnivDesconto(e.target.value)}/></div>
                     <div><div className="lbl">Validade (horas)</div><input className="inp" type="number" value={anivValidade} onChange={e=>setAnivValidade(e.target.value)}/></div>
                   </div>
-                  <button className="btn-g" onClick={()=>salvar('Configurações de aniversário salvas!')}>Salvar</button>
+                  <button className="btn-g" onClick={()=>salvar('Configurações salvas!')}>Salvar</button>
                 </div>
                 <div style={{fontSize:13,color:'#7A8BB0',marginBottom:12}}>{aniversariantesMes.length} aniversariante{aniversariantesMes.length!==1?'s':''} este mês</div>
                 {aniversariantesMes.length===0?
@@ -837,7 +897,7 @@ export default function Admin() {
                     <div><div className="lbl">Nome da Plataforma</div><input className="inp" value={identidade.nome_plataforma} onChange={e=>setIdentidade(p=>({...p,nome_plataforma:e.target.value}))}/></div>
                     <div><div className="lbl">Slogan</div><input className="inp" value={identidade.slogan} onChange={e=>setIdentidade(p=>({...p,slogan:e.target.value}))}/></div>
                   </div>
-                  <button className="btn-g" onClick={()=>salvar('Identidade visual atualizada em todo o sistema!')}>Salvar e Atualizar Sistema</button>
+                  <button className="btn-g" onClick={()=>salvar('Identidade visual atualizada!')}>Salvar e Atualizar Sistema</button>
                 </div>
               </div>
             )}
@@ -846,7 +906,7 @@ export default function Admin() {
             {menu==='temas'&&(
               <div>
                 <div className="sec-title">Temas Sazonais</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Selecione o tema e visualize o preview antes de aplicar. Elementos profissionais adicionados sobre o visual padrão da Capi.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Selecione e visualize o preview antes de aplicar. Elementos profissionais adicionados sobre o visual padrão da Capi.</div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10,marginBottom:20}}>
                   {TEMAS.map(t=>(
                     <div key={t.id} onClick={()=>setTemaSelecionado(t.id)} style={{cursor:'pointer',borderRadius:12,padding:16,border:`2px solid ${temaSelecionado===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:temaSelecionado===t.id?`rgba(${hexToRgb(t.cor)},0.12)`:'rgba(255,255,255,0.03)',transition:'all .2s'}}>
@@ -860,7 +920,7 @@ export default function Admin() {
                 </div>
                 <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
                   <button className="btn-b" style={{flex:1}} onClick={()=>setPreviewTema(true)}>Visualizar Preview</button>
-                  <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado com sucesso!')}}>Aplicar Tema</button>
+                  <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado!')}}>Aplicar Tema</button>
                 </div>
               </div>
             )}
@@ -895,17 +955,16 @@ export default function Admin() {
             {menu==='pixel'&&(
               <div>
                 <div className="sec-title">Pixel Meta</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Instale o Pixel do Facebook para rastrear visitantes, compras e otimizar seus anúncios no Meta.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Instale o Pixel do Facebook para rastrear visitantes e otimizar anúncios no Meta.</div>
                 <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Configuração do Pixel</div>
                   <div style={{marginBottom:12}}><div className="lbl">ID do Pixel</div><input className="inp" placeholder="Ex: 1234567890123456" value={pixelId} onChange={e=>setPixelId(e.target.value)}/></div>
                   <div style={{background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:10,padding:16,marginBottom:16}}>
-                    <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'#F5A800',letterSpacing:1,marginBottom:10}}>Eventos Rastreados</div>
+                    <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'#F5A800',letterSpacing:1,marginBottom:10}}>Eventos Rastreados Automaticamente</div>
                     {[
                       {evento:'PageView',desc:'Visitou o site'},
-                      {evento:'ViewContent',desc:'Visualizou pacotes de bilhetes'},
+                      {evento:'ViewContent',desc:'Visualizou pacotes'},
                       {evento:'InitiateCheckout',desc:'Clicou em comprar'},
-                      {evento:'Purchase',desc:'Pagamento PIX confirmado'},
+                      {evento:'Purchase',desc:'PIX confirmado'},
                       {evento:'CompleteRegistration',desc:'Cadastro realizado'},
                     ].map((e,i)=>(
                       <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
@@ -914,7 +973,7 @@ export default function Admin() {
                       </div>
                     ))}
                   </div>
-                  <button className="btn-g" onClick={()=>salvar('Pixel Meta instalado com sucesso!')}>Salvar e Instalar Pixel</button>
+                  <button className="btn-g" onClick={()=>salvar('Pixel Meta instalado!')}>Salvar e Instalar Pixel</button>
                 </div>
               </div>
             )}
@@ -923,19 +982,19 @@ export default function Admin() {
             {menu==='api_conversoes'&&(
               <div>
                 <div className="sec-title">API de Conversões</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>A API de Conversões envia dados diretamente do servidor para o Meta — mais precisa que o pixel e funciona com bloqueadores de anúncio.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Integração direta servidor-Meta. Mais precisa e funciona com bloqueadores de anúncio.</div>
                 <div className="card">
                   <div style={{marginBottom:12}}><div className="lbl">Token de Acesso da API</div><input className="inp" type="password" placeholder="Token gerado no Gerenciador de Eventos do Meta" value={apiToken} onChange={e=>setApiToken(e.target.value)}/></div>
                   <div style={{background:'rgba(31,204,106,0.05)',border:'1px solid rgba(31,204,106,0.15)',borderRadius:10,padding:14,marginBottom:16}}>
-                    <div style={{fontSize:12,color:'#1FCC6A',fontWeight:600,marginBottom:4}}>Vantagens da API de Conversões</div>
-                    <div style={{fontSize:12,color:'#7A8BB0',lineHeight:1.8}}>
-                      Funciona mesmo com bloqueadores de anúncio<br/>
-                      Dados mais precisos para o algoritmo do Meta<br/>
-                      Reduz o custo por conversão<br/>
+                    <div style={{fontSize:12,color:'#1FCC6A',fontWeight:600,marginBottom:8}}>Vantagens</div>
+                    <div style={{fontSize:12,color:'#7A8BB0',lineHeight:2}}>
+                      Funciona com bloqueadores de anúncio<br/>
+                      Dados mais precisos para o Meta<br/>
+                      Reduz custo por conversão<br/>
                       Melhora o ROAS das campanhas
                     </div>
                   </div>
-                  <button className="btn-g" onClick={()=>salvar('API de Conversões configurada!')}>Salvar Configuração</button>
+                  <button className="btn-g" onClick={()=>salvar('API configurada!')}>Salvar Configuração</button>
                 </div>
               </div>
             )}
@@ -945,8 +1004,7 @@ export default function Admin() {
               <div>
                 <div className="sec-title">UTM e Rastreamento</div>
                 <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Crie links rastreados para saber de qual anúncio veio cada compra.</div>
-                <div className="card" style={{marginBottom:16}}>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Gerador de Link UTM</div>
+                <div className="card">
                   <div className="grid2" style={{marginBottom:12}}>
                     <div><div className="lbl">Nome da Campanha</div><input className="inp" placeholder="Ex: campanha-maio-2026" value={utmCampanha} onChange={e=>setUtmCampanha(e.target.value)}/></div>
                     <div><div className="lbl">Mídia</div>
@@ -976,7 +1034,6 @@ export default function Admin() {
             {menu==='relatorio_anuncios'&&(
               <div>
                 <div className="sec-title">Relatório de Anúncios</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Performance das campanhas de tráfego pago por origem.</div>
                 <div className="grid3" style={{marginBottom:16}}>
                   {[
                     {lbl:'Visitantes',val:'0',cor:'#fff'},
@@ -991,7 +1048,7 @@ export default function Admin() {
                 </div>
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Performance por Canal</div>
-                  {['Facebook','Instagram','TikTok','YouTube','Orgânico'].map((canal,i)=>(
+                  {['Facebook','Instagram','TikTok','YouTube','Google','Orgânico'].map((canal,i)=>(
                     <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
                       <div style={{fontSize:13,fontWeight:600,color:'#fff'}}>{canal}</div>
                       <div style={{display:'flex',gap:20}}>
@@ -1010,12 +1067,12 @@ export default function Admin() {
               <div>
                 <div className="sec-title">Logs do Sistema</div>
                 {[
-                  {action:'pagamento_confirmado',user:'marcos@email.com',ip:'189.x.x.x',detalhe:'PIX confirmado • R$ 22,00',data:'23/04/2026 14:33'},
-                  {action:'compra_iniciada',user:'joao@email.com',ip:'200.x.x.x',detalhe:'5 bilhetes • R$ 22,00',data:'23/04/2026 14:32'},
-                  {action:'cadastro',user:'maria@email.com',ip:'177.x.x.x',detalhe:'Novo usuário cadastrado',data:'23/04/2026 13:10'},
-                  {action:'webhook_recebido',user:'sistema',ip:'asaas',detalhe:'PAYMENT_CONFIRMED recebido',data:'23/04/2026 14:33'},
-                  {action:'congelamento_auto',user:'sistema',ip:'interno',detalhe:'1º Sorteio congelado automaticamente',data:'23/04/2026 20:00'},
-                  {action:'aniversario_disparado',user:'sistema',ip:'interno',detalhe:'Presente enviado para Ana C.',data:'23/04/2026 09:00'},
+                  {action:'pagamento_confirmado',user:'marcos@email.com',ip:'189.x.x.x',detalhe:'PIX confirmado • R$ 22,00',data:'24/04/2026 14:33'},
+                  {action:'compra_iniciada',user:'joao@email.com',ip:'200.x.x.x',detalhe:'5 bilhetes • R$ 22,00',data:'24/04/2026 14:32'},
+                  {action:'cadastro',user:'maria@email.com',ip:'177.x.x.x',detalhe:'Novo usuário cadastrado',data:'24/04/2026 13:10'},
+                  {action:'webhook_recebido',user:'sistema',ip:'asaas',detalhe:'PAYMENT_CONFIRMED recebido',data:'24/04/2026 14:33'},
+                  {action:'congelamento_auto',user:'sistema',ip:'interno',detalhe:'1º Sorteio ID 001 congelado automaticamente',data:'24/04/2026 20:00'},
+                  {action:'aniversario_disparado',user:'sistema',ip:'interno',detalhe:'Presente enviado — Ana C.',data:'24/04/2026 09:00'},
                 ].map((l,i)=>(
                   <div key={i} className="row">
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
@@ -1040,14 +1097,14 @@ export default function Admin() {
                   <div style={{marginBottom:12}}><div className="lbl">Senha Atual</div><input className="inp" type="password" placeholder="Senha atual"/></div>
                   <div style={{marginBottom:12}}><div className="lbl">Nova Senha</div><input className="inp" type="password" placeholder="Nova senha"/></div>
                   <div style={{marginBottom:16}}><div className="lbl">Confirmar Nova Senha</div><input className="inp" type="password" placeholder="Confirmar senha"/></div>
-                  <button className="btn-g" onClick={()=>salvar('Senha alterada com sucesso!')}>Alterar Senha</button>
+                  <button className="btn-g" onClick={()=>salvar('Senha alterada!')}>Alterar Senha</button>
                 </div>
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Histórico de Acessos</div>
                   {[
-                    {ip:'189.x.x.x',data:'23/04/2026 14:00',status:'sucesso'},
-                    {ip:'189.x.x.x',data:'22/04/2026 20:15',status:'sucesso'},
-                    {ip:'201.x.x.x',data:'22/04/2026 18:30',status:'falha'},
+                    {ip:'189.x.x.x',data:'24/04/2026 14:00',status:'sucesso'},
+                    {ip:'189.x.x.x',data:'23/04/2026 20:15',status:'sucesso'},
+                    {ip:'201.x.x.x',data:'23/04/2026 18:30',status:'falha'},
                   ].map((a,i)=>(
                     <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
                       <div>
@@ -1067,17 +1124,19 @@ export default function Admin() {
 
       {/* PREVIEW TEMA */}
       {previewTema&&(
-        <div style={{position:'fixed',inset:0,zIndex:500,background:'rgba(0,0,0,0.95)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:20}}>
+        <div style={{position:'fixed',inset:0,zIndex:500,background:'rgba(0,0,0,0.95)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
           <div style={{background:'rgba(4,9,28,0.98)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:20,padding:32,maxWidth:500,width:'100%',textAlign:'center'}}>
             <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:22,color:'#F5A800',letterSpacing:3,marginBottom:4}}>Preview do Tema</div>
             <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>{TEMAS.find(t=>t.id===temaSelecionado)?.nome}</div>
             <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,padding:24,marginBottom:20}}>
-              <div style={{width:40,height:40,borderRadius:'50%',background:TEMAS.find(t=>t.id===temaSelecionado)?.cor,margin:'0 auto 16px',boxShadow:`0 0 30px ${TEMAS.find(t=>t.id===temaSelecionado)?.cor}80`}}></div>
-              <div style={{fontSize:13,color:'#fff',lineHeight:2,whiteSpace:'pre-line'}}>
-                {TEMAS.find(t=>t.id===temaSelecionado)?.elementos.split('•').join('\n•')}
+              <div style={{width:48,height:48,borderRadius:'50%',background:TEMAS.find(t=>t.id===temaSelecionado)?.cor,margin:'0 auto 16px',boxShadow:`0 0 40px ${TEMAS.find(t=>t.id===temaSelecionado)?.cor}80`}}></div>
+              <div style={{fontSize:13,color:'#fff',lineHeight:2}}>
+                {TEMAS.find(t=>t.id===temaSelecionado)?.elementos.split('•').map((e,i)=>(
+                  <div key={i} style={{padding:'2px 0'}}>{e.trim()}</div>
+                ))}
               </div>
             </div>
-            <div style={{fontSize:12,color:'#7A8BB0',marginBottom:20}}>O preview visual completo será exibido na página principal antes de aplicar.</div>
+            <div style={{fontSize:12,color:'#7A8BB0',marginBottom:20}}>Elementos adicionados sobre o visual padrão da Capi da Sorte.</div>
             <div style={{display:'flex',gap:10}}>
               <button className="btn-r" style={{flex:1}} onClick={()=>setPreviewTema(false)}>Fechar</button>
               <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado!');setPreviewTema(false)}}>Aplicar Tema</button>
