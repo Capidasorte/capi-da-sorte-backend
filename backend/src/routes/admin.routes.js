@@ -158,4 +158,62 @@ router.get('/logs', auth, admin, async (req, res) => {
   }
 })
 
+// GET tema ativo — público (página principal consome)
+router.get('/tema-ativo', async (req, res) => {
+  try {
+    const result = await db.query(
+      "SELECT valor FROM configuracoes WHERE chave='tema_ativo' LIMIT 1"
+    )
+    const tema = result.rows[0]?.valor || 'padrao'
+    res.json({ tema })
+  } catch (err) {
+    res.json({ tema: 'padrao' })
+  }
+})
+
+// POST salvar tema ativo — somente admin
+router.post('/tema-ativo', auth, admin, async (req, res) => {
+  try {
+    const { tema } = req.body
+    await db.query(
+      `INSERT INTO configuracoes(chave, valor) VALUES('tema_ativo', $1)
+       ON CONFLICT(chave) DO UPDATE SET valor=$1, updated_at=NOW()`,
+      [tema]
+    )
+    await log('tema_aplicado', req.user?.id || 'admin', req.ip, { tema })
+    res.json({ message: 'Tema aplicado com sucesso', tema })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// GET listar transações — admin
+router.get('/transacoes', auth, admin, async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT t.*, u.nome as user_nome, u.email as user_email
+       FROM transactions t
+       LEFT JOIN users u ON t.user_id = u.id
+       ORDER BY t.created_at DESC LIMIT 200`
+    )
+    res.json({ transacoes: result.rows })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// GET listar usuários para o painel admin
+router.get('/usuarios', auth, admin, async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT id, nome, email, telefone, data_nascimento,
+       created_at, ativo, saldo_carteira, total_compras, total_gasto
+       FROM users ORDER BY created_at DESC LIMIT 500`
+    )
+    res.json({ usuarios: result.rows })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 module.exports = router
