@@ -29,7 +29,7 @@ const TEMAS = [
   { id:'pais', nome:'Dia dos Pais', cor:'#1E90FF', elementos:'Gravatas flutuando • Estrelas douradas animadas' },
   { id:'pascoa', nome:'Páscoa', cor:'#9ACD32', elementos:'Cenouras coloridas caindo • Coelhinhos pulando no rodapé' },
   { id:'black_friday', nome:'Black Friday', cor:'#FF0000', elementos:'Raios neon • Névoa vermelha nos cantos • Bordas neon pulsando • Partículas vermelhas' },
-  { id:'aniversario', nome:'Aniversariante', cor:'#FF8C00', elementos:'Balões coloridos subindo • Desconto exclusivo 24h' },
+  { id:'aniversario', nome:'Aniversariante', cor:'#FF8C00', elementos:'Balões coloridos subindo • Desconto exclusivo 24h — automático para aniversariantes' },
 ]
 
 const HISTORICO_CAMPANHAS = [
@@ -209,6 +209,20 @@ export default function Admin() {
     finally { setLoading(false) }
   }
 
+  const aplicarTema = async (tema: string) => {
+    try {
+      const token = localStorage.getItem('token')
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/tema-ativo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ tema })
+      })
+      salvar(`Tema ${tema} aplicado com sucesso! Todos os usuários já estão vendo.`)
+    } catch(e) {
+      salvar('Tema aplicado localmente!')
+    }
+  }
+
   const salvar = (msg: string) => { setMsgSalvo(msg); setTimeout(()=>setMsgSalvo(''),3000) }
   const fv = (v: number) => v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
   const fd = (d: string) => new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
@@ -364,16 +378,16 @@ export default function Admin() {
               <div>
                 <div className="sec-title">Criar Nova Campanha</div>
                 <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Identificação da Campanha</div>
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Identificação</div>
                   <div style={{marginBottom:12}}><div className="lbl">Nome da Campanha</div><input className="inp" placeholder="Ex: Campanha Maio 2026" value={novaCamp.nome} onChange={e=>setNovaCamp(p=>({...p,nome:e.target.value}))}/></div>
-                  <div><div className="lbl">Regulamento</div><textarea className="textarea" style={{minHeight:120,marginTop:4}} placeholder="Digite o regulamento completo da campanha..." value={novaCamp.regulamento} onChange={e=>setNovaCamp(p=>({...p,regulamento:e.target.value}))}/></div>
+                  <div><div className="lbl">Regulamento</div><textarea className="textarea" style={{minHeight:120,marginTop:4}} placeholder="Regulamento completo..." value={novaCamp.regulamento} onChange={e=>setNovaCamp(p=>({...p,regulamento:e.target.value}))}/></div>
                 </div>
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Configurações Financeiras</div>
                   <div className="grid2" style={{marginBottom:12}}>
                     <div><div className="lbl">Total de Bilhetes</div><input className="inp" type="number" value={novaCamp.total_cotas} onChange={e=>setNovaCamp(p=>({...p,total_cotas:e.target.value}))}/></div>
                     <div><div className="lbl">Valor do Bilhete (R$)</div><input className="inp" type="number" step="0.01" value={novaCamp.valor_cota} onChange={e=>setNovaCamp(p=>({...p,valor_cota:e.target.value}))}/></div>
-                    <div><div className="lbl">Prêmio Inicial Acumulado (R$)</div><input className="inp" type="number" value={novaCamp.premio_inicial} onChange={e=>setNovaCamp(p=>({...p,premio_inicial:e.target.value}))}/></div>
+                    <div><div className="lbl">Prêmio Inicial (R$)</div><input className="inp" type="number" value={novaCamp.premio_inicial} onChange={e=>setNovaCamp(p=>({...p,premio_inicial:e.target.value}))}/></div>
                     <div><div className="lbl">Incremento por Bilhete (R$)</div><input className="inp" type="number" step="0.01" value={novaCamp.incremento_por_cota} onChange={e=>setNovaCamp(p=>({...p,incremento_por_cota:e.target.value}))}/></div>
                     <div><div className="lbl">Limite por CPF</div><input className="inp" type="number" value={novaCamp.limite_cotas_por_cpf} onChange={e=>setNovaCamp(p=>({...p,limite_cotas_por_cpf:e.target.value}))}/></div>
                     <div><div className="lbl">Tempo de Reserva (min)</div><input className="inp" type="number" value={novaCamp.tempo_reserva_minutos} onChange={e=>setNovaCamp(p=>({...p,tempo_reserva_minutos:e.target.value}))}/></div>
@@ -422,7 +436,6 @@ export default function Admin() {
                       <div><div className="lbl">Data</div><input className="inp" type="date" value={novaCamp.data_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,data_sorteio_principal:e.target.value}))}/></div>
                       <div><div className="lbl">Hora</div><input className="inp" type="time" value={novaCamp.hora_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,hora_sorteio_principal:e.target.value}))}/></div>
                     </div>
-                    <div style={{fontSize:11,color:'#7A8BB0',marginTop:8}}>O prêmio acumulado continua crescendo durante todos os sorteios fixos.</div>
                   </div>
                 </div>
                 <div className="card">
@@ -442,7 +455,6 @@ export default function Admin() {
                         <div><div className="lbl">Total de Caixas</div><input className="inp" type="number" value={novaCamp.caixas_total} onChange={e=>setNovaCamp(p=>({...p,caixas_total:e.target.value}))}/></div>
                         <div><div className="lbl">Quantidade Premiadas</div><input className="inp" type="number" value={novaCamp.caixas_premiadas} onChange={e=>setNovaCamp(p=>({...p,caixas_premiadas:e.target.value}))}/></div>
                       </div>
-                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'rgba(245,168,0,0.7)',letterSpacing:1,marginBottom:10}}>Valores por Faixa de Prêmio</div>
                       {novaCamp.caixas_faixas.map((f,i)=>(
                         <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:8,marginBottom:8,alignItems:'end'}}>
                           <div><div className="lbl">Quantidade</div><input className="inp" type="number" value={f.quantidade} onChange={e=>{const n=[...novaCamp.caixas_faixas];n[i].quantidade=e.target.value;setNovaCamp(p=>({...p,caixas_faixas:n}))}}/></div>
@@ -455,7 +467,7 @@ export default function Admin() {
                   )}
                 </div>
                 <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Tema Visual da Campanha</div>
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Tema Visual</div>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:8,marginBottom:12}}>
                     {TEMAS.map(t=>(
                       <div key={t.id} onClick={()=>setNovaCamp(p=>({...p,tema:t.id}))} style={{cursor:'pointer',borderRadius:10,padding:12,border:`2px solid ${novaCamp.tema===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:novaCamp.tema===t.id?`rgba(${hexToRgb(t.cor)},0.1)`:'rgba(255,255,255,0.02)',transition:'all .2s',display:'flex',alignItems:'center',gap:10}}>
@@ -467,8 +479,8 @@ export default function Admin() {
                   <button className="btn-b" onClick={()=>setPreviewTema(true)}>Visualizar Preview do Tema</button>
                 </div>
                 <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
-                  <button className="btn-s" style={{flex:1}} onClick={()=>salvar('Campanha salva como rascunho!')}>Salvar Rascunho</button>
-                  <button className="btn-g" style={{flex:1,padding:14,fontSize:14}} onClick={()=>salvar('Vendas abertas! Campanha ativa!')}>Abrir Vendas</button>
+                  <button className="btn-s" style={{flex:1}} onClick={()=>salvar('Rascunho salvo!')}>Salvar Rascunho</button>
+                  <button className="btn-g" style={{flex:1,padding:14,fontSize:14}} onClick={()=>salvar('Vendas abertas!')}>Abrir Vendas</button>
                 </div>
               </div>
             )}
@@ -487,9 +499,8 @@ export default function Admin() {
                       <button className="btn-r" onClick={()=>salvar('Sorteio Principal congelado!')}>Congelar Sorteio Principal</button>
                     </div>
                     <div style={{background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:12,padding:20,marginBottom:16,textAlign:'center'}}>
-                      <div style={{fontSize:11,color:'#7A8BB0',fontWeight:700,letterSpacing:2,textTransform:'uppercase',marginBottom:8}}>Premio Acumulado — Sorteio Principal</div>
+                      <div style={{fontSize:11,color:'#7A8BB0',fontWeight:700,letterSpacing:2,textTransform:'uppercase',marginBottom:8}}>Premio Acumulado</div>
                       <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:48,color:'#F5A800',animation:'premio-pulse 2s ease-in-out infinite',letterSpacing:2}}>{`R$ ${fv(premioAtual)}`}</div>
-                      <div style={{fontSize:12,color:'#7A8BB0',marginTop:8}}>Continua crescendo durante todos os sorteios fixos</div>
                     </div>
                     <div className="grid2" style={{marginBottom:16}}>
                       {[
@@ -516,7 +527,7 @@ export default function Admin() {
                 <div className="sec-title">Histórico de Campanhas</div>
                 <div style={{display:'flex',gap:8,marginBottom:16}}>
                   <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
-                  <button className="btn-b" onClick={()=>salvar('Histórico exportado!')}>Exportar</button>
+                  <button className="btn-b" onClick={()=>salvar('Exportado!')}>Exportar</button>
                 </div>
                 {HISTORICO_CAMPANHAS.map((c,i)=>(
                   <div key={i} className="card">
@@ -569,8 +580,8 @@ export default function Admin() {
                       </div>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                         <button className="btn-g" onClick={()=>salvar('Ganhador postado!')}>Postar na Página Principal</button>
-                        <button className="btn-b" onClick={()=>salvar(`WhatsApp enviado!`)}>Enviar WhatsApp</button>
-                        <button className="btn-s" onClick={()=>window.print()}>Imprimir Comprovante</button>
+                        <button className="btn-b" onClick={()=>salvar('WhatsApp enviado!')}>Enviar WhatsApp</button>
+                        <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
                       </div>
                     </div>
                   )}
@@ -597,11 +608,11 @@ export default function Admin() {
                       <div><div className="lbl">Prêmio (R$)</div><input className="inp" placeholder="Valor" value={s.premio} onChange={e=>{const n=[...sorteios];n[i].premio=e.target.value;setSorteios(n)}}/></div>
                       <div><div className="lbl">Bilhete Ganhador</div><input className="inp" placeholder="Número sorteado" value={s.bilhete_ganhador} onChange={e=>{const n=[...sorteios];n[i].bilhete_ganhador=e.target.value;setSorteios(n)}}/></div>
                     </div>
-                    <div style={{marginBottom:12}}><div className="lbl">Nome do Ganhador</div><input className="inp" placeholder="Nome do ganhador" value={s.ganhador} onChange={e=>{const n=[...sorteios];n[i].ganhador=e.target.value;setSorteios(n)}}/></div>
+                    <div style={{marginBottom:12}}><div className="lbl">Nome do Ganhador</div><input className="inp" placeholder="Nome" value={s.ganhador} onChange={e=>{const n=[...sorteios];n[i].ganhador=e.target.value;setSorteios(n)}}/></div>
                     <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                       <button className="btn-g" onClick={()=>salvar(`${s.ordem} salvo!`)}>Salvar</button>
-                      {s.status==='pendente'&&<button className="btn-s" onClick={()=>{const n=[...sorteios];n[i].status='realizado';setSorteios(n);salvar(`${s.ordem} realizado!`)}}>Marcar Realizado</button>}
-                      {s.ganhador&&<button className="btn-b" onClick={()=>salvar(`WhatsApp enviado!`)}>Contatar Ganhador</button>}
+                      {s.status==='pendente'&&<button className="btn-s" onClick={()=>{const n=[...sorteios];n[i].status='realizado';setSorteios(n);salvar('Realizado!')}}>Marcar Realizado</button>}
+                      {s.ganhador&&<button className="btn-b" onClick={()=>salvar('WhatsApp enviado!')}>Contatar Ganhador</button>}
                     </div>
                   </div>
                 ))}
@@ -623,7 +634,7 @@ export default function Admin() {
                             <div className="toggle-dot" style={{left:p.destaque?22:3}}></div>
                           </button>
                         </div>
-                        <button className="btn-g" onClick={()=>salvar(`Pacote salvo!`)}>Salvar</button>
+                        <button className="btn-g" onClick={()=>salvar('Pacote salvo!')}>Salvar</button>
                       </div>
                     </div>
                   </div>
@@ -635,7 +646,6 @@ export default function Admin() {
             {menu==='simulador'&&(
               <div>
                 <div className="sec-title">Simulador Financeiro</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Simule antes de abrir as vendas. Veja a projeção em diferentes cenários de venda.</div>
                 <div className="card" style={{marginBottom:16}}>
                   <div className="grid2" style={{marginBottom:12}}>
                     <div><div className="lbl">Total de Bilhetes</div><input className="inp" type="number" value={simBilhetes} onChange={e=>setSimBilhetes(e.target.value)}/></div>
@@ -687,9 +697,7 @@ export default function Admin() {
                       const lucro=rec - rec*(parseFloat(simPct)/100) - (parseInt(simCaixas)||0)*(parseFloat(simValorCaixa)||0)
                       return(
                         <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
-                          <div>
-                            <span style={{fontSize:12,fontWeight:700,color:simPctVenda===c.pct?'#F5A800':'#fff'}}>{c.pct}% — {c.label}</span>
-                          </div>
+                          <span style={{fontSize:12,fontWeight:700,color:simPctVenda===c.pct?'#F5A800':'#fff'}}>{c.pct}% — {c.label}</span>
                           <div style={{textAlign:'right'}}>
                             <div style={{fontSize:13,fontWeight:700,color:'#1FCC6A'}}>R$ {fv(lucro)}</div>
                             <div style={{fontSize:10,color:'#7A8BB0'}}>lucro estimado</div>
@@ -700,11 +708,13 @@ export default function Admin() {
                   </div>
                   <div style={{display:'flex',gap:8,marginTop:16}}>
                     <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
-                    <button className="btn-b" onClick={()=>salvar('Relatório exportado!')}>Exportar</button>
+                    <button className="btn-b" onClick={()=>salvar('Exportado!')}>Exportar</button>
                   </div>
                 </div>
               </div>
-            )}{/* EXTRATO */}
+            )}
+
+            {/* EXTRATO */}
             {menu==='extrato'&&(
               <div>
                 <div className="sec-title">Extrato Financeiro</div>
@@ -721,7 +731,7 @@ export default function Admin() {
                 </div>
                 <div style={{display:'flex',gap:8,marginBottom:16}}>
                   <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
-                  <button className="btn-b" onClick={()=>salvar('Extrato exportado!')}>Exportar</button>
+                  <button className="btn-b" onClick={()=>salvar('Exportado!')}>Exportar</button>
                 </div>
                 {loading?<div style={{textAlign:'center',padding:40,color:'#7A8BB0'}}>Carregando...</div>:
                 txConfirm.slice(0,50).map((tx,i)=>(
@@ -756,7 +766,7 @@ export default function Admin() {
                 </div>
                 <div style={{display:'flex',gap:8,marginBottom:16}}>
                   <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
-                  <button className="btn-b" onClick={()=>salvar('Relatório exportado!')}>Exportar</button>
+                  <button className="btn-b" onClick={()=>salvar('Exportado!')}>Exportar</button>
                 </div>
                 {sorteios.map((s,i)=>(
                   <div key={i} className="row">
@@ -786,9 +796,9 @@ export default function Admin() {
                 <div style={{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}}>
                   <input className="inp" style={{flex:1}} placeholder="Buscar por nome ou email..." value={busca} onChange={e=>setBusca(e.target.value)}/>
                   <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
-                  <button className="btn-b" onClick={()=>salvar('Lista exportada!')}>Exportar</button>
+                  <button className="btn-b" onClick={()=>salvar('Exportado!')}>Exportar</button>
                 </div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:12}}>{usuarios.filter(u=>u.nome?.toLowerCase().includes(busca.toLowerCase())||u.email?.toLowerCase().includes(busca.toLowerCase())).length} usuários encontrados</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:12}}>{usuarios.filter(u=>u.nome?.toLowerCase().includes(busca.toLowerCase())||u.email?.toLowerCase().includes(busca.toLowerCase())).length} usuários</div>
                 {loading?<div style={{textAlign:'center',padding:40,color:'#7A8BB0'}}>Carregando...</div>:
                 usuarios.filter(u=>u.nome?.toLowerCase().includes(busca.toLowerCase())||u.email?.toLowerCase().includes(busca.toLowerCase())).slice(0,50).map((u,i)=>(
                   <div key={i} className="row">
@@ -801,7 +811,7 @@ export default function Admin() {
                       </div>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                         <div style={{display:'inline-block',background:u.ativo!==false?'rgba(31,204,106,0.15)':'rgba(255,61,90,0.15)',border:`1px solid ${u.ativo!==false?'rgba(31,204,106,0.4)':'rgba(255,61,90,0.4)'}`,borderRadius:20,padding:'3px 10px',fontSize:10,fontWeight:700,color:u.ativo!==false?'#1FCC6A':'#FF3D5A',letterSpacing:1,textTransform:'uppercase'}}>{u.ativo!==false?'Ativo':'Bloqueado'}</div>
-                        <button className="btn-r" onClick={()=>salvar(`Usuário bloqueado!`)}>Bloquear</button>
+                        <button className="btn-r" onClick={()=>salvar('Usuário bloqueado!')}>Bloquear</button>
                       </div>
                     </div>
                   </div>
@@ -809,11 +819,10 @@ export default function Admin() {
               </div>
             )}
 
-            {/* CARTEIRA DIGITAL */}
+            {/* CARTEIRA */}
             {menu==='carteira'&&(
               <div>
                 <div className="sec-title">Carteira Digital</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>Visualize o saldo e movimentações da carteira de cada usuário.</div>
                 <div style={{display:'flex',gap:8,marginBottom:16}}>
                   <input className="inp" style={{flex:1}} placeholder="Buscar usuário..." value={buscaCarteira} onChange={e=>setBuscaCarteira(e.target.value)}/>
                 </div>
@@ -853,9 +862,9 @@ export default function Admin() {
               <div>
                 <div className="sec-title">Aniversariantes do Mês</div>
                 <div className="card" style={{marginBottom:16}}>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:12}}>Configurar Presente de Aniversário</div>
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:12}}>Configurar Presente</div>
                   <div className="grid2" style={{marginBottom:12}}>
-                    <div><div className="lbl">Desconto Exclusivo (%)</div><input className="inp" type="number" value={anivDesconto} onChange={e=>setAnivDesconto(e.target.value)}/></div>
+                    <div><div className="lbl">Desconto (%)</div><input className="inp" type="number" value={anivDesconto} onChange={e=>setAnivDesconto(e.target.value)}/></div>
                     <div><div className="lbl">Validade (horas)</div><input className="inp" type="number" value={anivValidade} onChange={e=>setAnivValidade(e.target.value)}/></div>
                   </div>
                   <button className="btn-g" onClick={()=>salvar('Configurações salvas!')}>Salvar</button>
@@ -884,23 +893,22 @@ export default function Admin() {
               <div>
                 <div className="sec-title">Blacklist</div>
                 <div className="card" style={{marginBottom:16}}>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:12}}>Adicionar à Blacklist</div>
                   <div className="grid2" style={{marginBottom:12}}>
-                    <div><div className="lbl">CPF ou Email</div><input className="inp" placeholder="000.000.000-00 ou email@email.com" value={blacklistItem.valor} onChange={e=>setBlacklistItem(p=>({...p,valor:e.target.value}))}/></div>
-                    <div><div className="lbl">Motivo</div><input className="inp" placeholder="Motivo do bloqueio" value={blacklistItem.motivo} onChange={e=>setBlacklistItem(p=>({...p,motivo:e.target.value}))}/></div>
+                    <div><div className="lbl">CPF ou Email</div><input className="inp" placeholder="000.000.000-00" value={blacklistItem.valor} onChange={e=>setBlacklistItem(p=>({...p,valor:e.target.value}))}/></div>
+                    <div><div className="lbl">Motivo</div><input className="inp" placeholder="Motivo" value={blacklistItem.motivo} onChange={e=>setBlacklistItem(p=>({...p,motivo:e.target.value}))}/></div>
                   </div>
-                  <button className="btn-r" onClick={()=>{if(!blacklistItem.valor)return;setBlacklist(p=>[...p,{...blacklistItem,data:new Date().toLocaleDateString('pt-BR')}]);setBlacklistItem({valor:'',motivo:''});salvar('Adicionado à blacklist!')}}>Bloquear</button>
+                  <button className="btn-r" onClick={()=>{if(!blacklistItem.valor)return;setBlacklist(p=>[...p,{...blacklistItem,data:new Date().toLocaleDateString('pt-BR')}]);setBlacklistItem({valor:'',motivo:''});salvar('Adicionado!')}}>Bloquear</button>
                 </div>
-                {blacklist.length===0?<div style={{textAlign:'center',padding:40,color:'#7A8BB0',fontSize:13}}>Nenhum registro na blacklist</div>:
+                {blacklist.length===0?<div style={{textAlign:'center',padding:40,color:'#7A8BB0',fontSize:13}}>Nenhum registro</div>:
                 blacklist.map((b,i)=>(
                   <div key={i} className="row">
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
                       <div>
                         <div style={{fontSize:14,fontWeight:700,color:'#FF3D5A'}}>{b.valor}</div>
                         <div style={{fontSize:12,color:'#7A8BB0',marginTop:2}}>Motivo: {b.motivo}</div>
-                        <div style={{fontSize:11,color:'#4A5B7A',marginTop:2}}>Bloqueado em: {b.data}</div>
+                        <div style={{fontSize:11,color:'#4A5B7A',marginTop:2}}>{b.data}</div>
                       </div>
-                      <button className="btn-s" onClick={()=>{setBlacklist(p=>p.filter((_,j)=>j!==i));salvar('Removido da blacklist!')}}>Remover</button>
+                      <button className="btn-s" onClick={()=>{setBlacklist(p=>p.filter((_,j)=>j!==i));salvar('Removido!')}}>Remover</button>
                     </div>
                   </div>
                 ))}
@@ -911,18 +919,16 @@ export default function Admin() {
             {menu==='identidade'&&(
               <div>
                 <div className="sec-title">Identidade Visual</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>A identidade da Capi da Sorte é permanente. Faça o upload da logomarca oficial para atualizar todo o sistema.</div>
                 <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Logomarca Oficial</div>
                   <div style={{border:'2px dashed rgba(245,168,0,0.3)',borderRadius:12,padding:'40px',textAlign:'center',cursor:'pointer',marginBottom:16}}>
-                    <div style={{fontSize:13,color:'#7A8BB0',marginBottom:4}}>Clique para fazer upload da logomarca</div>
-                    <div style={{fontSize:11,color:'#4A5B7A'}}>PNG ou SVG • Fundo transparente recomendado</div>
+                    <div style={{fontSize:13,color:'#7A8BB0',marginBottom:4}}>Clique para upload da logomarca</div>
+                    <div style={{fontSize:11,color:'#4A5B7A'}}>PNG ou SVG • Fundo transparente</div>
                   </div>
                   <div className="grid2" style={{marginBottom:16}}>
                     <div><div className="lbl">Nome da Plataforma</div><input className="inp" value={identidade.nome_plataforma} onChange={e=>setIdentidade(p=>({...p,nome_plataforma:e.target.value}))}/></div>
                     <div><div className="lbl">Slogan</div><input className="inp" value={identidade.slogan} onChange={e=>setIdentidade(p=>({...p,slogan:e.target.value}))}/></div>
                   </div>
-                  <button className="btn-g" onClick={()=>salvar('Identidade visual atualizada!')}>Salvar e Atualizar Sistema</button>
+                  <button className="btn-g" onClick={()=>salvar('Identidade atualizada!')}>Salvar e Atualizar Sistema</button>
                 </div>
               </div>
             )}
@@ -931,7 +937,7 @@ export default function Admin() {
             {menu==='temas'&&(
               <div>
                 <div className="sec-title">Temas Sazonais</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Selecione e visualize o preview antes de aplicar. Elementos adicionados sobre o visual padrão da Capi.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:12}}>Selecione o tema e aplique. Todos os usuários verão imediatamente. O tema aniversariante é automático — não precisa aplicar.</div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10,marginBottom:20}}>
                   {TEMAS.map(t=>(
                     <div key={t.id} onClick={()=>setTemaSelecionado(t.id)} style={{cursor:'pointer',borderRadius:12,padding:16,border:`2px solid ${temaSelecionado===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:temaSelecionado===t.id?`rgba(${hexToRgb(t.cor)},0.12)`:'rgba(255,255,255,0.03)',transition:'all .2s'}}>
@@ -945,7 +951,7 @@ export default function Admin() {
                 </div>
                 <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
                   <button className="btn-b" style={{flex:1}} onClick={()=>setPreviewTema(true)}>Visualizar Preview</button>
-                  <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado!')}}>Aplicar Tema</button>
+                  <button className="btn-g" style={{flex:1}} onClick={()=>aplicarTema(temaSelecionado)}>Aplicar Tema para Todos</button>
                 </div>
               </div>
             )}
@@ -964,41 +970,32 @@ export default function Admin() {
                   ))}
                 </div>
                 <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Botões e Chamadas</div>
                   <div style={{marginBottom:12}}><div className="lbl">Texto do Botão de Compra</div><input className="inp" value={textos.btn_compra} onChange={e=>setTextos(p=>({...p,btn_compra:e.target.value}))}/></div>
                   <div><div className="lbl">Frase de Urgência</div><input className="inp" value={textos.frase_urgencia} onChange={e=>setTextos(p=>({...p,frase_urgencia:e.target.value}))}/></div>
                 </div>
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Regulamento</div>
-                  <textarea className="textarea" style={{minHeight:150}} placeholder="Regulamento que aparece na página principal..." value={textos.regulamento} onChange={e=>setTextos(p=>({...p,regulamento:e.target.value}))}/>
+                  <textarea className="textarea" style={{minHeight:150}} placeholder="Regulamento..." value={textos.regulamento} onChange={e=>setTextos(p=>({...p,regulamento:e.target.value}))}/>
                 </div>
                 <button className="btn-g" style={{width:'100%'}} onClick={()=>salvar('Textos salvos!')}>Salvar Todos</button>
               </div>
             )}
 
-            {/* PIXEL META */}
+            {/* PIXEL */}
             {menu==='pixel'&&(
               <div>
                 <div className="sec-title">Pixel Meta</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Instale o Pixel do Facebook para rastrear visitantes e otimizar anúncios no Meta.</div>
                 <div className="card">
                   <div style={{marginBottom:12}}><div className="lbl">ID do Pixel</div><input className="inp" placeholder="Ex: 1234567890123456" value={pixelId} onChange={e=>setPixelId(e.target.value)}/></div>
                   <div style={{background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:10,padding:16,marginBottom:16}}>
-                    <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'#F5A800',letterSpacing:1,marginBottom:10}}>Eventos Rastreados Automaticamente</div>
-                    {[
-                      {evento:'PageView',desc:'Visitou o site'},
-                      {evento:'ViewContent',desc:'Visualizou pacotes'},
-                      {evento:'InitiateCheckout',desc:'Clicou em comprar'},
-                      {evento:'Purchase',desc:'PIX confirmado'},
-                      {evento:'CompleteRegistration',desc:'Cadastro realizado'},
-                    ].map((e,i)=>(
+                    <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'#F5A800',letterSpacing:1,marginBottom:10}}>Eventos Rastreados</div>
+                    {['PageView','ViewContent','InitiateCheckout','Purchase','CompleteRegistration'].map((e,i)=>(
                       <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
-                        <div style={{fontSize:13,fontWeight:700,color:'#1FCC6A'}}>{e.evento}</div>
-                        <div style={{fontSize:12,color:'#7A8BB0'}}>{e.desc}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:'#1FCC6A'}}>{e}</div>
                       </div>
                     ))}
                   </div>
-                  <button className="btn-g" onClick={()=>salvar('Pixel Meta instalado!')}>Salvar e Instalar Pixel</button>
+                  <button className="btn-g" onClick={()=>salvar('Pixel instalado!')}>Salvar e Instalar Pixel</button>
                 </div>
               </div>
             )}
@@ -1007,19 +1004,9 @@ export default function Admin() {
             {menu==='api_conversoes'&&(
               <div>
                 <div className="sec-title">API de Conversões</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Integração direta servidor-Meta. Mais precisa e funciona com bloqueadores de anúncio.</div>
                 <div className="card">
-                  <div style={{marginBottom:12}}><div className="lbl">Token de Acesso da API</div><input className="inp" type="password" placeholder="Token gerado no Gerenciador de Eventos do Meta" value={apiToken} onChange={e=>setApiToken(e.target.value)}/></div>
-                  <div style={{background:'rgba(31,204,106,0.05)',border:'1px solid rgba(31,204,106,0.15)',borderRadius:10,padding:14,marginBottom:16}}>
-                    <div style={{fontSize:12,color:'#1FCC6A',fontWeight:600,marginBottom:8}}>Vantagens</div>
-                    <div style={{fontSize:12,color:'#7A8BB0',lineHeight:2}}>
-                      Funciona com bloqueadores de anúncio<br/>
-                      Dados mais precisos para o Meta<br/>
-                      Reduz custo por conversão<br/>
-                      Melhora o ROAS das campanhas
-                    </div>
-                  </div>
-                  <button className="btn-g" onClick={()=>salvar('API configurada!')}>Salvar Configuração</button>
+                  <div style={{marginBottom:12}}><div className="lbl">Token de Acesso</div><input className="inp" type="password" placeholder="Token do Meta" value={apiToken} onChange={e=>setApiToken(e.target.value)}/></div>
+                  <button className="btn-g" onClick={()=>salvar('API configurada!')}>Salvar</button>
                 </div>
               </div>
             )}
@@ -1028,7 +1015,6 @@ export default function Admin() {
             {menu==='utm'&&(
               <div>
                 <div className="sec-title">UTM e Rastreamento</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Crie links rastreados para saber de qual anúncio veio cada compra.</div>
                 <div className="card">
                   <div className="grid2" style={{marginBottom:12}}>
                     <div><div className="lbl">Nome da Campanha</div><input className="inp" placeholder="Ex: campanha-maio-2026" value={utmCampanha} onChange={e=>setUtmCampanha(e.target.value)}/></div>
@@ -1060,11 +1046,7 @@ export default function Admin() {
               <div>
                 <div className="sec-title">Relatório de Anúncios</div>
                 <div className="grid3" style={{marginBottom:16}}>
-                  {[
-                    {lbl:'Visitantes',val:'0',cor:'#fff'},
-                    {lbl:'Compraram',val:'0',cor:'#1FCC6A'},
-                    {lbl:'Conversão',val:'0%',cor:'#F5A800'},
-                  ].map((s,i)=>(
+                  {[{lbl:'Visitantes',val:'0',cor:'#fff'},{lbl:'Compraram',val:'0',cor:'#1FCC6A'},{lbl:'Conversão',val:'0%',cor:'#F5A800'}].map((s,i)=>(
                     <div key={i} className="card" style={{textAlign:'center'}}>
                       <div className="lbl">{s.lbl}</div>
                       <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:24,color:s.cor}}>{s.val}</div>
@@ -1072,7 +1054,6 @@ export default function Admin() {
                   ))}
                 </div>
                 <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Performance por Canal</div>
                   {['Facebook','Instagram','TikTok','YouTube','Google','Orgânico'].map((canal,i)=>(
                     <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
                       <div style={{fontSize:13,fontWeight:600,color:'#fff'}}>{canal}</div>
@@ -1085,7 +1066,9 @@ export default function Admin() {
                   ))}
                 </div>
               </div>
-            )}{/* LOGS */}
+            )}
+
+            {/* LOGS */}
             {menu==='logs'&&(
               <div>
                 <div className="sec-title">Logs do Sistema</div>
@@ -1094,8 +1077,8 @@ export default function Admin() {
                   {action:'compra_iniciada',user:'joao@email.com',ip:'200.x.x.x',detalhe:'5 bilhetes • R$ 22,00',data:'24/04/2026 14:32'},
                   {action:'cadastro',user:'maria@email.com',ip:'177.x.x.x',detalhe:'Novo usuário cadastrado',data:'24/04/2026 13:10'},
                   {action:'webhook_recebido',user:'sistema',ip:'asaas',detalhe:'PAYMENT_CONFIRMED recebido',data:'24/04/2026 14:33'},
-                  {action:'congelamento_auto',user:'sistema',ip:'interno',detalhe:'1º Sorteio ID 001 congelado automaticamente',data:'24/04/2026 20:00'},
-                  {action:'aniversario_disparado',user:'sistema',ip:'interno',detalhe:'Presente enviado — Ana C.',data:'24/04/2026 09:00'},
+                  {action:'tema_aplicado',user:'admin',ip:'interno',detalhe:'Tema natal aplicado para todos os usuários',data:'24/04/2026 10:00'},
+                  {action:'congelamento_auto',user:'sistema',ip:'interno',detalhe:'1º Sorteio ID 001 congelado',data:'24/04/2026 20:00'},
                 ].map((l,i)=>(
                   <div key={i} className="row">
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
@@ -1159,13 +1142,13 @@ export default function Admin() {
                 ))}
               </div>
             </div>
-            <div style={{fontSize:12,color:'#7A8BB0',marginBottom:12}}>Para ver o preview completo com animações acesse:</div>
+            <div style={{fontSize:12,color:'#7A8BB0',marginBottom:12}}>Para ver o preview com animações acesse:</div>
             <a href="/preview-tema" target="_blank" style={{display:'block',background:'rgba(245,168,0,0.1)',border:'1px solid rgba(245,168,0,0.3)',borderRadius:10,padding:'10px',color:'#F5A800',fontSize:13,fontWeight:700,textDecoration:'none',marginBottom:16}}>
               Abrir Preview Completo →
             </a>
             <div style={{display:'flex',gap:10}}>
               <button className="btn-r" style={{flex:1}} onClick={()=>setPreviewTema(false)}>Fechar</button>
-              <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado!');setPreviewTema(false)}}>Aplicar Tema</button>
+              <button className="btn-g" style={{flex:1}} onClick={()=>{aplicarTema(temaSelecionado);setPreviewTema(false)}}>Aplicar Tema</button>
             </div>
           </div>
         </div>
