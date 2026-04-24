@@ -1,4 +1,3 @@
-// frontend/app/admin/page.tsx
 'use client'
 import { useEffect, useRef, useState } from 'react'
 
@@ -22,15 +21,15 @@ const ADMIN_PASSWORD = 'CapiAdmin@2026'
 
 const TEMAS = [
   { id:'padrao', nome:'Padrão', cor:'#F5A800', elementos:'Estrelas douradas animadas — visual padrão Capi da Sorte' },
-  { id:'natal', nome:'Natal', cor:'#CC0000', elementos:'Árvores com luzes coloridas no rodapé • Neve caindo • Trenó com Papai Noel • Texto Feliz Natal' },
-  { id:'ano_novo', nome:'Ano Novo', cor:'#FFD700', elementos:'Fogos de artifício coloridos • Contador para virada • Champagne • Texto Feliz Ano Novo' },
-  { id:'carnaval', nome:'Carnaval', cor:'#9B00FF', elementos:'Confetes coloridos caindo • Máscaras de carnaval flutuando • Serpentinas coloridas' },
-  { id:'maes', nome:'Dia das Mães', cor:'#FF69B4', elementos:'Pétalas de rosa douradas caindo • Flores animadas • Borboletas douradas • Texto Feliz Dia das Mães' },
-  { id:'namorados', nome:'Namorados', cor:'#FF0044', elementos:'Corações flutuando • Pétalas vermelhas caindo • Flechas do cupido animadas' },
-  { id:'pais', nome:'Dia dos Pais', cor:'#1E90FF', elementos:'Gravatas douradas flutuando • Troféu dourado animado • Estrelas maiores • Texto Feliz Dia dos Pais' },
-  { id:'pascoa', nome:'Páscoa', cor:'#9ACD32', elementos:'Ovos coloridos flutuando • Coelhinhos animados nos cantos • Flores da primavera • Texto Feliz Páscoa' },
-  { id:'black_friday', nome:'Black Friday', cor:'#FF0000', elementos:'Raios elétricos neon • Contador regressivo agressivo • Texto BLACK FRIDAY pulsando • Etiquetas caindo' },
-  { id:'aniversario', nome:'Aniversariante', cor:'#FF8C00', elementos:'Balões coloridos subindo • Caixa dourada especial • Bolo com velas animado • Desconto exclusivo 24h' },
+  { id:'natal', nome:'Natal', cor:'#CC0000', elementos:'Neve caindo • Árvores de natal com luzes coloridas • Presentes caindo' },
+  { id:'ano_novo', nome:'Ano Novo', cor:'#FFD700', elementos:'Fogos dourados e prata • Chuva de papel dourado e prata • Countdown para virada' },
+  { id:'carnaval', nome:'Carnaval', cor:'#9B00FF', elementos:'Confetes coloridos caindo • Serpentinas animadas' },
+  { id:'maes', nome:'Dia das Mães', cor:'#FF69B4', elementos:'Pétalas de rosa douradas caindo • Flores animadas' },
+  { id:'namorados', nome:'Namorados', cor:'#FF0044', elementos:'Corações flutuando • Pétalas vermelhas caindo' },
+  { id:'pais', nome:'Dia dos Pais', cor:'#1E90FF', elementos:'Gravatas flutuando • Estrelas douradas animadas' },
+  { id:'pascoa', nome:'Páscoa', cor:'#9ACD32', elementos:'Cenouras coloridas caindo • Coelhinhos pulando no rodapé' },
+  { id:'black_friday', nome:'Black Friday', cor:'#FF0000', elementos:'Raios neon • Névoa vermelha nos cantos • Bordas neon pulsando • Partículas vermelhas' },
+  { id:'aniversario', nome:'Aniversariante', cor:'#FF8C00', elementos:'Balões coloridos subindo • Desconto exclusivo 24h' },
 ]
 
 const HISTORICO_CAMPANHAS = [
@@ -255,7 +254,7 @@ export default function Admin() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap');
         *{margin:0;padding:0;box-sizing:border-box}body{background:#04091C;overflow-x:hidden}
         .menu-item{padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;color:rgba(255,255,255,0.4);display:block;width:100%}
         .menu-item:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7)}
@@ -485,7 +484,7 @@ export default function Admin() {
                         <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:22,color:'#fff',letterSpacing:2}}>{campanha.nome}</div>
                         <div style={{display:'inline-block',background:'rgba(31,204,106,0.15)',border:'1px solid rgba(31,204,106,0.4)',borderRadius:20,padding:'3px 12px',fontSize:10,fontWeight:700,color:'#1FCC6A',letterSpacing:1,textTransform:'uppercase',marginTop:6}}>Ativa</div>
                       </div>
-                      <button className="btn-r" onClick={()=>salvar('Sorteio Principal congelado! Contador pulsando. Countdown ativado. Mensagens disparadas!')}>Congelar Sorteio Principal</button>
+                      <button className="btn-r" onClick={()=>salvar('Sorteio Principal congelado!')}>Congelar Sorteio Principal</button>
                     </div>
                     <div style={{background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:12,padding:20,marginBottom:16,textAlign:'center'}}>
                       <div style={{fontSize:11,color:'#7A8BB0',fontWeight:700,letterSpacing:2,textTransform:'uppercase',marginBottom:8}}>Premio Acumulado — Sorteio Principal</div>
@@ -569,8 +568,8 @@ export default function Admin() {
                         <div><div className="lbl">Bilhete Premiado</div><div style={{fontSize:14,color:'#F5A800',fontWeight:700}}>#{ganhadorSequencia}</div></div>
                       </div>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-                        <button className="btn-g" onClick={()=>salvar('Ganhador postado na página principal!')}>Postar na Página Principal</button>
-                        <button className="btn-b" onClick={()=>salvar(`WhatsApp enviado para ${ganhadorEncontrado.nome}!`)}>Enviar WhatsApp</button>
+                        <button className="btn-g" onClick={()=>salvar('Ganhador postado!')}>Postar na Página Principal</button>
+                        <button className="btn-b" onClick={()=>salvar(`WhatsApp enviado!`)}>Enviar WhatsApp</button>
                         <button className="btn-s" onClick={()=>window.print()}>Imprimir Comprovante</button>
                       </div>
                     </div>
@@ -602,7 +601,7 @@ export default function Admin() {
                     <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                       <button className="btn-g" onClick={()=>salvar(`${s.ordem} salvo!`)}>Salvar</button>
                       {s.status==='pendente'&&<button className="btn-s" onClick={()=>{const n=[...sorteios];n[i].status='realizado';setSorteios(n);salvar(`${s.ordem} realizado!`)}}>Marcar Realizado</button>}
-                      {s.ganhador&&<button className="btn-b" onClick={()=>salvar(`WhatsApp enviado para ${s.ganhador}!`)}>Contatar Ganhador</button>}
+                      {s.ganhador&&<button className="btn-b" onClick={()=>salvar(`WhatsApp enviado!`)}>Contatar Ganhador</button>}
                     </div>
                   </div>
                 ))}
@@ -624,7 +623,7 @@ export default function Admin() {
                             <div className="toggle-dot" style={{left:p.destaque?22:3}}></div>
                           </button>
                         </div>
-                        <button className="btn-g" onClick={()=>salvar(`Pacote ${p.qty} bilhete${p.qty>1?'s':''} salvo!`)}>Salvar</button>
+                        <button className="btn-g" onClick={()=>salvar(`Pacote salvo!`)}>Salvar</button>
                       </div>
                     </div>
                   </div>
@@ -636,7 +635,7 @@ export default function Admin() {
             {menu==='simulador'&&(
               <div>
                 <div className="sec-title">Simulador Financeiro</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Simule antes de abrir as vendas. Veja a projeção em diferentes cenários.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Simule antes de abrir as vendas. Veja a projeção em diferentes cenários de venda.</div>
                 <div className="card" style={{marginBottom:16}}>
                   <div className="grid2" style={{marginBottom:12}}>
                     <div><div className="lbl">Total de Bilhetes</div><input className="inp" type="number" value={simBilhetes} onChange={e=>setSimBilhetes(e.target.value)}/></div>
@@ -649,8 +648,9 @@ export default function Admin() {
                     <div><div className="lbl">Cenário de Venda</div>
                       <select className="sel" value={simPctVenda} onChange={e=>setSimPctVenda(e.target.value)}>
                         <option value="25">25% — Conservador</option>
+                        <option value="30">30% — Realista Baixo</option>
                         <option value="50">50% — Moderado</option>
-                        <option value="75">75% — Otimista</option>
+                        <option value="80">80% — Otimista</option>
                         <option value="100">100% — Esgotado</option>
                       </select>
                     </div>
@@ -673,15 +673,38 @@ export default function Admin() {
                       <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:20,color:s.cor}}>{s.val}</div>
                     </div>
                   ))}
+                  <div style={{marginTop:16,background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.15)',borderRadius:10,padding:14}}>
+                    <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'#F5A800',letterSpacing:1,marginBottom:10}}>Comparativo de Cenários</div>
+                    {[
+                      {pct:'25',label:'Conservador'},
+                      {pct:'30',label:'Realista Baixo'},
+                      {pct:'50',label:'Moderado'},
+                      {pct:'80',label:'Otimista'},
+                      {pct:'100',label:'Esgotado'},
+                    ].map((c,i)=>{
+                      const bil=Math.floor((parseFloat(simBilhetes)||0)*(parseFloat(c.pct)/100))
+                      const rec=bil*(parseFloat(simValor)||0)
+                      const lucro=rec - rec*(parseFloat(simPct)/100) - (parseInt(simCaixas)||0)*(parseFloat(simValorCaixa)||0)
+                      return(
+                        <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+                          <div>
+                            <span style={{fontSize:12,fontWeight:700,color:simPctVenda===c.pct?'#F5A800':'#fff'}}>{c.pct}% — {c.label}</span>
+                          </div>
+                          <div style={{textAlign:'right'}}>
+                            <div style={{fontSize:13,fontWeight:700,color:'#1FCC6A'}}>R$ {fv(lucro)}</div>
+                            <div style={{fontSize:10,color:'#7A8BB0'}}>lucro estimado</div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                   <div style={{display:'flex',gap:8,marginTop:16}}>
                     <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
                     <button className="btn-b" onClick={()=>salvar('Relatório exportado!')}>Exportar</button>
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* EXTRATO */}
+            )}{/* EXTRATO */}
             {menu==='extrato'&&(
               <div>
                 <div className="sec-title">Extrato Financeiro</div>
@@ -754,7 +777,9 @@ export default function Admin() {
                   </div>
                 ))}
               </div>
-            )}{/* USUARIOS */}
+            )}
+
+            {/* USUARIOS */}
             {menu==='usuarios'&&(
               <div>
                 <div className="sec-title">Usuários</div>
@@ -776,7 +801,7 @@ export default function Admin() {
                       </div>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                         <div style={{display:'inline-block',background:u.ativo!==false?'rgba(31,204,106,0.15)':'rgba(255,61,90,0.15)',border:`1px solid ${u.ativo!==false?'rgba(31,204,106,0.4)':'rgba(255,61,90,0.4)'}`,borderRadius:20,padding:'3px 10px',fontSize:10,fontWeight:700,color:u.ativo!==false?'#1FCC6A':'#FF3D5A',letterSpacing:1,textTransform:'uppercase'}}>{u.ativo!==false?'Ativo':'Bloqueado'}</div>
-                        <button className="btn-r" onClick={()=>salvar(`Usuário ${u.nome} bloqueado!`)}>Bloquear</button>
+                        <button className="btn-r" onClick={()=>salvar(`Usuário bloqueado!`)}>Bloquear</button>
                       </div>
                     </div>
                   </div>
@@ -846,7 +871,7 @@ export default function Admin() {
                           <div style={{fontSize:12,color:'#7A8BB0',marginTop:2}}>{u.email}</div>
                           <div style={{fontSize:12,color:'#F5A800',marginTop:2}}>Aniversário: {u.data_nascimento?new Date(u.data_nascimento).toLocaleDateString('pt-BR',{day:'2-digit',month:'long'}):'—'}</div>
                         </div>
-                        <button className="btn-b" onClick={()=>salvar(`Presente enviado para ${u.nome}!`)}>Enviar Presente</button>
+                        <button className="btn-b" onClick={()=>salvar(`Presente enviado!`)}>Enviar Presente</button>
                       </div>
                     </div>
                   ))
@@ -906,7 +931,7 @@ export default function Admin() {
             {menu==='temas'&&(
               <div>
                 <div className="sec-title">Temas Sazonais</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Selecione e visualize o preview antes de aplicar. Elementos profissionais adicionados sobre o visual padrão da Capi.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Selecione e visualize o preview antes de aplicar. Elementos adicionados sobre o visual padrão da Capi.</div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10,marginBottom:20}}>
                   {TEMAS.map(t=>(
                     <div key={t.id} onClick={()=>setTemaSelecionado(t.id)} style={{cursor:'pointer',borderRadius:12,padding:16,border:`2px solid ${temaSelecionado===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:temaSelecionado===t.id?`rgba(${hexToRgb(t.cor)},0.12)`:'rgba(255,255,255,0.03)',transition:'all .2s'}}>
@@ -1060,9 +1085,7 @@ export default function Admin() {
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* LOGS */}
+            )}{/* LOGS */}
             {menu==='logs'&&(
               <div>
                 <div className="sec-title">Logs do Sistema</div>
@@ -1136,7 +1159,10 @@ export default function Admin() {
                 ))}
               </div>
             </div>
-            <div style={{fontSize:12,color:'#7A8BB0',marginBottom:20}}>Elementos adicionados sobre o visual padrão da Capi da Sorte.</div>
+            <div style={{fontSize:12,color:'#7A8BB0',marginBottom:12}}>Para ver o preview completo com animações acesse:</div>
+            <a href="/preview-tema" target="_blank" style={{display:'block',background:'rgba(245,168,0,0.1)',border:'1px solid rgba(245,168,0,0.3)',borderRadius:10,padding:'10px',color:'#F5A800',fontSize:13,fontWeight:700,textDecoration:'none',marginBottom:16}}>
+              Abrir Preview Completo →
+            </a>
             <div style={{display:'flex',gap:10}}>
               <button className="btn-r" style={{flex:1}} onClick={()=>setPreviewTema(false)}>Fechar</button>
               <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado!');setPreviewTema(false)}}>Aplicar Tema</button>
