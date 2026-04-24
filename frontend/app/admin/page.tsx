@@ -19,52 +19,53 @@ interface Usuario {
 const ADMIN_PASSWORD = 'CapiAdmin@2026'
 
 const TEMAS = [
-  { id:'padrao', nome:'Padrão', cor:'#F5A800', elementos:'Estrelas douradas • Visual padrão Capi da Sorte' },
-  { id:'natal', nome:'Natal', cor:'#CC0000', elementos:'Árvores de natal no rodapé • Neve caindo • Trenó com Papai Noel • Feliz Natal' },
-  { id:'ano_novo', nome:'Ano Novo', cor:'#FFD700', elementos:'Fogos de artifício • Contador para virada • Feliz Ano Novo • Champagne' },
-  { id:'carnaval', nome:'Carnaval', cor:'#9B00FF', elementos:'Confetes coloridos • Máscaras de carnaval • Serpentinas coloridas' },
-  { id:'maes', nome:'Dia das Mães', cor:'#FF69B4', elementos:'Pétalas de rosa • Flores animadas • Borboletas douradas • Feliz Dia das Mães' },
-  { id:'namorados', nome:'Namorados', cor:'#FF0044', elementos:'Corações flutuando • Pétalas vermelhas • Flechas do cupido' },
-  { id:'pais', nome:'Dia dos Pais', cor:'#1E90FF', elementos:'Gravatas douradas • Troféu animado • Estrelas maiores • Feliz Dia dos Pais' },
-  { id:'pascoa', nome:'Páscoa', cor:'#9ACD32', elementos:'Ovos coloridos • Coelhinhos animados • Flores da primavera • Feliz Páscoa' },
-  { id:'black_friday', nome:'Black Friday', cor:'#FF0000', elementos:'Raios neon • Contador agressivo • BLACK FRIDAY pulsando • Etiquetas caindo' },
-  { id:'aniversario', nome:'Aniversariante', cor:'#FF8C00', elementos:'Balões coloridos subindo • Caixa dourada • Bolo com velas • Desconto exclusivo 24h' },
+  { id:'padrao', nome:'Padrão', cor:'#F5A800', elementos:'Estrelas douradas animadas — visual padrão Capi da Sorte' },
+  { id:'natal', nome:'Natal', cor:'#CC0000', elementos:'Árvores com luzes coloridas no rodapé • Neve caindo • Trenó com Papai Noel • Texto Feliz Natal' },
+  { id:'ano_novo', nome:'Ano Novo', cor:'#FFD700', elementos:'Fogos de artifício coloridos • Contador para virada • Champagne • Texto Feliz Ano Novo' },
+  { id:'carnaval', nome:'Carnaval', cor:'#9B00FF', elementos:'Confetes coloridos caindo • Máscaras de carnaval flutuando • Serpentinas coloridas' },
+  { id:'maes', nome:'Dia das Mães', cor:'#FF69B4', elementos:'Pétalas de rosa douradas caindo • Flores animadas • Borboletas douradas • Texto Feliz Dia das Mães' },
+  { id:'namorados', nome:'Namorados', cor:'#FF0044', elementos:'Corações flutuando • Pétalas vermelhas caindo • Flechas do cupido animadas' },
+  { id:'pais', nome:'Dia dos Pais', cor:'#1E90FF', elementos:'Gravatas douradas flutuando • Troféu dourado animado • Estrelas maiores • Texto Feliz Dia dos Pais' },
+  { id:'pascoa', nome:'Páscoa', cor:'#9ACD32', elementos:'Ovos coloridos flutuando • Coelhinhos animados nos cantos • Flores da primavera • Texto Feliz Páscoa' },
+  { id:'black_friday', nome:'Black Friday', cor:'#FF0000', elementos:'Raios elétricos neon • Contador regressivo agressivo • Texto BLACK FRIDAY pulsando • Etiquetas caindo' },
+  { id:'aniversario', nome:'Aniversariante', cor:'#FF8C00', elementos:'Balões coloridos subindo • Caixa dourada especial • Bolo com velas animado • Desconto exclusivo 24h' },
 ]
 
-type Menu = 'dashboard'|'criar_campanha'|'campanhas_ativas'|'historico_campanhas'|'sorteios'|'pacotes'|'caixas'|'extrato'|'relatorio_premios'|'simulador'|'usuarios'|'aniversariantes'|'blacklist'|'marcos'|'templates'|'gatilhos'|'vip'|'identidade'|'temas'|'textos'|'logs'|'controle_acesso'
+type Menu = 'dashboard'|'criar_campanha'|'campanhas_ativas'|'historico'|'sorteios'|'pacotes'|'simulador'|'extrato'|'premios'|'usuarios'|'aniversariantes'|'blacklist'|'identidade'|'temas'|'textos'|'pixel'|'api_conversoes'|'utm'|'relatorio_anuncios'|'logs'|'controle_acesso'
 
 const MENU_ITEMS = [
-  { section:'VISÃO GERAL', items:[{ id:'dashboard', label:'Dashboard' }]},
+  { section:'VISÃO GERAL', items:[
+    { id:'dashboard', label:'Dashboard' },
+  ]},
   { section:'CAMPANHAS', items:[
     { id:'criar_campanha', label:'Criar Campanha' },
     { id:'campanhas_ativas', label:'Campanhas Ativas' },
-    { id:'historico_campanhas', label:'Histórico' },
+    { id:'historico', label:'Histórico' },
     { id:'sorteios', label:'Sorteios' },
   ]},
-  { section:'BILHETES & GAMES', items:[
+  { section:'BILHETES', items:[
     { id:'pacotes', label:'Pacotes' },
-    { id:'caixas', label:'Caixas Premiadas' },
   ]},
   { section:'FINANCEIRO', items:[
     { id:'simulador', label:'Simulador' },
     { id:'extrato', label:'Extrato' },
-    { id:'relatorio_premios', label:'Prêmios' },
+    { id:'premios', label:'Prêmios' },
   ]},
   { section:'USUÁRIOS', items:[
     { id:'usuarios', label:'Usuários' },
     { id:'aniversariantes', label:'Aniversariantes' },
     { id:'blacklist', label:'Blacklist' },
   ]},
-  { section:'COMUNICAÇÃO', items:[
-    { id:'marcos', label:'Marcos de Venda' },
-    { id:'templates', label:'Templates WhatsApp' },
-    { id:'gatilhos', label:'Gatilhos Automáticos' },
-    { id:'vip', label:'Grupo VIP' },
-  ]},
   { section:'PLATAFORMA', items:[
     { id:'identidade', label:'Identidade Visual' },
     { id:'temas', label:'Temas Sazonais' },
     { id:'textos', label:'Textos e Frases' },
+  ]},
+  { section:'MARKETING', items:[
+    { id:'pixel', label:'Pixel Meta' },
+    { id:'api_conversoes', label:'API de Conversões' },
+    { id:'utm', label:'UTM e Rastreamento' },
+    { id:'relatorio_anuncios', label:'Relatório de Anúncios' },
   ]},
   { section:'SEGURANÇA', items:[
     { id:'logs', label:'Logs do Sistema' },
@@ -72,21 +73,11 @@ const MENU_ITEMS = [
   ]},
 ]
 
-const MARCOS_PADRAO = [
-  { id:1, nome:'Marco 1 — Primeira Compra', descricao:'Disparado imediatamente após confirmação do pagamento', ativo:true, tempo:'Imediato',
-    mensagem:'Olá {nome}! 🎉 Seus {quantidade} bilhetes estão confirmados! O prêmio acumulado já está em R$ {premio} e continua crescendo a cada compra. Seus números: {numeros}. Boa sorte! 🍀 {link}' },
-  { id:2, nome:'Marco 2 — Recompra 1', descricao:'6 horas após a primeira compra', ativo:true, tempo:'6h após compra',
-    mensagem:'Olá {nome}! 😊 O prêmio da Capi da Sorte já está em R$ {premio}! Desde sua compra o prêmio cresceu. Garanta mais bilhetes e aumente suas chances: {link}' },
-  { id:3, nome:'Marco 3 — Recompra 2', descricao:'24 horas sem nova compra', ativo:true, tempo:'24h inativo',
-    mensagem:'Olá {nome}! ⏰ O sorteio está se aproximando e o prêmio já está em R$ {premio}! Não deixe seus bilhetes de lado — garanta mais agora: {link}' },
-  { id:4, nome:'Marco 4 — Urgência', descricao:'48 horas sem nova compra', ativo:true, tempo:'48h inativo',
-    mensagem:'🚨 {nome}, últimas horas! O prêmio acumulado está em R$ {premio} e os bilhetes estão acabando. Garanta os seus agora: {link}' },
-  { id:5, nome:'Marco 5 — Pré Sorteio', descricao:'24 horas antes do sorteio', ativo:true, tempo:'24h antes sorteio',
-    mensagem:'🎯 {nome}, o sorteio acontece AMANHÃ! O prêmio acumulado é R$ {premio}. Você tem {quantidade} bilhetes participando. Garanta mais e aumente suas chances: {link}' },
-  { id:6, nome:'Marco 6 — Pós Sorteio', descricao:'Imediatamente após o sorteio', ativo:true, tempo:'Pós sorteio',
-    mensagem:'🏆 O sorteio foi realizado! Parabéns ao ganhador! O prêmio da próxima campanha já começou a acumular e está em R$ {premio}. Garanta seus bilhetes agora: {link}' },
-  { id:7, nome:'Marco 7 — Reativação', descricao:'7 dias sem compra', ativo:true, tempo:'7 dias inativo',
-    mensagem:'Olá {nome}! Sentimos sua falta 💛 O prêmio da Capi da Sorte está em R$ {premio} e continua crescendo. Volte agora e garanta seus bilhetes: {link}' },
+const SORTEIOS_PADRAO = [
+  { id:'001', ordem:'1º Sorteio', data:'2026-04-15', hora:'20:00', premio:'500', status:'realizado', ganhador:'', bilhete_ganhador:'', congelado:true },
+  { id:'002', ordem:'2º Sorteio', data:'2026-04-20', hora:'20:00', premio:'800', status:'realizado', ganhador:'', bilhete_ganhador:'', congelado:true },
+  { id:'003', ordem:'3º Sorteio', data:'2026-04-26', hora:'20:00', premio:'1200', status:'pendente', ganhador:'', bilhete_ganhador:'', congelado:false },
+  { id:'004', ordem:'Sorteio Principal', data:'2026-04-30', hora:'20:00', premio:'', status:'pendente', ganhador:'', bilhete_ganhador:'', congelado:false },
 ]
 
 export default function Admin() {
@@ -103,19 +94,29 @@ export default function Admin() {
   const [msgSalvo, setMsgSalvo] = useState('')
   const [busca, setBusca] = useState('')
   const [temaSelecionado, setTemaSelecionado] = useState('padrao')
-  const [simBilhetes, setSimBilhetes] = useState('1000000')
+  const [previewTema, setPreviewTema] = useState(false)
+  const [ganhadorCampanha, setGanhadorCampanha] = useState('')
+  const [ganhadorSequencia, setGanhadorSequencia] = useState('')
+  const [ganhadorEncontrado, setGanhadorEncontrado] = useState<any>(null)
+  const [sorteios, setSorteios] = useState(SORTEIOS_PADRAO)
+  const [blacklist, setBlacklist] = useState<{valor:string,motivo:string,data:string}[]>([])
+  const [blacklistItem, setBlacklistItem] = useState({valor:'',motivo:''})
+  const [pixelId, setPixelId] = useState('')
+  const [apiToken, setApiToken] = useState('')
+  const [utmCampanha, setUtmCampanha] = useState('')
+  const [utmMidia, setUtmMidia] = useState('facebook')
+  const [anivDesconto, setAnivDesconto] = useState('20')
+  const [anivValidade, setAnivValidade] = useState('24')
+
+  const [simBilhetes, setSimBilhetes] = useState('10000000')
   const [simValor, setSimValor] = useState('4.99')
   const [simPct, setSimPct] = useState('30')
   const [simPctVenda, setSimPctVenda] = useState('100')
   const [simCaixas, setSimCaixas] = useState('10')
   const [simValorCaixa, setSimValorCaixa] = useState('100')
-  const [marcos, setMarcos] = useState(MARCOS_PADRAO)
-  const [vipMensagem, setVipMensagem] = useState('Olá {nome}! Você faz parte do nosso grupo VIP 👑 O prêmio está em R$ {premio}. Acesso exclusivo: {link}')
-  const [vipClientes, setVipClientes] = useState<string[]>([])
-  const [ganhadorBusca, setGanhadorBusca] = useState('')
-  const [ganhadorEncontrado, setGanhadorEncontrado] = useState<any>(null)
+
   const [novaCamp, setNovaCamp] = useState({
-    nome:'', logo:'', slogan:'', regulamento:'',
+    nome:'', regulamento:'',
     total_cotas:'10000000', valor_cota:'4.99',
     premio_inicial:'100000', incremento_por_cota:'1.50',
     porcentagem_premio:'30', limite_cotas_por_cpf:'200',
@@ -125,30 +126,29 @@ export default function Admin() {
     data_sorteio2:'', hora_sorteio2:'20:00', premio_sorteio2:'800',
     data_sorteio3:'', hora_sorteio3:'20:00', premio_sorteio3:'1200',
     data_sorteio_principal:'', hora_sorteio_principal:'20:00',
-    tema:'padrao', caixas_ativas:false, qtd_caixas:'10', valor_caixa:'100',
+    tema:'padrao',
+    caixas_ativas:false, caixas_total:'100', caixas_premiadas:'10',
+    caixas_faixas:[
+      {quantidade:'5', valor:'50'},
+      {quantidade:'3', valor:'100'},
+      {quantidade:'2', valor:'200'},
+    ],
   })
+
   const [pacotes, setPacotes] = useState([
     { qty:1, valor:'4.99', destaque:false },
     { qty:5, valor:'22.00', destaque:false },
     { qty:10, valor:'40.00', destaque:true },
     { qty:20, valor:'70.00', destaque:true },
   ])
-  const [caixas, setCaixas] = useState([
-    { id:1, premio:'R$ 50,00', tipo:'dinheiro', revelada:false, ganhador:'' },
-    { id:2, premio:'R$ 100,00', tipo:'dinheiro', revelada:false, ganhador:'' },
-    { id:3, premio:'10 Bilhetes', tipo:'bilhetes', revelada:false, ganhador:'' },
-  ])
-  const [novaCaixa, setNovaCaixa] = useState({ premio:'', tipo:'dinheiro' })
-  const [sorteios, setSorteios] = useState([
-    { ordem:'1º Sorteio', data:'2026-04-15', hora:'20:00', premio:'500', status:'realizado', ganhador:'', bilhete_ganhador:'', congelado:true },
-    { ordem:'2º Sorteio', data:'2026-04-20', hora:'20:00', premio:'800', status:'realizado', ganhador:'', bilhete_ganhador:'', congelado:true },
-    { ordem:'3º Sorteio', data:'2026-04-26', hora:'20:00', premio:'1200', status:'pendente', ganhador:'', bilhete_ganhador:'', congelado:false },
-    { ordem:'Sorteio Principal', data:'2026-04-30', hora:'20:00', premio:'', status:'pendente', ganhador:'', bilhete_ganhador:'', congelado:false },
-  ])
+
   const [identidade, setIdentidade] = useState({
-    nome_plataforma:'Capi da Sorte', slogan:'O prêmio cresce com você.',
-    cor_principal:'#F5A800', cor_secundaria:'#04091C',
+    nome_plataforma:'Capi da Sorte',
+    slogan:'O prêmio cresce com você.',
+    cor_principal:'#F5A800',
+    cor_secundaria:'#04091C',
   })
+
   const [textos, setTextos] = useState({
     frase1:'Compras acontecendo agora',
     frase2:'Quanto mais bilhetes, maiores suas chances',
@@ -159,11 +159,6 @@ export default function Admin() {
     frase_urgencia:'Pagamento 100% seguro via PIX • Confirmação imediata',
     regulamento:'',
   })
-  const [anivDesconto, setAnivDesconto] = useState('20')
-  const [anivValidade, setAnivValidade] = useState('24')
-  const [anivMensagem, setAnivMensagem] = useState('Feliz Aniversário {nome}! 🎂 A Capi da Sorte preparou uma surpresa especial para você hoje! Acesse agora e descubra: {link}')
-  const [blacklistItem, setBlacklistItem] = useState({ valor:'', motivo:'' })
-  const [blacklist, setBlacklist] = useState<{valor:string,motivo:string,data:string}[]>([])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -230,10 +225,10 @@ export default function Admin() {
   const aniversariantesMes = usuarios.filter(u => u.data_nascimento && new Date(u.data_nascimento).getMonth()===new Date().getMonth())
 
   const buscarGanhador = () => {
-    if (!ganhadorBusca) return
-    const encontrado = usuarios.find(u => u.nome?.toLowerCase().includes(ganhadorBusca.toLowerCase()) || u.email?.toLowerCase().includes(ganhadorBusca.toLowerCase()))
-    setGanhadorEncontrado(encontrado || null)
-    if (!encontrado) salvar('Nenhum usuário encontrado com essa sequência')
+    if (!ganhadorCampanha || !ganhadorSequencia) { salvar('Preencha o número da campanha e a sequência sorteada'); return }
+    const encontrado = usuarios[Math.floor(Math.random()*usuarios.length)] || null
+    setGanhadorEncontrado(encontrado)
+    if (!encontrado) salvar('Nenhum ganhador encontrado com essa sequência')
   }
 
   function hexToRgb(hex: string) {
@@ -276,16 +271,15 @@ export default function Admin() {
         .btn-s{padding:10px 18px;border-radius:8px;background:rgba(245,168,0,0.1);border:1px solid rgba(245,168,0,0.3);color:#F5A800;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif}
         .btn-r{padding:8px 14px;border-radius:6px;background:rgba(255,61,90,0.1);border:1px solid rgba(255,61,90,0.3);color:#FF3D5A;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif}
         .btn-b{padding:8px 14px;border-radius:6px;background:rgba(30,144,255,0.1);border:1px solid rgba(30,144,255,0.3);color:#1E90FF;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif}
-        .btn-v{padding:8px 14px;border-radius:6px;background:rgba(155,0,255,0.1);border:1px solid rgba(155,0,255,0.3);color:#9B00FF;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif}
         .lbl{font-size:10px;color:#7A8BB0;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
         .sec-title{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;color:#F5A800;margin-bottom:20px}
         .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
         @media(max-width:600px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}}
         @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+        @keyframes premio-pulse{0%,100%{filter:drop-shadow(0 0 30px rgba(245,168,0,0.8));transform:scale(1)}50%{filter:drop-shadow(0 0 80px rgba(245,168,0,1));transform:scale(1.06)}}
         .toggle{width:44px;height:24px;border-radius:12px;cursor:pointer;transition:background .2s;position:relative;border:none;flex-shrink:0}
         .toggle-dot{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;transition:left .2s}
-        @keyframes premio-pulse{0%,100%{filter:drop-shadow(0 0 20px rgba(245,168,0,0.5));transform:scale(1)}50%{filter:drop-shadow(0 0 60px rgba(245,168,0,1));transform:scale(1.05)}}
       `}</style>
 
       <canvas ref={canvasRef} style={{position:'fixed',inset:0,zIndex:0,pointerEvents:'none'}}/>
@@ -371,20 +365,13 @@ export default function Admin() {
             {menu==='criar_campanha'&&(
               <div>
                 <div className="sec-title">Criar Nova Campanha</div>
+
                 <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Identidade da Campanha</div>
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Identificação da Campanha</div>
                   <div style={{marginBottom:12}}><div className="lbl">Nome da Campanha</div><input className="inp" placeholder="Ex: Campanha Maio 2026" value={novaCamp.nome} onChange={e=>setNovaCamp(p=>({...p,nome:e.target.value}))}/></div>
-                  <div style={{marginBottom:12}}><div className="lbl">Slogan</div><input className="inp" placeholder="Ex: O prêmio cresce com você!" value={novaCamp.slogan} onChange={e=>setNovaCamp(p=>({...p,slogan:e.target.value}))}/></div>
-                  <div style={{marginBottom:12}}>
-                    <div className="lbl">Logo da Campanha</div>
-                    <div style={{marginTop:8,border:'2px dashed rgba(245,168,0,0.3)',borderRadius:12,padding:'24px',textAlign:'center',cursor:'pointer'}}>
-                      <div style={{fontSize:13,color:'#7A8BB0'}}>Clique para fazer upload da logo</div>
-                      <div style={{fontSize:11,color:'#4A5B7A',marginTop:4}}>PNG ou SVG • Fundo transparente recomendado</div>
-                    </div>
-                  </div>
-                  <div style={{marginBottom:12}}>
+                  <div>
                     <div className="lbl">Regulamento</div>
-                    <textarea className="textarea" style={{minHeight:120}} placeholder="Digite o regulamento completo da campanha..." value={novaCamp.regulamento} onChange={e=>setNovaCamp(p=>({...p,regulamento:e.target.value}))}/>
+                    <textarea className="textarea" style={{minHeight:120,marginTop:4}} placeholder="Digite o regulamento completo da campanha..." value={novaCamp.regulamento} onChange={e=>setNovaCamp(p=>({...p,regulamento:e.target.value}))}/>
                   </div>
                 </div>
 
@@ -399,7 +386,7 @@ export default function Admin() {
                     <div><div className="lbl">Tempo de Reserva (min)</div><input className="inp" type="number" value={novaCamp.tempo_reserva_minutos} onChange={e=>setNovaCamp(p=>({...p,tempo_reserva_minutos:e.target.value}))}/></div>
                   </div>
                   <div className="lbl">Porcentagem para o Prêmio</div>
-                  <div style={{display:'flex',gap:10,marginTop:8,flexWrap:'wrap',marginBottom:12}}>
+                  <div style={{display:'flex',gap:10,marginTop:8,flexWrap:'wrap'}}>
                     {['20','30','40'].map(p=>(
                       <div key={p} onClick={()=>setNovaCamp(prev=>({...prev,porcentagem_premio:p}))} style={{flex:1,minWidth:80,padding:'16px',borderRadius:12,border:`2px solid ${novaCamp.porcentagem_premio===p?'#F5A800':'rgba(255,255,255,0.1)'}`,background:novaCamp.porcentagem_premio===p?'rgba(245,168,0,0.1)':'rgba(255,255,255,0.03)',textAlign:'center',cursor:'pointer',transition:'all .2s'}}>
                         <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:32,color:novaCamp.porcentagem_premio===p?'#F5A800':'#fff'}}>{p}%</div>
@@ -412,54 +399,83 @@ export default function Admin() {
 
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Datas e Horários</div>
-                  <div className="grid2" style={{marginBottom:12}}>
+                  <div className="grid2" style={{marginBottom:16}}>
                     <div><div className="lbl">Início das Vendas</div><input className="inp" type="datetime-local" value={novaCamp.data_inicio} onChange={e=>setNovaCamp(p=>({...p,data_inicio:e.target.value}))}/></div>
                     <div><div className="lbl">Encerramento das Vendas</div><input className="inp" type="datetime-local" value={novaCamp.data_fim} onChange={e=>setNovaCamp(p=>({...p,data_fim:e.target.value}))}/></div>
                   </div>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'#F5A800',letterSpacing:1,marginBottom:12}}>Sorteios Fixos — Congelamento Automático</div>
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'rgba(245,168,0,0.7)',letterSpacing:1,marginBottom:12}}>Sorteios Fixos — Congelamento Automático pelo Sistema</div>
                   {[
-                    {label:'1º Sorteio',dataKey:'data_sorteio1',horaKey:'hora_sorteio1',premioKey:'premio_sorteio1'},
-                    {label:'2º Sorteio',dataKey:'data_sorteio2',horaKey:'hora_sorteio2',premioKey:'premio_sorteio2'},
-                    {label:'3º Sorteio',dataKey:'data_sorteio3',horaKey:'hora_sorteio3',premioKey:'premio_sorteio3'},
+                    {id:'001',label:'1º Sorteio',dataKey:'data_sorteio1',horaKey:'hora_sorteio1',premioKey:'premio_sorteio1'},
+                    {id:'002',label:'2º Sorteio',dataKey:'data_sorteio2',horaKey:'hora_sorteio2',premioKey:'premio_sorteio2'},
+                    {id:'003',label:'3º Sorteio',dataKey:'data_sorteio3',horaKey:'hora_sorteio3',premioKey:'premio_sorteio3'},
                   ].map((s,i)=>(
-                    <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:10}}>
-                      <div><div className="lbl">{s.label} — Data</div><input className="inp" type="date" value={(novaCamp as any)[s.dataKey]} onChange={e=>setNovaCamp(p=>({...p,[s.dataKey]:e.target.value}))}/></div>
-                      <div><div className="lbl">Hora</div><input className="inp" type="time" value={(novaCamp as any)[s.horaKey]} onChange={e=>setNovaCamp(p=>({...p,[s.horaKey]:e.target.value}))}/></div>
-                      <div><div className="lbl">Prêmio (R$)</div><input className="inp" type="number" value={(novaCamp as any)[s.premioKey]} onChange={e=>setNovaCamp(p=>({...p,[s.premioKey]:e.target.value}))}/></div>
+                    <div key={i} style={{background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:10,padding:'14px',marginBottom:10}}>
+                      <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                        <div style={{background:'rgba(245,168,0,0.15)',border:'1px solid rgba(245,168,0,0.3)',borderRadius:6,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#F5A800',letterSpacing:1}}>ID {s.id}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:'#fff'}}>{s.label}</div>
+                      </div>
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
+                        <div><div className="lbl">Data</div><input className="inp" type="date" value={(novaCamp as any)[s.dataKey]} onChange={e=>setNovaCamp(p=>({...p,[s.dataKey]:e.target.value}))}/></div>
+                        <div><div className="lbl">Hora</div><input className="inp" type="time" value={(novaCamp as any)[s.horaKey]} onChange={e=>setNovaCamp(p=>({...p,[s.horaKey]:e.target.value}))}/></div>
+                        <div><div className="lbl">Prêmio (R$)</div><input className="inp" type="number" value={(novaCamp as any)[s.premioKey]} onChange={e=>setNovaCamp(p=>({...p,[s.premioKey]:e.target.value}))}/></div>
+                      </div>
                     </div>
                   ))}
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
-                    <div><div className="lbl">Sorteio Principal — Data</div><input className="inp" type="date" value={novaCamp.data_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,data_sorteio_principal:e.target.value}))}/></div>
-                    <div><div className="lbl">Hora</div><input className="inp" type="time" value={novaCamp.hora_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,hora_sorteio_principal:e.target.value}))}/></div>
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Tema Visual</div>
-                  <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:8,marginBottom:12}}>
-                    {TEMAS.map(t=>(
-                      <div key={t.id} onClick={()=>setNovaCamp(p=>({...p,tema:t.id}))} style={{cursor:'pointer',borderRadius:10,padding:12,border:`2px solid ${novaCamp.tema===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:novaCamp.tema===t.id?`rgba(${hexToRgb(t.cor)},0.1)`:'rgba(255,255,255,0.02)',transition:'all .2s',display:'flex',alignItems:'center',gap:10}}>
-                        <div style={{width:22,height:22,borderRadius:'50%',background:t.cor,flexShrink:0}}></div>
-                        <div style={{fontSize:12,fontWeight:700,color:novaCamp.tema===t.id?'#fff':'#7A8BB0'}}>{t.nome}</div>
-                      </div>
-                    ))}
+                  <div style={{background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:10,padding:'14px'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                      <div style={{background:'rgba(245,168,0,0.3)',border:'1px solid rgba(245,168,0,0.5)',borderRadius:6,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#F5A800',letterSpacing:1}}>ID 004</div>
+                      <div style={{fontSize:13,fontWeight:700,color:'#F5A800'}}>Sorteio Principal — Congelamento Manual</div>
+                    </div>
+                    <div className="grid2">
+                      <div><div className="lbl">Data</div><input className="inp" type="date" value={novaCamp.data_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,data_sorteio_principal:e.target.value}))}/></div>
+                      <div><div className="lbl">Hora</div><input className="inp" type="time" value={novaCamp.hora_sorteio_principal} onChange={e=>setNovaCamp(p=>({...p,hora_sorteio_principal:e.target.value}))}/></div>
+                    </div>
+                    <div style={{fontSize:11,color:'#7A8BB0',marginTop:8}}>O prêmio acumulado continua crescendo durante todos os sorteios fixos. O congelamento do Sorteio Principal é feito manualmente pelo admin em Campanhas Ativas.</div>
                   </div>
                 </div>
 
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Caixas Premiadas</div>
-                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
-                    <div style={{fontSize:14,color:'#fff',fontWeight:600}}>Ativar Caixas Premiadas</div>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+                    <div>
+                      <div style={{fontSize:14,color:'#fff',fontWeight:600}}>Ativar Caixas Premiadas</div>
+                      <div style={{fontSize:12,color:'#7A8BB0',marginTop:2}}>Uma caixa por compra — sistema distribui automaticamente</div>
+                    </div>
                     <button className="toggle" style={{background:novaCamp.caixas_ativas?'#1FCC6A':'rgba(255,255,255,0.1)'}} onClick={()=>setNovaCamp(p=>({...p,caixas_ativas:!p.caixas_ativas}))}>
                       <div className="toggle-dot" style={{left:novaCamp.caixas_ativas?22:3}}></div>
                     </button>
                   </div>
                   {novaCamp.caixas_ativas&&(
-                    <div className="grid2">
-                      <div><div className="lbl">Quantidade de Caixas</div><input className="inp" type="number" value={novaCamp.qtd_caixas} onChange={e=>setNovaCamp(p=>({...p,qtd_caixas:e.target.value}))}/></div>
-                      <div><div className="lbl">Valor Médio por Caixa (R$)</div><input className="inp" type="number" value={novaCamp.valor_caixa} onChange={e=>setNovaCamp(p=>({...p,valor_caixa:e.target.value}))}/></div>
-                    </div>
+                    <>
+                      <div className="grid2" style={{marginBottom:16}}>
+                        <div><div className="lbl">Total de Caixas na Campanha</div><input className="inp" type="number" value={novaCamp.caixas_total} onChange={e=>setNovaCamp(p=>({...p,caixas_total:e.target.value}))}/></div>
+                        <div><div className="lbl">Quantidade de Caixas Premiadas</div><input className="inp" type="number" value={novaCamp.caixas_premiadas} onChange={e=>setNovaCamp(p=>({...p,caixas_premiadas:e.target.value}))}/></div>
+                      </div>
+                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'rgba(245,168,0,0.7)',letterSpacing:1,marginBottom:10}}>Valores dos Prêmios por Faixa</div>
+                      {novaCamp.caixas_faixas.map((f,i)=>(
+                        <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:8,marginBottom:8,alignItems:'end'}}>
+                          <div><div className="lbl">Quantidade</div><input className="inp" type="number" value={f.quantidade} onChange={e=>{const n=[...novaCamp.caixas_faixas];n[i].quantidade=e.target.value;setNovaCamp(p=>({...p,caixas_faixas:n}))}}/></div>
+                          <div><div className="lbl">Valor (R$)</div><input className="inp" type="number" value={f.valor} onChange={e=>{const n=[...novaCamp.caixas_faixas];n[i].valor=e.target.value;setNovaCamp(p=>({...p,caixas_faixas:n}))}}/></div>
+                          <button className="btn-r" onClick={()=>setNovaCamp(p=>({...p,caixas_faixas:p.caixas_faixas.filter((_,j)=>j!==i)}))}>Remover</button>
+                        </div>
+                      ))}
+                      <button className="btn-s" style={{marginTop:8}} onClick={()=>setNovaCamp(p=>({...p,caixas_faixas:[...p.caixas_faixas,{quantidade:'1',valor:'50'}]}))}>+ Adicionar Faixa</button>
+                    </>
                   )}
+                </div>
+
+                <div className="card">
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Tema Visual da Campanha</div>
+                  <div style={{fontSize:12,color:'#7A8BB0',marginBottom:12}}>Selecione o tema. Visualize o preview antes de criar a campanha.</div>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:8,marginBottom:12}}>
+                    {TEMAS.map(t=>(
+                      <div key={t.id} onClick={()=>setNovaCamp(p=>({...p,tema:t.id}))} style={{cursor:'pointer',borderRadius:10,padding:12,border:`2px solid ${novaCamp.tema===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:novaCamp.tema===t.id?`rgba(${hexToRgb(t.cor)},0.1)`:'rgba(255,255,255,0.02)',transition:'all .2s',display:'flex',alignItems:'center',gap:10}}>
+                        <div style={{width:22,height:22,borderRadius:'50%',background:t.cor,flexShrink:0,boxShadow:`0 0 8px ${t.cor}60`}}></div>
+                        <div style={{fontSize:12,fontWeight:700,color:novaCamp.tema===t.id?'#fff':'#7A8BB0'}}>{t.nome}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="btn-b" onClick={()=>setPreviewTema(true)}>Visualizar Preview do Tema</button>
                 </div>
 
                 <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
@@ -480,11 +496,12 @@ export default function Admin() {
                         <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:22,color:'#fff',letterSpacing:2}}>{campanha.nome}</div>
                         <div style={{display:'inline-block',background:'rgba(31,204,106,0.15)',border:'1px solid rgba(31,204,106,0.4)',borderRadius:20,padding:'3px 12px',fontSize:10,fontWeight:700,color:'#1FCC6A',letterSpacing:1,textTransform:'uppercase',marginTop:6}}>Ativa</div>
                       </div>
-                      <button className="btn-r" onClick={()=>salvar('Campanha congelada! Contador pulsando. Mensagens disparadas!')}>🔒 Congelar Campanha</button>
+                      <button className="btn-r" onClick={()=>salvar('Sorteio Principal congelado! Contador pulsando. Countdown ativado. Mensagens disparadas!')}>Congelar Sorteio Principal</button>
                     </div>
-                    <div style={{background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:12,padding:16,marginBottom:16,textAlign:'center'}}>
-                      <div style={{fontSize:11,color:'#7A8BB0',fontWeight:700,letterSpacing:2,textTransform:'uppercase',marginBottom:8}}>Premio Acumulado</div>
-                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:42,color:'#F5A800',animation:'premio-pulse 2s ease-in-out infinite'}}>{`R$ ${fv(premioAtual)}`}</div>
+                    <div style={{background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:12,padding:20,marginBottom:16,textAlign:'center'}}>
+                      <div style={{fontSize:11,color:'#7A8BB0',fontWeight:700,letterSpacing:2,textTransform:'uppercase',marginBottom:8}}>Premio Acumulado — Sorteio Principal</div>
+                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:48,color:'#F5A800',animation:'premio-pulse 2s ease-in-out infinite',letterSpacing:2}}>{`R$ ${fv(premioAtual)}`}</div>
+                      <div style={{fontSize:12,color:'#7A8BB0',marginTop:8}}>Continua crescendo durante todos os sorteios fixos</div>
                     </div>
                     <div className="grid2" style={{marginBottom:16}}>
                       {[
@@ -511,21 +528,26 @@ export default function Admin() {
             {menu==='sorteios'&&(
               <div>
                 <div className="sec-title">Controle de Sorteios</div>
-                <div className="card" style={{marginBottom:20,background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.2)'}}>
+                <div className="card" style={{marginBottom:20,background:'rgba(245,168,0,0.04)',border:'1px solid rgba(245,168,0,0.15)'}}>
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:12}}>Buscar Ganhador</div>
-                  <div style={{display:'flex',gap:8,marginBottom:12}}>
-                    <input className="inp" placeholder="Digite o número do bilhete sorteado..." value={ganhadorBusca} onChange={e=>setGanhadorBusca(e.target.value)}/>
-                    <button className="btn-g" onClick={buscarGanhador}>Localizar</button>
+                  <div className="grid2" style={{marginBottom:12}}>
+                    <div><div className="lbl">Número da Campanha</div><input className="inp" placeholder="Ex: 001" value={ganhadorCampanha} onChange={e=>setGanhadorCampanha(e.target.value)}/></div>
+                    <div><div className="lbl">Sequência Sorteada</div><input className="inp" placeholder="Ex: 4857291" value={ganhadorSequencia} onChange={e=>setGanhadorSequencia(e.target.value)}/></div>
                   </div>
+                  <button className="btn-g" style={{marginBottom:16}} onClick={buscarGanhador}>Identificar Ganhador</button>
                   {ganhadorEncontrado&&(
-                    <div style={{background:'rgba(31,204,106,0.1)',border:'1px solid rgba(31,204,106,0.3)',borderRadius:10,padding:16}}>
-                      <div style={{fontSize:16,fontWeight:700,color:'#1FCC6A',marginBottom:8}}>✅ Ganhador Encontrado!</div>
-                      <div style={{fontSize:14,color:'#fff',marginBottom:4}}>{ganhadorEncontrado.nome}</div>
-                      <div style={{fontSize:12,color:'#7A8BB0',marginBottom:4}}>{ganhadorEncontrado.email}</div>
-                      {ganhadorEncontrado.telefone&&<div style={{fontSize:12,color:'#7A8BB0',marginBottom:12}}>{ganhadorEncontrado.telefone}</div>}
+                    <div style={{background:'rgba(31,204,106,0.08)',border:'1px solid rgba(31,204,106,0.25)',borderRadius:12,padding:16}}>
+                      <div style={{fontSize:15,fontWeight:700,color:'#1FCC6A',marginBottom:12}}>Ganhador Identificado</div>
+                      <div className="grid2" style={{marginBottom:16}}>
+                        <div><div className="lbl">Nome</div><div style={{fontSize:14,color:'#fff',fontWeight:600}}>{ganhadorEncontrado.nome}</div></div>
+                        <div><div className="lbl">Email</div><div style={{fontSize:14,color:'#fff',fontWeight:600}}>{ganhadorEncontrado.email}</div></div>
+                        <div><div className="lbl">Telefone</div><div style={{fontSize:14,color:'#fff',fontWeight:600}}>{ganhadorEncontrado.telefone||'—'}</div></div>
+                        <div><div className="lbl">Bilhete</div><div style={{fontSize:14,color:'#F5A800',fontWeight:700}}>#{ganhadorSequencia}</div></div>
+                      </div>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-                        <button className="btn-g" onClick={()=>salvar(`WhatsApp enviado para ${ganhadorEncontrado.nome}!`)}>📱 Entrar em Contato</button>
-                        <button className="btn-s" onClick={()=>window.print()}>🖨️ Imprimir Comprovante</button>
+                        <button className="btn-g" onClick={()=>salvar('Ganhador postado na página principal!')}>Postar na Página Principal</button>
+                        <button className="btn-b" onClick={()=>salvar(`WhatsApp enviado para ${ganhadorEncontrado.nome}!`)}>Enviar WhatsApp</button>
+                        <button className="btn-s" onClick={()=>window.print()}>Imprimir Comprovante</button>
                       </div>
                     </div>
                   )}
@@ -533,9 +555,12 @@ export default function Admin() {
                 {sorteios.map((s,i)=>(
                   <div key={i} className="card">
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16,flexWrap:'wrap',gap:8}}>
-                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:18,color:'#F5A800',letterSpacing:2}}>{s.ordem}</div>
+                      <div style={{display:'flex',alignItems:'center',gap:10}}>
+                        <div style={{background:'rgba(245,168,0,0.15)',border:'1px solid rgba(245,168,0,0.3)',borderRadius:6,padding:'3px 10px',fontSize:11,fontWeight:700,color:'#F5A800',letterSpacing:1}}>ID {s.id}</div>
+                        <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:18,color:'#F5A800',letterSpacing:2}}>{s.ordem}</div>
+                      </div>
                       <div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
-                        {s.congelado&&<div style={{background:'rgba(30,144,255,0.15)',border:'1px solid rgba(30,144,255,0.4)',borderRadius:20,padding:'3px 10px',fontSize:10,fontWeight:700,color:'#1E90FF',letterSpacing:1,textTransform:'uppercase'}}>Congelado Auto</div>}
+                        {s.congelado&&<div style={{background:'rgba(30,144,255,0.15)',border:'1px solid rgba(30,144,255,0.3)',borderRadius:20,padding:'3px 10px',fontSize:10,fontWeight:700,color:'#1E90FF',letterSpacing:1,textTransform:'uppercase'}}>Auto</div>}
                         <div style={{display:'inline-block',background:s.status==='realizado'?'rgba(31,204,106,0.15)':'rgba(245,168,0,0.15)',border:`1px solid ${s.status==='realizado'?'rgba(31,204,106,0.4)':'rgba(245,168,0,0.4)'}`,borderRadius:20,padding:'3px 12px',fontSize:10,fontWeight:700,color:s.status==='realizado'?'#1FCC6A':'#F5A800',letterSpacing:1,textTransform:'uppercase'}}>
                           {s.status==='realizado'?'Realizado':'Pendente'}
                         </div>
@@ -552,8 +577,8 @@ export default function Admin() {
                     <div style={{marginBottom:12}}><div className="lbl">Nome do Ganhador</div><input className="inp" placeholder="Nome do ganhador" value={s.ganhador} onChange={e=>{const n=[...sorteios];n[i].ganhador=e.target.value;setSorteios(n)}}/></div>
                     <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                       <button className="btn-g" onClick={()=>salvar(`${s.ordem} salvo!`)}>Salvar</button>
-                      {s.status==='pendente'&&<button className="btn-s" onClick={()=>{const n=[...sorteios];n[i].status='realizado';setSorteios(n);salvar(`${s.ordem} realizado!`)}}>Marcar Realizado</button>}
-                      {s.ganhador&&<button className="btn-b" onClick={()=>salvar(`WhatsApp enviado para ${s.ganhador}!`)}>📱 Contatar Ganhador</button>}
+                      {s.status==='pendente'&&<button className="btn-s" onClick={()=>{const n=[...sorteios];n[i].status='realizado';setSorteios(n);salvar(`${s.ordem} marcado como realizado!`)}}>Marcar Realizado</button>}
+                      {s.ganhador&&<button className="btn-b" onClick={()=>salvar(`WhatsApp enviado para ${s.ganhador}!`)}>Contatar Ganhador</button>}
                     </div>
                   </div>
                 ))}
@@ -576,57 +601,6 @@ export default function Admin() {
                           </button>
                         </div>
                         <button className="btn-g" onClick={()=>salvar(`Pacote ${p.qty} bilhete${p.qty>1?'s':''} salvo!`)}>Salvar</button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* CAIXAS */}
-            {menu==='caixas'&&(
-              <div>
-                <div className="sec-title">Caixas Premiadas</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>Uma caixa por compra. Cliente clica para revelar. Sistema distribui automaticamente.</div>
-                <div className="grid3" style={{marginBottom:20}}>
-                  {[
-                    {lbl:'Total',val:caixas.length,cor:'#fff'},
-                    {lbl:'Reveladas',val:caixas.filter(c=>c.revelada).length,cor:'#1FCC6A'},
-                    {lbl:'Disponíveis',val:caixas.filter(c=>!c.revelada).length,cor:'#F5A800'},
-                  ].map((s,i)=>(
-                    <div key={i} className="card" style={{textAlign:'center'}}>
-                      <div className="lbl">{s.lbl}</div>
-                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:28,color:s.cor}}>{s.val}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="card" style={{marginBottom:16}}>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:12}}>Adicionar Caixa</div>
-                  <div className="grid2" style={{marginBottom:12}}>
-                    <div><div className="lbl">Prêmio</div><input className="inp" placeholder="Ex: R$ 50,00 ou 10 Bilhetes" value={novaCaixa.premio} onChange={e=>setNovaCaixa(p=>({...p,premio:e.target.value}))}/></div>
-                    <div><div className="lbl">Tipo</div>
-                      <select className="sel" value={novaCaixa.tipo} onChange={e=>setNovaCaixa(p=>({...p,tipo:e.target.value}))}>
-                        <option value="dinheiro">Dinheiro</option>
-                        <option value="bilhetes">Bilhetes Bônus</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button className="btn-g" onClick={()=>{if(!novaCaixa.premio)return;setCaixas(p=>[...p,{id:Date.now(),premio:novaCaixa.premio,tipo:novaCaixa.tipo as any,revelada:false,ganhador:''}]);setNovaCaixa({premio:'',tipo:'dinheiro'});salvar('Caixa adicionada!')}}>Adicionar</button>
-                </div>
-                {caixas.map((c,i)=>(
-                  <div key={i} className="row">
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
-                      <div style={{display:'flex',alignItems:'center',gap:12}}>
-                        <div style={{fontSize:28}}>🎁</div>
-                        <div>
-                          <div style={{fontSize:14,fontWeight:700,color:'#fff'}}>{c.premio}</div>
-                          <div style={{fontSize:12,color:'#7A8BB0'}}>{c.tipo==='dinheiro'?'Dinheiro':'Bilhetes Bônus'}</div>
-                          {c.ganhador&&<div style={{fontSize:12,color:'#1FCC6A'}}>Ganhador: {c.ganhador}</div>}
-                        </div>
-                      </div>
-                      <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                        <div style={{display:'inline-block',background:c.revelada?'rgba(31,204,106,0.15)':'rgba(245,168,0,0.15)',border:`1px solid ${c.revelada?'rgba(31,204,106,0.4)':'rgba(245,168,0,0.4)'}`,borderRadius:20,padding:'3px 10px',fontSize:10,fontWeight:700,color:c.revelada?'#1FCC6A':'#F5A800',letterSpacing:1,textTransform:'uppercase'}}>{c.revelada?'Revelada':'Disponível'}</div>
-                        {!c.revelada&&<button className="btn-r" onClick={()=>setCaixas(p=>p.filter(x=>x.id!==c.id))}>Remover</button>}
                       </div>
                     </div>
                   </div>
@@ -677,8 +651,8 @@ export default function Admin() {
                     </div>
                   ))}
                   <div style={{display:'flex',gap:8,marginTop:16}}>
-                    <button className="btn-s" onClick={()=>window.print()}>🖨️ Imprimir</button>
-                    <button className="btn-b" onClick={()=>salvar('Relatório exportado!')}>💾 Exportar</button>
+                    <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
+                    <button className="btn-b" onClick={()=>salvar('Relatório exportado!')}>Exportar</button>
                   </div>
                 </div>
               </div>
@@ -700,8 +674,8 @@ export default function Admin() {
                   ))}
                 </div>
                 <div style={{display:'flex',gap:8,marginBottom:16}}>
-                  <button className="btn-s" onClick={()=>window.print()}>🖨️ Imprimir</button>
-                  <button className="btn-b" onClick={()=>salvar('Extrato exportado!')}>💾 Exportar</button>
+                  <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
+                  <button className="btn-b" onClick={()=>salvar('Extrato exportado!')}>Exportar</button>
                 </div>
                 {loading?<div style={{textAlign:'center',padding:40,color:'#7A8BB0'}}>Carregando...</div>:
                 txConfirm.slice(0,50).map((tx,i)=>(
@@ -718,14 +692,55 @@ export default function Admin() {
               </div>
             )}
 
+            {/* PREMIOS */}
+            {menu==='premios'&&(
+              <div>
+                <div className="sec-title">Relatório de Prêmios</div>
+                <div className="grid3" style={{marginBottom:16}}>
+                  {[
+                    {lbl:'Premio Principal',val:`R$ ${fv(premioAtual)}`,cor:'#F5A800'},
+                    {lbl:'Prêmios Fixos',val:'R$ 2.500,00',cor:'#fff'},
+                    {lbl:'Caixas Premiadas',val:'R$ 0,00',cor:'#fff'},
+                  ].map((s,i)=>(
+                    <div key={i} className="card" style={{textAlign:'center'}}>
+                      <div className="lbl">{s.lbl}</div>
+                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:22,color:s.cor}}>{s.val}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{display:'flex',gap:8,marginBottom:16}}>
+                  <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
+                  <button className="btn-b" onClick={()=>salvar('Relatório exportado!')}>Exportar</button>
+                </div>
+                {sorteios.map((s,i)=>(
+                  <div key={i} className="row">
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+                      <div>
+                        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+                          <div style={{background:'rgba(245,168,0,0.15)',border:'1px solid rgba(245,168,0,0.3)',borderRadius:6,padding:'2px 8px',fontSize:10,fontWeight:700,color:'#F5A800'}}>ID {s.id}</div>
+                          <div style={{fontSize:14,fontWeight:700,color:'#fff'}}>{s.ordem}</div>
+                        </div>
+                        <div style={{fontSize:12,color:'#7A8BB0'}}>{s.data} às {s.hora}</div>
+                        {s.ganhador&&<div style={{fontSize:12,color:'#1FCC6A',marginTop:2}}>Ganhador: {s.ganhador}</div>}
+                      </div>
+                      <div>
+                        <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:20,color:'#F5A800'}}>R$ {s.premio?parseFloat(s.premio).toLocaleString('pt-BR',{minimumFractionDigits:2}):fv(premioAtual)}</div>
+                        <div style={{display:'inline-block',background:s.status==='realizado'?'rgba(31,204,106,0.15)':'rgba(245,168,0,0.15)',border:`1px solid ${s.status==='realizado'?'rgba(31,204,106,0.4)':'rgba(245,168,0,0.4)'}`,borderRadius:20,padding:'2px 10px',fontSize:10,fontWeight:700,color:s.status==='realizado'?'#1FCC6A':'#F5A800',letterSpacing:1,textTransform:'uppercase',marginTop:4}}>{s.status==='realizado'?'Pago':'Pendente'}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* USUARIOS */}
             {menu==='usuarios'&&(
               <div>
                 <div className="sec-title">Usuários</div>
-                <div style={{display:'flex',gap:8,marginBottom:12}}>
+                <div style={{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}}>
                   <input className="inp" style={{flex:1}} placeholder="Buscar por nome ou email..." value={busca} onChange={e=>setBusca(e.target.value)}/>
-                  <button className="btn-s" onClick={()=>window.print()}>🖨️ Imprimir</button>
-                  <button className="btn-b" onClick={()=>salvar('Lista exportada!')}>💾 Exportar</button>
+                  <button className="btn-s" onClick={()=>window.print()}>Imprimir</button>
+                  <button className="btn-b" onClick={()=>salvar('Lista exportada!')}>Exportar</button>
                 </div>
                 <div style={{fontSize:13,color:'#7A8BB0',marginBottom:12}}>{usuarios.filter(u=>u.nome?.toLowerCase().includes(busca.toLowerCase())||u.email?.toLowerCase().includes(busca.toLowerCase())).length} usuários encontrados</div>
                 {loading?<div style={{textAlign:'center',padding:40,color:'#7A8BB0'}}>Carregando...</div>:
@@ -758,11 +773,6 @@ export default function Admin() {
                     <div><div className="lbl">Desconto Exclusivo (%)</div><input className="inp" type="number" value={anivDesconto} onChange={e=>setAnivDesconto(e.target.value)}/></div>
                     <div><div className="lbl">Validade (horas)</div><input className="inp" type="number" value={anivValidade} onChange={e=>setAnivValidade(e.target.value)}/></div>
                   </div>
-                  <div style={{marginBottom:12}}>
-                    <div className="lbl">Mensagem WhatsApp do Aniversário</div>
-                    <textarea className="textarea" style={{marginTop:4}} value={anivMensagem} onChange={e=>setAnivMensagem(e.target.value)}/>
-                    <div style={{fontSize:11,color:'#4A5B7A',marginTop:4}}>Variáveis: {'{nome}'} {'{link}'} {'{premio}'} {'{desconto}'}</div>
-                  </div>
                   <button className="btn-g" onClick={()=>salvar('Configurações de aniversário salvas!')}>Salvar</button>
                 </div>
                 <div style={{fontSize:13,color:'#7A8BB0',marginBottom:12}}>{aniversariantesMes.length} aniversariante{aniversariantesMes.length!==1?'s':''} este mês</div>
@@ -772,11 +782,11 @@ export default function Admin() {
                     <div key={i} className="row">
                       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
                         <div>
-                          <div style={{fontSize:14,fontWeight:700,color:'#fff'}}>{u.nome} 🎂</div>
+                          <div style={{fontSize:14,fontWeight:700,color:'#fff'}}>{u.nome}</div>
                           <div style={{fontSize:12,color:'#7A8BB0',marginTop:2}}>{u.email}</div>
                           <div style={{fontSize:12,color:'#F5A800',marginTop:2}}>Aniversário: {u.data_nascimento?new Date(u.data_nascimento).toLocaleDateString('pt-BR',{day:'2-digit',month:'long'}):'—'}</div>
                         </div>
-                        <button className="btn-b" onClick={()=>salvar(`Presente enviado para ${u.nome}!`)}>🎁 Enviar Presente</button>
+                        <button className="btn-b" onClick={()=>salvar(`Presente enviado para ${u.nome}!`)}>Enviar Presente</button>
                       </div>
                     </div>
                   ))
@@ -812,146 +822,22 @@ export default function Admin() {
               </div>
             )}
 
-            {/* MARCOS DE VENDA */}
-            {menu==='marcos'&&(
-              <div>
-                <div className="sec-title">Marcos de Venda</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>O tráfego traz o cliente uma vez. Os marcos trabalham automaticamente para vender, revender e reativar. Todas as mensagens incluem o prêmio atualizado em tempo real.</div>
-                {marcos.map((m,i)=>(
-                  <div key={i} className="card">
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12,flexWrap:'wrap',gap:8}}>
-                      <div>
-                        <div style={{fontSize:14,fontWeight:700,color:'#fff',marginBottom:4}}>{m.nome}</div>
-                        <div style={{fontSize:12,color:'#7A8BB0'}}>{m.descricao}</div>
-                        <div style={{display:'inline-block',background:'rgba(245,168,0,0.1)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:6,padding:'2px 8px',fontSize:10,fontWeight:700,color:'#F5A800',letterSpacing:1,marginTop:6}}>⏱ {m.tempo}</div>
-                      </div>
-                      <div style={{display:'flex',alignItems:'center',gap:8}}>
-                        <span style={{fontSize:12,color:m.ativo?'#1FCC6A':'#7A8BB0'}}>{m.ativo?'Ativo':'Inativo'}</span>
-                        <button className="toggle" style={{background:m.ativo?'#1FCC6A':'rgba(255,255,255,0.1)'}} onClick={()=>{const n=[...marcos];n[i].ativo=!n[i].ativo;setMarcos(n)}}>
-                          <div className="toggle-dot" style={{left:m.ativo?22:3}}></div>
-                        </button>
-                      </div>
-                    </div>
-                    <div className="lbl">Mensagem</div>
-                    <textarea className="textarea" style={{marginTop:4}} value={m.mensagem} onChange={e=>{const n=[...marcos];n[i].mensagem=e.target.value;setMarcos(n)}}/>
-                    <div style={{fontSize:11,color:'#4A5B7A',marginTop:4,marginBottom:8}}>Variáveis: {'{nome}'} {'{quantidade}'} {'{premio}'} {'{numeros}'} {'{link}'} {'{sorteio}'}</div>
-                    <button className="btn-s" onClick={()=>salvar(`${m.nome} salvo!`)}>Salvar</button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* TEMPLATES */}
-            {menu==='templates'&&(
-              <div>
-                <div className="sec-title">Templates WhatsApp</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>Templates específicos para cada evento. Todas as mensagens incluem o prêmio atualizado automaticamente.</div>
-                {[
-                  {key:'confirmacao', label:'Confirmação de Pagamento', msg:'Pagamento confirmado! Seus {quantidade} bilhetes estão garantidos. O prêmio já está em R$ {premio}. Seus números: {numeros}. Boa sorte! {link}'},
-                  {key:'congelamento_auto', label:'Congelamento Automático (3 Sorteios Fixos)', msg:'Atenção {nome}! O {sorteio} está prestes a acontecer! O prêmio acumulado está em R$ {premio}. Seus bilhetes estão garantidos. Boa sorte! E garanta mais bilhetes para os próximos sorteios: {link}'},
-                  {key:'congelamento_manual', label:'Congelamento Manual (Sorteio Principal)', msg:'Atenção {nome}! A campanha foi encerrada! O prêmio acumulado é R$ {premio}. O sorteio acontece em breve. Boa sorte! 🍀'},
-                  {key:'resultado_sorteio', label:'Resultado do Sorteio + Chamada Recompra', msg:'O {sorteio} foi realizado! Parabéns ao ganhador! 🏆 A próxima campanha já começou e o prêmio já está em R$ {premio}. Garanta seus bilhetes agora: {link}'},
-                  {key:'ganhador', label:'Ganhador do Sorteio', msg:'Parabéns {nome}! 🎉 Você ganhou R$ {premio} no {sorteio} da Capi da Sorte! Entraremos em contato em breve para entregar seu prêmio.'},
-                  {key:'ganhador_caixa', label:'Ganhador da Caixa Premiada', msg:'🎁 {nome}, você revelou uma Caixa Premiada! Parabéns! Você ganhou {premio}. Entraremos em contato para entregar seu prêmio!'},
-                ].map((t,i)=>(
-                  <div key={i} className="card">
-                    <div className="lbl">{t.label}</div>
-                    <textarea className="textarea" style={{marginTop:8}} defaultValue={t.msg}/>
-                    <div style={{fontSize:11,color:'#4A5B7A',marginTop:4,marginBottom:8}}>Variáveis: {'{nome}'} {'{quantidade}'} {'{premio}'} {'{numeros}'} {'{link}'} {'{sorteio}'}</div>
-                    <button className="btn-s" onClick={()=>salvar('Template salvo!')}>Salvar</button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* GATILHOS */}
-            {menu==='gatilhos'&&(
-              <div>
-                <div className="sec-title">Gatilhos Automáticos</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>Configure quando cada mensagem dispara. O sistema executa tudo automaticamente.</div>
-                {[
-                  {nome:'Confirmação de pagamento', tempo:'Imediato', ativo:true},
-                  {nome:'Recompra 1 — 6h após compra', tempo:'6 horas após compra', ativo:true},
-                  {nome:'Recompra 2 — 24h inativo', tempo:'24 horas sem compra', ativo:true},
-                  {nome:'Urgência — 48h inativo', tempo:'48 horas sem compra', ativo:true},
-                  {nome:'Pré sorteio — 24h antes', tempo:'24 horas antes do sorteio', ativo:true},
-                  {nome:'Congelamento automático', tempo:'Na data/hora do sorteio fixo', ativo:true},
-                  {nome:'Resultado do sorteio', tempo:'Após registrar ganhador', ativo:true},
-                  {nome:'Reativação — 7 dias', tempo:'7 dias sem compra', ativo:true},
-                  {nome:'Aniversário do cliente', tempo:'Dia do aniversário — manhã', ativo:true},
-                ].map((g,i)=>(
-                  <div key={i} className="card">
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12}}>
-                      <div>
-                        <div style={{fontSize:14,fontWeight:700,color:'#fff'}}>{g.nome}</div>
-                        <div style={{fontSize:12,color:'#7A8BB0',marginTop:2}}>⏱ {g.tempo}</div>
-                      </div>
-                      <div style={{display:'flex',alignItems:'center',gap:8}}>
-                        <span style={{fontSize:12,color:g.ativo?'#1FCC6A':'#7A8BB0'}}>{g.ativo?'Ativo':'Inativo'}</span>
-                        <button className="toggle" style={{background:g.ativo?'#1FCC6A':'rgba(255,255,255,0.1)'}}>
-                          <div className="toggle-dot" style={{left:g.ativo?22:3}}></div>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* VIP */}
-            {menu==='vip'&&(
-              <div>
-                <div className="sec-title">Grupo VIP</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>Clientes VIP recebem mensagens exclusivas com ofertas especiais e acesso antecipado. O prêmio atual é sempre incluído automaticamente.</div>
-                <div className="card" style={{marginBottom:16}}>
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:12}}>Mensagem VIP</div>
-                  <textarea className="textarea" style={{marginBottom:8}} value={vipMensagem} onChange={e=>setVipMensagem(e.target.value)}/>
-                  <div style={{fontSize:11,color:'#4A5B7A',marginBottom:12}}>Variáveis: {'{nome}'} {'{premio}'} {'{link}'}</div>
-                  <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-                    <button className="btn-g" onClick={()=>salvar('Mensagem VIP enviada para todos!')}>📱 Enviar para Todos VIP</button>
-                    <button className="btn-s" onClick={()=>salvar('Mensagem VIP salva!')}>Salvar Template</button>
-                  </div>
-                </div>
-                <div className="card">
-                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:12}}>Adicionar ao Grupo VIP</div>
-                  <div style={{display:'flex',gap:8,marginBottom:16}}>
-                    <input className="inp" style={{flex:1}} placeholder="Buscar usuário por nome ou email..."/>
-                    <button className="btn-v" onClick={()=>salvar('Adicionado ao grupo VIP!')}>+ VIP</button>
-                  </div>
-                  <div style={{fontSize:13,color:'#7A8BB0'}}>{vipClientes.length} clientes no grupo VIP</div>
-                </div>
-              </div>
-            )}
-
             {/* IDENTIDADE */}
             {menu==='identidade'&&(
               <div>
                 <div className="sec-title">Identidade Visual</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:16}}>A identidade da Capi da Sorte é permanente. Faça o upload da logomarca oficial para atualizar todo o sistema.</div>
                 <div className="card">
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Logomarca Oficial</div>
+                  <div style={{border:'2px dashed rgba(245,168,0,0.3)',borderRadius:12,padding:'40px',textAlign:'center',cursor:'pointer',marginBottom:16}}>
+                    <div style={{fontSize:13,color:'#7A8BB0',marginBottom:4}}>Clique para fazer upload da logomarca</div>
+                    <div style={{fontSize:11,color:'#4A5B7A'}}>PNG ou SVG • Fundo transparente recomendado</div>
+                  </div>
                   <div className="grid2" style={{marginBottom:16}}>
                     <div><div className="lbl">Nome da Plataforma</div><input className="inp" value={identidade.nome_plataforma} onChange={e=>setIdentidade(p=>({...p,nome_plataforma:e.target.value}))}/></div>
                     <div><div className="lbl">Slogan</div><input className="inp" value={identidade.slogan} onChange={e=>setIdentidade(p=>({...p,slogan:e.target.value}))}/></div>
-                    <div><div className="lbl">Cor Principal</div>
-                      <div style={{display:'flex',gap:8,alignItems:'center',marginTop:4}}>
-                        <input type="color" value={identidade.cor_principal} onChange={e=>setIdentidade(p=>({...p,cor_principal:e.target.value}))} style={{width:48,height:40,borderRadius:8,border:'none',cursor:'pointer'}}/>
-                        <input className="inp" style={{flex:1}} value={identidade.cor_principal} onChange={e=>setIdentidade(p=>({...p,cor_principal:e.target.value}))}/>
-                      </div>
-                    </div>
-                    <div><div className="lbl">Cor de Fundo</div>
-                      <div style={{display:'flex',gap:8,alignItems:'center',marginTop:4}}>
-                        <input type="color" value={identidade.cor_secundaria} onChange={e=>setIdentidade(p=>({...p,cor_secundaria:e.target.value}))} style={{width:48,height:40,borderRadius:8,border:'none',cursor:'pointer'}}/>
-                        <input className="inp" style={{flex:1}} value={identidade.cor_secundaria} onChange={e=>setIdentidade(p=>({...p,cor_secundaria:e.target.value}))}/>
-                      </div>
-                    </div>
                   </div>
-                  <div style={{marginBottom:16}}>
-                    <div className="lbl">Logo (Upload)</div>
-                    <div style={{marginTop:8,border:'2px dashed rgba(245,168,0,0.3)',borderRadius:12,padding:'32px',textAlign:'center',cursor:'pointer'}}>
-                      <div style={{fontSize:13,color:'#7A8BB0'}}>Clique para fazer upload da logo</div>
-                      <div style={{fontSize:11,color:'#4A5B7A',marginTop:4}}>PNG ou SVG • Fundo transparente recomendado</div>
-                    </div>
-                  </div>
-                  <button className="btn-g" onClick={()=>salvar('Identidade visual salva!')}>Salvar</button>
+                  <button className="btn-g" onClick={()=>salvar('Identidade visual atualizada em todo o sistema!')}>Salvar e Atualizar Sistema</button>
                 </div>
               </div>
             )}
@@ -960,7 +846,7 @@ export default function Admin() {
             {menu==='temas'&&(
               <div>
                 <div className="sec-title">Temas Sazonais</div>
-                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Elementos decorativos adicionados sobre o visual padrão. Preview antes de aplicar.</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Selecione o tema e visualize o preview antes de aplicar. Elementos profissionais adicionados sobre o visual padrão da Capi.</div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10,marginBottom:20}}>
                   {TEMAS.map(t=>(
                     <div key={t.id} onClick={()=>setTemaSelecionado(t.id)} style={{cursor:'pointer',borderRadius:12,padding:16,border:`2px solid ${temaSelecionado===t.id?t.cor:'rgba(255,255,255,0.08)'}`,background:temaSelecionado===t.id?`rgba(${hexToRgb(t.cor)},0.12)`:'rgba(255,255,255,0.03)',transition:'all .2s'}}>
@@ -972,7 +858,10 @@ export default function Admin() {
                     </div>
                   ))}
                 </div>
-                <button className="btn-g" style={{width:'100%',padding:16}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado!')}}>Aplicar Tema</button>
+                <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+                  <button className="btn-b" style={{flex:1}} onClick={()=>setPreviewTema(true)}>Visualizar Preview</button>
+                  <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado com sucesso!')}}>Aplicar Tema</button>
+                </div>
               </div>
             )}
 
@@ -992,13 +881,127 @@ export default function Admin() {
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Botões e Chamadas</div>
                   <div style={{marginBottom:12}}><div className="lbl">Texto do Botão de Compra</div><input className="inp" value={textos.btn_compra} onChange={e=>setTextos(p=>({...p,btn_compra:e.target.value}))}/></div>
-                  <div style={{marginBottom:12}}><div className="lbl">Frase de Urgência</div><input className="inp" value={textos.frase_urgencia} onChange={e=>setTextos(p=>({...p,frase_urgencia:e.target.value}))}/></div>
+                  <div><div className="lbl">Frase de Urgência</div><input className="inp" value={textos.frase_urgencia} onChange={e=>setTextos(p=>({...p,frase_urgencia:e.target.value}))}/></div>
                 </div>
                 <div className="card">
                   <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Regulamento</div>
-                  <textarea className="textarea" style={{minHeight:150}} placeholder="Digite o regulamento completo que aparecerá na página principal..." value={textos.regulamento} onChange={e=>setTextos(p=>({...p,regulamento:e.target.value}))}/>
+                  <textarea className="textarea" style={{minHeight:150}} placeholder="Regulamento que aparece na página principal..." value={textos.regulamento} onChange={e=>setTextos(p=>({...p,regulamento:e.target.value}))}/>
                 </div>
                 <button className="btn-g" style={{width:'100%'}} onClick={()=>salvar('Textos salvos!')}>Salvar Todos</button>
+              </div>
+            )}
+
+            {/* PIXEL META */}
+            {menu==='pixel'&&(
+              <div>
+                <div className="sec-title">Pixel Meta</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Instale o Pixel do Facebook para rastrear visitantes, compras e otimizar seus anúncios no Meta.</div>
+                <div className="card">
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Configuração do Pixel</div>
+                  <div style={{marginBottom:12}}><div className="lbl">ID do Pixel</div><input className="inp" placeholder="Ex: 1234567890123456" value={pixelId} onChange={e=>setPixelId(e.target.value)}/></div>
+                  <div style={{background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:10,padding:16,marginBottom:16}}>
+                    <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:14,color:'#F5A800',letterSpacing:1,marginBottom:10}}>Eventos Rastreados</div>
+                    {[
+                      {evento:'PageView',desc:'Visitou o site'},
+                      {evento:'ViewContent',desc:'Visualizou pacotes de bilhetes'},
+                      {evento:'InitiateCheckout',desc:'Clicou em comprar'},
+                      {evento:'Purchase',desc:'Pagamento PIX confirmado'},
+                      {evento:'CompleteRegistration',desc:'Cadastro realizado'},
+                    ].map((e,i)=>(
+                      <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+                        <div style={{fontSize:13,fontWeight:700,color:'#1FCC6A'}}>{e.evento}</div>
+                        <div style={{fontSize:12,color:'#7A8BB0'}}>{e.desc}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="btn-g" onClick={()=>salvar('Pixel Meta instalado com sucesso!')}>Salvar e Instalar Pixel</button>
+                </div>
+              </div>
+            )}
+
+            {/* API CONVERSOES */}
+            {menu==='api_conversoes'&&(
+              <div>
+                <div className="sec-title">API de Conversões</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>A API de Conversões envia dados diretamente do servidor para o Meta — mais precisa que o pixel e funciona com bloqueadores de anúncio.</div>
+                <div className="card">
+                  <div style={{marginBottom:12}}><div className="lbl">Token de Acesso da API</div><input className="inp" type="password" placeholder="Token gerado no Gerenciador de Eventos do Meta" value={apiToken} onChange={e=>setApiToken(e.target.value)}/></div>
+                  <div style={{background:'rgba(31,204,106,0.05)',border:'1px solid rgba(31,204,106,0.15)',borderRadius:10,padding:14,marginBottom:16}}>
+                    <div style={{fontSize:12,color:'#1FCC6A',fontWeight:600,marginBottom:4}}>Vantagens da API de Conversões</div>
+                    <div style={{fontSize:12,color:'#7A8BB0',lineHeight:1.8}}>
+                      Funciona mesmo com bloqueadores de anúncio<br/>
+                      Dados mais precisos para o algoritmo do Meta<br/>
+                      Reduz o custo por conversão<br/>
+                      Melhora o ROAS das campanhas
+                    </div>
+                  </div>
+                  <button className="btn-g" onClick={()=>salvar('API de Conversões configurada!')}>Salvar Configuração</button>
+                </div>
+              </div>
+            )}
+
+            {/* UTM */}
+            {menu==='utm'&&(
+              <div>
+                <div className="sec-title">UTM e Rastreamento</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Crie links rastreados para saber de qual anúncio veio cada compra.</div>
+                <div className="card" style={{marginBottom:16}}>
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Gerador de Link UTM</div>
+                  <div className="grid2" style={{marginBottom:12}}>
+                    <div><div className="lbl">Nome da Campanha</div><input className="inp" placeholder="Ex: campanha-maio-2026" value={utmCampanha} onChange={e=>setUtmCampanha(e.target.value)}/></div>
+                    <div><div className="lbl">Mídia</div>
+                      <select className="sel" value={utmMidia} onChange={e=>setUtmMidia(e.target.value)}>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="google">Google</option>
+                      </select>
+                    </div>
+                  </div>
+                  {utmCampanha&&(
+                    <div style={{background:'rgba(245,168,0,0.05)',border:'1px solid rgba(245,168,0,0.15)',borderRadius:10,padding:14,marginBottom:12}}>
+                      <div className="lbl" style={{marginBottom:8}}>Link Gerado</div>
+                      <div style={{fontSize:12,color:'#fff',wordBreak:'break-all',fontFamily:'monospace'}}>
+                        {`https://capidasorte.com.br?utm_source=${utmMidia}&utm_medium=paid&utm_campaign=${utmCampanha}`}
+                      </div>
+                    </div>
+                  )}
+                  <button className="btn-g" onClick={()=>salvar('Link copiado!')}>Copiar Link</button>
+                </div>
+              </div>
+            )}
+
+            {/* RELATORIO ANUNCIOS */}
+            {menu==='relatorio_anuncios'&&(
+              <div>
+                <div className="sec-title">Relatório de Anúncios</div>
+                <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>Performance das campanhas de tráfego pago por origem.</div>
+                <div className="grid3" style={{marginBottom:16}}>
+                  {[
+                    {lbl:'Visitantes',val:'0',cor:'#fff'},
+                    {lbl:'Compraram',val:'0',cor:'#1FCC6A'},
+                    {lbl:'Conversão',val:'0%',cor:'#F5A800'},
+                  ].map((s,i)=>(
+                    <div key={i} className="card" style={{textAlign:'center'}}>
+                      <div className="lbl">{s.lbl}</div>
+                      <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:24,color:s.cor}}>{s.val}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="card">
+                  <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:16,color:'#F5A800',letterSpacing:2,marginBottom:16}}>Performance por Canal</div>
+                  {['Facebook','Instagram','TikTok','YouTube','Orgânico'].map((canal,i)=>(
+                    <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                      <div style={{fontSize:13,fontWeight:600,color:'#fff'}}>{canal}</div>
+                      <div style={{display:'flex',gap:20}}>
+                        <div style={{textAlign:'center'}}><div className="lbl">Visitas</div><div style={{fontSize:14,color:'#fff',fontWeight:600}}>0</div></div>
+                        <div style={{textAlign:'center'}}><div className="lbl">Vendas</div><div style={{fontSize:14,color:'#1FCC6A',fontWeight:600}}>0</div></div>
+                        <div style={{textAlign:'center'}}><div className="lbl">Receita</div><div style={{fontSize:14,color:'#F5A800',fontWeight:600}}>R$ 0</div></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -1009,10 +1012,10 @@ export default function Admin() {
                 {[
                   {action:'pagamento_confirmado',user:'marcos@email.com',ip:'189.x.x.x',detalhe:'PIX confirmado • R$ 22,00',data:'23/04/2026 14:33'},
                   {action:'compra_iniciada',user:'joao@email.com',ip:'200.x.x.x',detalhe:'5 bilhetes • R$ 22,00',data:'23/04/2026 14:32'},
-                  {action:'marco_disparado',user:'sistema',ip:'interno',detalhe:'Marco 2 — Recompra 1 enviado',data:'23/04/2026 20:32'},
                   {action:'cadastro',user:'maria@email.com',ip:'177.x.x.x',detalhe:'Novo usuário cadastrado',data:'23/04/2026 13:10'},
                   {action:'webhook_recebido',user:'sistema',ip:'asaas',detalhe:'PAYMENT_CONFIRMED recebido',data:'23/04/2026 14:33'},
-                  {action:'aniversario_disparado',user:'sistema',ip:'interno',detalhe:'Presente de aniversário enviado para Ana C.',data:'23/04/2026 09:00'},
+                  {action:'congelamento_auto',user:'sistema',ip:'interno',detalhe:'1º Sorteio congelado automaticamente',data:'23/04/2026 20:00'},
+                  {action:'aniversario_disparado',user:'sistema',ip:'interno',detalhe:'Presente enviado para Ana C.',data:'23/04/2026 09:00'},
                 ].map((l,i)=>(
                   <div key={i} className="row">
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
@@ -1061,6 +1064,27 @@ export default function Admin() {
           </div>
         </div>
       </div>
+
+      {/* PREVIEW TEMA */}
+      {previewTema&&(
+        <div style={{position:'fixed',inset:0,zIndex:500,background:'rgba(0,0,0,0.95)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:20}}>
+          <div style={{background:'rgba(4,9,28,0.98)',border:'1px solid rgba(245,168,0,0.2)',borderRadius:20,padding:32,maxWidth:500,width:'100%',textAlign:'center'}}>
+            <div style={{fontFamily:"'Bebas Neue',cursive",fontSize:22,color:'#F5A800',letterSpacing:3,marginBottom:4}}>Preview do Tema</div>
+            <div style={{fontSize:13,color:'#7A8BB0',marginBottom:20}}>{TEMAS.find(t=>t.id===temaSelecionado)?.nome}</div>
+            <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:14,padding:24,marginBottom:20}}>
+              <div style={{width:40,height:40,borderRadius:'50%',background:TEMAS.find(t=>t.id===temaSelecionado)?.cor,margin:'0 auto 16px',boxShadow:`0 0 30px ${TEMAS.find(t=>t.id===temaSelecionado)?.cor}80`}}></div>
+              <div style={{fontSize:13,color:'#fff',lineHeight:2,whiteSpace:'pre-line'}}>
+                {TEMAS.find(t=>t.id===temaSelecionado)?.elementos.split('•').join('\n•')}
+              </div>
+            </div>
+            <div style={{fontSize:12,color:'#7A8BB0',marginBottom:20}}>O preview visual completo será exibido na página principal antes de aplicar.</div>
+            <div style={{display:'flex',gap:10}}>
+              <button className="btn-r" style={{flex:1}} onClick={()=>setPreviewTema(false)}>Fechar</button>
+              <button className="btn-g" style={{flex:1}} onClick={()=>{localStorage.setItem('capi_tema',temaSelecionado);salvar('Tema aplicado!');setPreviewTema(false)}}>Aplicar Tema</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
